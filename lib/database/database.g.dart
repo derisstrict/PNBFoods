@@ -34,11 +34,11 @@ class $ProdukTable extends Produk with TableInfo<$ProdukTable, ProdukData> {
   );
   static const VerificationMeta _stokMeta = const VerificationMeta('stok');
   @override
-  late final GeneratedColumn<int> stok = GeneratedColumn<int>(
+  late final GeneratedColumn<String> stok = GeneratedColumn<String>(
     'stok',
     aliasedName,
     false,
-    type: DriftSqlType.int,
+    type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
   static const VerificationMeta _deskripsiProdukMeta = const VerificationMeta(
@@ -185,7 +185,7 @@ class $ProdukTable extends Produk with TableInfo<$ProdukTable, ProdukData> {
         data['${effectivePrefix}foto_produk'],
       )!,
       stok: attachedDatabase.typeMapping.read(
-        DriftSqlType.int,
+        DriftSqlType.string,
         data['${effectivePrefix}stok'],
       )!,
       deskripsiProduk: attachedDatabase.typeMapping.read(
@@ -216,7 +216,7 @@ class $ProdukTable extends Produk with TableInfo<$ProdukTable, ProdukData> {
 class ProdukData extends DataClass implements Insertable<ProdukData> {
   final int id;
   final String fotoProduk;
-  final int stok;
+  final String stok;
   final String deskripsiProduk;
   final String kategoriProduk;
   final String hargaProduk;
@@ -235,7 +235,7 @@ class ProdukData extends DataClass implements Insertable<ProdukData> {
     final map = <String, Expression>{};
     map['id'] = Variable<int>(id);
     map['foto_produk'] = Variable<String>(fotoProduk);
-    map['stok'] = Variable<int>(stok);
+    map['stok'] = Variable<String>(stok);
     map['deskripsi_produk'] = Variable<String>(deskripsiProduk);
     map['kategori_produk'] = Variable<String>(kategoriProduk);
     map['harga_produk'] = Variable<String>(hargaProduk);
@@ -263,7 +263,7 @@ class ProdukData extends DataClass implements Insertable<ProdukData> {
     return ProdukData(
       id: serializer.fromJson<int>(json['id']),
       fotoProduk: serializer.fromJson<String>(json['fotoProduk']),
-      stok: serializer.fromJson<int>(json['stok']),
+      stok: serializer.fromJson<String>(json['stok']),
       deskripsiProduk: serializer.fromJson<String>(json['deskripsiProduk']),
       kategoriProduk: serializer.fromJson<String>(json['kategoriProduk']),
       hargaProduk: serializer.fromJson<String>(json['hargaProduk']),
@@ -276,7 +276,7 @@ class ProdukData extends DataClass implements Insertable<ProdukData> {
     return <String, dynamic>{
       'id': serializer.toJson<int>(id),
       'fotoProduk': serializer.toJson<String>(fotoProduk),
-      'stok': serializer.toJson<int>(stok),
+      'stok': serializer.toJson<String>(stok),
       'deskripsiProduk': serializer.toJson<String>(deskripsiProduk),
       'kategoriProduk': serializer.toJson<String>(kategoriProduk),
       'hargaProduk': serializer.toJson<String>(hargaProduk),
@@ -287,7 +287,7 @@ class ProdukData extends DataClass implements Insertable<ProdukData> {
   ProdukData copyWith({
     int? id,
     String? fotoProduk,
-    int? stok,
+    String? stok,
     String? deskripsiProduk,
     String? kategoriProduk,
     String? hargaProduk,
@@ -363,7 +363,7 @@ class ProdukData extends DataClass implements Insertable<ProdukData> {
 class ProdukCompanion extends UpdateCompanion<ProdukData> {
   final Value<int> id;
   final Value<String> fotoProduk;
-  final Value<int> stok;
+  final Value<String> stok;
   final Value<String> deskripsiProduk;
   final Value<String> kategoriProduk;
   final Value<String> hargaProduk;
@@ -380,7 +380,7 @@ class ProdukCompanion extends UpdateCompanion<ProdukData> {
   ProdukCompanion.insert({
     this.id = const Value.absent(),
     required String fotoProduk,
-    required int stok,
+    required String stok,
     required String deskripsiProduk,
     required String kategoriProduk,
     required String hargaProduk,
@@ -394,7 +394,7 @@ class ProdukCompanion extends UpdateCompanion<ProdukData> {
   static Insertable<ProdukData> custom({
     Expression<int>? id,
     Expression<String>? fotoProduk,
-    Expression<int>? stok,
+    Expression<String>? stok,
     Expression<String>? deskripsiProduk,
     Expression<String>? kategoriProduk,
     Expression<String>? hargaProduk,
@@ -414,7 +414,7 @@ class ProdukCompanion extends UpdateCompanion<ProdukData> {
   ProdukCompanion copyWith({
     Value<int>? id,
     Value<String>? fotoProduk,
-    Value<int>? stok,
+    Value<String>? stok,
     Value<String>? deskripsiProduk,
     Value<String>? kategoriProduk,
     Value<String>? hargaProduk,
@@ -441,7 +441,7 @@ class ProdukCompanion extends UpdateCompanion<ProdukData> {
       map['foto_produk'] = Variable<String>(fotoProduk.value);
     }
     if (stok.present) {
-      map['stok'] = Variable<int>(stok.value);
+      map['stok'] = Variable<String>(stok.value);
     }
     if (deskripsiProduk.present) {
       map['deskripsi_produk'] = Variable<String>(deskripsiProduk.value);
@@ -488,7 +488,7 @@ typedef $$ProdukTableCreateCompanionBuilder =
     ProdukCompanion Function({
       Value<int> id,
       required String fotoProduk,
-      required int stok,
+      required String stok,
       required String deskripsiProduk,
       required String kategoriProduk,
       required String hargaProduk,
@@ -498,7 +498,7 @@ typedef $$ProdukTableUpdateCompanionBuilder =
     ProdukCompanion Function({
       Value<int> id,
       Value<String> fotoProduk,
-      Value<int> stok,
+      Value<String> stok,
       Value<String> deskripsiProduk,
       Value<String> kategoriProduk,
       Value<String> hargaProduk,
@@ -524,7 +524,7 @@ class $$ProdukTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnFilters<int> get stok => $composableBuilder(
+  ColumnFilters<String> get stok => $composableBuilder(
     column: $table.stok,
     builder: (column) => ColumnFilters(column),
   );
@@ -569,7 +569,7 @@ class $$ProdukTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<int> get stok => $composableBuilder(
+  ColumnOrderings<String> get stok => $composableBuilder(
     column: $table.stok,
     builder: (column) => ColumnOrderings(column),
   );
@@ -612,7 +612,7 @@ class $$ProdukTableAnnotationComposer
     builder: (column) => column,
   );
 
-  GeneratedColumn<int> get stok =>
+  GeneratedColumn<String> get stok =>
       $composableBuilder(column: $table.stok, builder: (column) => column);
 
   GeneratedColumn<String> get deskripsiProduk => $composableBuilder(
@@ -666,7 +666,7 @@ class $$ProdukTableTableManager
               ({
                 Value<int> id = const Value.absent(),
                 Value<String> fotoProduk = const Value.absent(),
-                Value<int> stok = const Value.absent(),
+                Value<String> stok = const Value.absent(),
                 Value<String> deskripsiProduk = const Value.absent(),
                 Value<String> kategoriProduk = const Value.absent(),
                 Value<String> hargaProduk = const Value.absent(),
@@ -684,7 +684,7 @@ class $$ProdukTableTableManager
               ({
                 Value<int> id = const Value.absent(),
                 required String fotoProduk,
-                required int stok,
+                required String stok,
                 required String deskripsiProduk,
                 required String kategoriProduk,
                 required String hargaProduk,

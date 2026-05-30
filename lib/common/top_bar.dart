@@ -8,9 +8,8 @@ class TopBar extends StatelessWidget implements PreferredSizeWidget{
 
   @override
   Widget build(BuildContext context) {
-    final warna = Warna();
     return AppBar(
-      backgroundColor: warna.warnaAccent,
+      backgroundColor: Warna.warnaAccent,
       foregroundColor: Colors.white,
       title: Text(title, 
         style: TextStyle(

@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'package:pnbfoods/common/tombol.dart';
 import 'package:pnbfoods/common/warna.dart';
 import 'package:pnbfoods/main.dart';
 import 'package:pnbfoods/pembeli/list_produk/widget/card_menu.dart';
@@ -23,9 +24,8 @@ class _ListProdukState extends State<ListProduk> {
 
   @override
   Widget build(BuildContext context) {
-    final warna = Warna();
     return Scaffold(
-      backgroundColor: warna.warnaBackground,
+      backgroundColor: Warna.warnaBackground,
       body: SingleChildScrollView(
         child: Column(
           children: [
@@ -164,11 +164,18 @@ class _ListProdukState extends State<ListProduk> {
                       
                     ],
                   ),
-                  TextButton(
-                    onPressed: () {
-                      Navigator.push(context, MaterialPageRoute(builder: (context) => FormProduk()));
-                    }, 
-                    child: Text("Buat Produk")
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      TombolNavigasi(
+                        function: () {
+                          Navigator.push(context, MaterialPageRoute(builder: (context) => FormProduk()));
+                        }, 
+                        backgroundColor: Colors.white, 
+                        foregroundColor: Colors.black, 
+                        text: "Buat Produk"
+                      )
+                    ],
                   )
                 ],
               ),

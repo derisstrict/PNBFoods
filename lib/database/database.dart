@@ -7,7 +7,7 @@ part 'database.g.dart';
 class Produk extends Table {
   IntColumn get id => integer().autoIncrement()();
   TextColumn get fotoProduk => text()();
-  IntColumn get stok => integer()();
+  TextColumn get stok => text()();
   TextColumn get deskripsiProduk => text()();
   TextColumn get kategoriProduk => text()();
   TextColumn get hargaProduk => text()();
