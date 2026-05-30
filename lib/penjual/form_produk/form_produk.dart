@@ -141,6 +141,7 @@ class _FormProdukState extends State<FormProduk> {
                                 color: Warna.warnaAccent
                               ),),
                           ),
+                          numberOnly: true,
                         ),
                         TextArea(
                           controller: deskripsi!, 
