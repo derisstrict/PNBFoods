@@ -184,6 +184,7 @@ class _ListProdukState extends State<ListProduk> {
         )
       ),
       bottomNavigationBar: BottomNavigationBar(
+        type: BottomNavigationBarType.fixed,
         items: <BottomNavigationBarItem>[
           BottomNavigationBarItem(
             icon: Icon(Icons.home_outlined),
@@ -203,6 +204,7 @@ class _ListProdukState extends State<ListProduk> {
           ),
         ],
         currentIndex: _selectedNavbar,
+        backgroundColor: Colors.white,
         selectedItemColor: Color(0xFFF9803B),
         unselectedItemColor: Colors.grey,
         selectedFontSize: 11.0,
