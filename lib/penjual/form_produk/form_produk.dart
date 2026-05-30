@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pnbfoods/common/forms.dart';
 import 'package:pnbfoods/common/tombol.dart';
 import 'package:pnbfoods/common/top_bar.dart';
 import 'package:pnbfoods/common/warna.dart';
@@ -62,21 +63,11 @@ class _FormProdukState extends State<FormProduk> {
                     ),
                   ),
                   SizedBox(height: 10,),
-                  TextButton(
-                    onPressed: () {}, 
-                    style: TextButton.styleFrom(
-                      backgroundColor: Colors.white,
-                      overlayColor: Colors.black,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadiusGeometry.circular(10)
-                      )
-                    ),
-                    child: Text("Upload gambar",
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontWeight: FontWeight.w400
-                      ),
-                    ),
+                  TombolNavigasi(
+                    function: () {}, 
+                    backgroundColor: Colors.white,
+                    foregroundColor: Colors.black, 
+                    text: "Upload gambar"
                   ),
                   Text("Ukuran gambar maksimal 5MB",
                    style: TextStyle(
@@ -105,181 +96,33 @@ class _FormProdukState extends State<FormProduk> {
                     child: Column(
                       spacing: 15,
                       children: [
-                        TextFormField(
-                          controller: nama,
-                          decoration: InputDecoration(
-                            prefixIcon: Icon(Icons.edit),
-                            prefixIconColor: Warna.warnaAccent,
-                            labelStyle: TextStyle(fontSize: 16),
-                            filled: true,
-                            fillColor: Colors.white,
-                            floatingLabelStyle: TextStyle(
-                              color: Warna.warnaTextGray,
-                              fontSize: 16,
-                            ),
-                            labelText: 'Nama Menu',
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(15),
-                            ),
-                            enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(15),
-                              borderSide: BorderSide.none
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(15),
-                              borderSide: BorderSide.none
-                            )
+                        TextFormFieldCustom(
+                          controller: nama!, 
+                          labelText: "Nama Menu", 
+                          prefixIcon: Icon(Icons.edit) 
+                        ),
+                        TextFormFieldCustom(
+                          controller: harga!, 
+                          labelText: "Harga", 
+                          prefixIcon: Padding(
+                            padding: EdgeInsetsGeometry.only(top: 13, left: 12),
+                            child: Text("Rp.",
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w500,
+                                color: Warna.warnaAccent
+                              ),),
                           ),
                         ),
-                        TextFormField(
-                          controller: harga,
-                          decoration: InputDecoration(
-                            prefixIcon: Padding(
-                              padding: EdgeInsetsGeometry.only(top: 13, left: 12),
-                              child: Text("Rp.",
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w500,
-                                  color: Warna.warnaAccent
-                                ),),
-                            ),
-                            labelStyle: TextStyle(fontSize: 16),
-                            filled: true,
-                            fillColor: Colors.white,
-                            floatingLabelStyle: TextStyle(
-                              color: Warna.warnaTextGray,
-                              fontSize: 16,
-                            ),
-                            labelText: 'Harga',
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(15),
-                            ),
-                            enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(15),
-                              borderSide: BorderSide.none
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(15),
-                              borderSide: BorderSide.none
-                            )
-                          ),
+                        TextArea(
+                          controller: deskripsi!, 
+                          minLines: 5, 
+                          maxLines: 5, 
+                          icon: Icons.description_outlined, 
+                          title: "Deskripsi"
                         ),
-                        Container(
-                          padding: EdgeInsets.all(0),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(15)
-                          ),
-                          child: Column(
-                            children: [
-                              Padding(
-                                padding: EdgeInsetsGeometry.only(top: 15, left: 15),
-                                child: Row(
-                                  children: [
-                                    Icon(Icons.description_outlined,
-                                      size: 20,
-                                    ),
-                                    SizedBox(width: 5,),
-                                    Text("Deskripsi")
-                                  ],
-                                ),
-                              ),
-                              TextFormField(
-                                controller: deskripsi,
-                                minLines: 5,
-                                maxLines: 5,
-                                decoration: InputDecoration(
-                                  labelStyle: TextStyle(fontSize: 14),
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(10),
-                                    borderSide: BorderSide(
-                                      color: Warna.warnaTextGray
-                                    )
-                                  ),
-                                  enabledBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(15),
-                                    borderSide: BorderSide.none
-                                  ),
-                                  focusedBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(15),
-                                    borderSide: BorderSide.none
-                                  )
-                                ),
-                              )
-                            ],
-                          ),
-                        ),
-                        Row(
-                          children: [
-                            Container(
-                              padding: EdgeInsets.all(5),
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(15)
-                              ),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Row(
-                                    children: [
-                                      Checkbox(
-                                        value: false, 
-                                        onChanged: (bool) {
-
-                                        }
-                                      ),
-                                      Text("Stok")
-                                    ],
-                                  ),
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.end,
-                                    children: [
-                                      IconButton(
-                                        onPressed: () {}, 
-                                        icon: Icon(Icons.remove)
-                                      ),
-                                      SizedBox(
-                                        width: 35,
-                                        height: 35,
-                                        child: TextFormField(
-                                          controller: stok,
-                                          textAlign: TextAlign.center,
-                                          keyboardType: TextInputType.number,
-                                          minLines: 1,
-                                          maxLines: 1,
-                                          style: TextStyle(
-                                            fontSize: 18,
-                                            color: Colors.white
-                                          ),
-                                          decoration: InputDecoration(
-                                            isDense: true,
-                                            contentPadding: EdgeInsets.symmetric(vertical: 5),
-                                            filled: true,
-                                            fillColor: Warna.warnaAccent,
-                                            border: OutlineInputBorder(
-                                              borderRadius: BorderRadius.circular(8),
-                                            ),
-                                            enabledBorder: OutlineInputBorder(
-                                              borderRadius: BorderRadius.circular(8),
-                                              borderSide: BorderSide.none
-                                            ),
-                                            focusedBorder: OutlineInputBorder(
-                                              borderRadius: BorderRadius.circular(8),
-                                              borderSide: BorderSide.none
-                                            )
-                                          ),
-                                        ),
-                                      ),
-                                      IconButton(
-                                        onPressed: () {}, 
-                                        icon: Icon(Icons.add)
-                                      ),
-                                    ],
-                                  )
-                                ],
-                              ),
-                            ),
-                          ],
+                        Stok(
+                          controller: stok!
                         ),
                         Row(
                           children: [

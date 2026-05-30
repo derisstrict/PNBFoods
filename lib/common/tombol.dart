@@ -21,6 +21,7 @@ class TombolNavigasi extends StatelessWidget {
         ) 
       ), 
       child: Row(
+        mainAxisSize: MainAxisSize.min,
         children: [
           Visibility(
             visible: icon != null,
