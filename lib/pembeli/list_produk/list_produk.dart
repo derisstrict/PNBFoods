@@ -1,7 +1,12 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:pnbfoods/list_produk/list_menu.dart';
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'package:pnbfoods/common/tombol.dart';
+import 'package:pnbfoods/common/warna.dart';
+import 'package:pnbfoods/main.dart';
+import 'package:pnbfoods/pembeli/list_produk/widget/card_menu.dart';
+import 'package:pnbfoods/penjual/form_produk/form_produk.dart';
 
 class ListProduk extends StatefulWidget {
   @override 
@@ -20,7 +25,7 @@ class _ListProdukState extends State<ListProduk> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFFF4F5F6),
+      backgroundColor: Warna.warnaBackground,
       body: SingleChildScrollView(
         child: Column(
           children: [
@@ -42,7 +47,7 @@ class _ListProdukState extends State<ListProduk> {
                       children: [
                         ClipRRect(
                           borderRadius: BorderRadiusGeometry.circular(15),
-                          child: Image.file(File('lib/img.png'), width: 60,),
+                          child: FlutterLogo(),
                         ),
                         SizedBox(width: 10,),
                         Column(
@@ -133,7 +138,21 @@ class _ListProdukState extends State<ListProduk> {
                       ),
                     ],
                   ),
-                  SizedBox(height: 10,),
+                  StreamBuilder(
+                    stream: database.semuaProduk, 
+                    builder: (context, snapshot) {
+                      final items = snapshot.data ?? [];
+                      return MasonryGridView.builder(
+                        shrinkWrap: true,
+                        physics: NeverScrollableScrollPhysics(),
+                        gridDelegate: SliverSimpleGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
+                        itemCount: items.length,
+                        itemBuilder: (context, index) {
+                          return CardProduk(produk: items[index]);
+                        }
+                      );
+                    }
+                  ),
                   Wrap(
                     spacing: 10.0,
                     runSpacing: 10.0,
@@ -142,16 +161,22 @@ class _ListProdukState extends State<ListProduk> {
                     runAlignment: WrapAlignment.start,
                     crossAxisAlignment: WrapCrossAlignment.end,
                     children: [
-                      ListMenuAccent(),
-                      ListMenu(),
-                      ListMenu(),
-                      ListMenuAccent(),
-                      ListMenu(),
-                      ListMenu(),
-                      ListMenu(),
-                      ListMenu(),
+                      
                     ],
                   ),
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      TombolNavigasi(
+                        function: () {
+                          Navigator.push(context, MaterialPageRoute(builder: (context) => FormProduk()));
+                        }, 
+                        backgroundColor: Colors.white, 
+                        foregroundColor: Colors.black, 
+                        text: "Buat Produk"
+                      )
+                    ],
+                  )
                 ],
               ),
             ),
