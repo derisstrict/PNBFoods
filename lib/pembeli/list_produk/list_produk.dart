@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:pnbfoods/common/tombol.dart';
 import 'package:pnbfoods/common/warna.dart';
 import 'package:pnbfoods/main.dart';
@@ -16,10 +17,25 @@ class ListProduk extends StatefulWidget {
 class _ListProdukState extends State<ListProduk> {
   int _selectedNavbar = 0;
 
+  String? _appDirPath;
+
   void _changeSelectedNavbar(int index) {
     setState(() {
       _selectedNavbar = index;
     });
+  }
+
+  Future<void> _initPath() async {
+    final Directory appDir = await getApplicationDocumentsDirectory();
+    setState(() {
+      _appDirPath = appDir.path;
+    });
+  }
+  
+  @override
+  void initState() {
+    super.initState();
+    _initPath();
   }
 
   @override
@@ -148,7 +164,7 @@ class _ListProdukState extends State<ListProduk> {
                         gridDelegate: SliverSimpleGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
                         itemCount: items.length,
                         itemBuilder: (context, index) {
-                          return CardProduk(produk: items[index]);
+                          return CardProduk(produk: items[index], appDir: _appDirPath!,);
                         }
                       );
                     }
