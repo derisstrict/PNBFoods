@@ -25,10 +25,10 @@ class _FormProdukState extends State<FormProduk> {
   TextEditingController? harga;
   TextEditingController? deskripsi;
   TextEditingController? stok;
-  // String? gambar;
   File? _gambar;
 
   bool _nilaiCheckbox = false;
+  String? _kategori;
 
   // String? _appDirPath = "";
 
@@ -138,6 +138,23 @@ class _FormProdukState extends State<FormProduk> {
                             ),
                             numberOnly: true,
                           ),
+                          DropdownButtonFormFieldCustom(
+                            initialValue: "Makanan", 
+                            icon: Icons.category,
+                            items: [
+                              DropdownMenuItem(
+                                value: "Makanan",
+                                child: Text("Makanan")
+                              ),
+                              DropdownMenuItem(
+                                value: "Minuman",
+                                child: Text("Minuman")
+                              )
+                            ], 
+                            onChanged: (value) {
+                              _kategori = value;
+                            }
+                          ),
                           TextArea(
                             controller: deskripsi!, 
                             minLines: 4, 
@@ -226,7 +243,7 @@ class _FormProdukState extends State<FormProduk> {
         namaProduk: nama!.text, 
         deskripsiProduk: deskripsi!.text, 
         hargaProduk: int.parse(harga!.text), 
-        kategoriProduk: "Makanan", 
+        kategoriProduk: _kategori!, 
         stok: int.parse(stok!.text), 
         fotoProduk: _gambar!
       );

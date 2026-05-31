@@ -205,3 +205,49 @@ class Stok extends StatelessWidget {
     );
   }
 }
+
+class DropdownButtonFormFieldCustom<T> extends StatelessWidget {
+  final T? initialValue;
+  final IconData icon;
+  final List<DropdownMenuItem<T>> items;
+  final Function(T) onChanged;
+
+  const DropdownButtonFormFieldCustom({super.key, required this.initialValue, required this.icon, required this.items, required this.onChanged});
+
+  @override
+  Widget build(BuildContext context) {
+    // TODO: implement build
+    return DropdownButtonFormField(
+      initialValue: initialValue,
+      items: items,
+      dropdownColor: Colors.white,
+      decoration: InputDecoration(
+        prefixIcon: Icon(icon),
+        prefixIconColor: Warna.warnaAccent,
+        labelStyle: TextStyle(fontSize: 16),
+        filled: true,
+        fillColor: Colors.white,
+        floatingLabelStyle: TextStyle(
+          color: Warna.warnaTextGray,
+          fontSize: 16,
+        ),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(15),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(15),
+          borderSide: BorderSide.none
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(15),
+          borderSide: BorderSide.none
+        )
+      ),
+      onChanged: (T? value) {
+        if (value != null) {
+          onChanged(value);
+        }
+      },
+    );
+  }
+}
