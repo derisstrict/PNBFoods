@@ -1,24 +1,27 @@
 import 'dart:io';
-import 'dart:math';
-
+import 'package:path/path.dart' as p;
 import 'package:flutter/material.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:pnbfoods/common/warna.dart';
-import 'package:pnbfoods/database/database.dart';
+import 'package:pnbfoods/models/produk.dart';
+// import 'package:pnbfoods/database/database.dart';
 
 class CardProduk extends StatelessWidget {
-  final ProdukData produk;
+  final Produk produk;
+  final String appDir;
+  final bool isAccent = false;
 
-  const CardProduk({super.key, required this.produk});
+  const CardProduk({super.key, required this.produk, required this.appDir});
 
   @override
   Widget build(BuildContext context) {
-    final warna = Warna();
+    File fileGambar = File(p.join(appDir, produk.fotoProduk));
     return Container(
       margin: EdgeInsets.all(5),
       padding: EdgeInsets.all(10),
       width: 180,
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: isAccent ? Warna.warnaAccent : Colors.white,
         borderRadius: BorderRadius.circular(10)
       ),
       child: Column(
@@ -31,80 +34,44 @@ class CardProduk extends StatelessWidget {
                 children: [
                   ClipRRect(
                     borderRadius: BorderRadiusGeometry.circular(10),
-                    child: Container(
-                      color: Colors.orange,
-                      padding: EdgeInsets.all(10),
-                      child: FlutterLogo(size: 145.0,),
-                    ),
+                    child: produk.fotoProduk == "" || produk.fotoProduk == null ? Icon(Icons.image_rounded, size: 160, color: Warna.warnaBackground,) : Image.network(produk.fotoUrl!, height: 160, width: 160, fit: BoxFit.cover,),
                   ),
                 ],
               ),
               SizedBox(height: 5,),
               Text(produk.namaProduk,
-              style: TextStyle(
-                fontWeight: FontWeight.w700
-              ),),
+                style: TextStyle(
+                  fontWeight: FontWeight.w700,
+                  color: isAccent ? Colors.white : Colors.black,
+                ),
+              ),
               Row(
                 children: [
                   Text("Rp. ${produk.hargaProduk}",
-                  style: TextStyle(
-                    color: warna.warnaTextAccent,
-                    fontWeight: FontWeight.w500
-                  ),),
-                ],
-              )
-            ],
-          )
-        ],
-      ),
-    );
-  }
-}
-
-class CardProdukAccent extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    // TODO: implement build
-    return Container(
-      padding: EdgeInsets.all(10),
-      width: 180,
-      decoration: BoxDecoration(
-        color: Color(0xFFF9803B),
-        borderRadius: BorderRadius.circular(10)
-      ),
-      child: Column(
-        children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              ClipRRect(
-                borderRadius: BorderRadiusGeometry.circular(10),
-                child: FlutterLogo(),
-              ),
-              SizedBox(height: 5,),
-              Text("Nasi Goreng Spesial",
-              style: TextStyle(
-                fontWeight: FontWeight.w700,
-                color: Colors.white
-              ),),
-              Row(
-                children: [
-                  Text("Rp. 25.000",
                     style: TextStyle(
-                      color: Colors.white
-                    ),),
-                  Spacer(),
-                  Container(
-                    padding: EdgeInsets.only(left: 10, top: 1, right: 10, bottom: 1),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(10)
+                      color: isAccent ? Colors.white : Warna.warnaAccent,
+                      fontWeight: FontWeight.w500
                     ),
-                    child: Text("2", 
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: Color(0xFFF9803B)
-                    ),),
+                  ),
+                  Spacer(),
+                  Visibility(
+                    visible: isAccent,
+                    child: Row(
+                      children: [
+                        Container(
+                          padding: EdgeInsets.only(left: 10, top: 1, right: 10, bottom: 1),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(6)
+                          ),
+                          child: Text("2", 
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: Color(0xFFF9803B)
+                          ),),
+                        )
+                      ],
+                    )
                   )
                 ],
               )

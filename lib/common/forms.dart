@@ -1,18 +1,23 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:pnbfoods/common/warna.dart';
 
 class TextFormFieldCustom extends StatelessWidget {
   final TextEditingController controller;
   final String labelText;
   final Widget prefixIcon;
+  final bool numberOnly;
 
-  const TextFormFieldCustom({super.key, required this.controller, required this.labelText, required this.prefixIcon});
+  const TextFormFieldCustom({super.key, required this.controller, required this.labelText, required this.prefixIcon, this.numberOnly = false});
   
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
     return TextFormField(
       controller: controller,
+      inputFormatters: <TextInputFormatter>[
+        if (numberOnly) FilteringTextInputFormatter.digitsOnly
+      ],
       decoration: InputDecoration(
         prefixIcon: prefixIcon,
         prefixIconColor: Warna.warnaAccent,

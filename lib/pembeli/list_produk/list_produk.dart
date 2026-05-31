@@ -2,11 +2,15 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:pnbfoods/common/tombol.dart';
 import 'package:pnbfoods/common/warna.dart';
+// import 'package:pnbfoods/database/database.dart';
 import 'package:pnbfoods/main.dart';
+import 'package:pnbfoods/models/produk.dart';
 import 'package:pnbfoods/pembeli/list_produk/widget/card_menu.dart';
 import 'package:pnbfoods/penjual/form_produk/form_produk.dart';
+import 'package:pnbfoods/services/produk_service.dart';
 
 class ListProduk extends StatefulWidget {
   @override 
@@ -16,10 +20,28 @@ class ListProduk extends StatefulWidget {
 class _ListProdukState extends State<ListProduk> {
   int _selectedNavbar = 0;
 
+  String? _appDirPath;
+
+  late Future<List<Produk>> futureProduk;
+
   void _changeSelectedNavbar(int index) {
     setState(() {
       _selectedNavbar = index;
     });
+  }
+
+  Future<void> _initPath() async {
+    final Directory appDir = await getApplicationDocumentsDirectory();
+    setState(() {
+      _appDirPath = appDir.path;
+    });
+  }
+  
+  @override
+  void initState() {
+    super.initState();
+    futureProduk = fetchSemuaProduk();
+    _initPath();
   }
 
   @override
@@ -138,19 +160,23 @@ class _ListProdukState extends State<ListProduk> {
                       ),
                     ],
                   ),
-                  StreamBuilder(
-                    stream: database.semuaProduk, 
+                  FutureBuilder<List<Produk>>(
+                    future: futureProduk, 
                     builder: (context, snapshot) {
-                      final items = snapshot.data ?? [];
-                      return MasonryGridView.builder(
-                        shrinkWrap: true,
-                        physics: NeverScrollableScrollPhysics(),
-                        gridDelegate: SliverSimpleGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
-                        itemCount: items.length,
-                        itemBuilder: (context, index) {
-                          return CardProduk(produk: items[index]);
+                      if (snapshot.hasData) {
+                        return MasonryGridView.builder(
+                          shrinkWrap: true,
+                          physics: NeverScrollableScrollPhysics(),
+                          gridDelegate: SliverSimpleGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
+                          itemCount: snapshot.data!.length,
+                          itemBuilder: (context, index) {
+                            return CardProduk(produk: snapshot.data![index], appDir: _appDirPath!,);
+                          }
+                        );
+                      } else if (snapshot.hasError) {
+                          return Text('${snapshot.error}');
                         }
-                      );
+                      return const CircularProgressIndicator();
                     }
                   ),
                   Wrap(

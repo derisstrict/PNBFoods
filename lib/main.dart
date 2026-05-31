@@ -1,11 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:pnbfoods/database/database.dart';
 import 'package:pnbfoods/pembeli/list_produk/list_produk.dart';
 import 'package:pnbfoods/penjual/form_produk/form_produk.dart';
 
-late AppDatabase database;
 void main() {
-  database = AppDatabase();
   runApp(const PNBFoods());
 }
 
