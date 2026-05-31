@@ -7,12 +7,11 @@ import 'package:pnbfoods/common/forms.dart';
 import 'package:pnbfoods/common/tombol.dart';
 import 'package:pnbfoods/common/top_bar.dart';
 import 'package:pnbfoods/common/warna.dart';
-import 'package:pnbfoods/database/database.dart';
-import 'package:pnbfoods/main.dart';
-import 'package:path/path.dart' as p;
+import 'package:pnbfoods/models/produk.dart';
+import 'package:pnbfoods/services/produk_service.dart';
 
 class FormProduk extends StatefulWidget {
-  final ProdukData? produk;
+  final Produk? produk;
 
   const FormProduk({super.key, this.produk});
 
@@ -26,14 +25,15 @@ class _FormProdukState extends State<FormProduk> {
   TextEditingController? harga;
   TextEditingController? deskripsi;
   TextEditingController? stok;
-  String? gambar;
+  // String? gambar;
+  File? _gambar;
 
-  String? _appDirPath = "";
+  // String? _appDirPath = "";
 
   Future<void> _initPath() async {
     final Directory appDir = await getApplicationDocumentsDirectory();
     setState(() {
-      _appDirPath = appDir.path;
+      // _appDirPath = appDir.path;
     });
   }
 
@@ -43,22 +43,22 @@ class _FormProdukState extends State<FormProduk> {
       text: widget.produk == null ? "" : widget.produk!.namaProduk
     );
     harga = TextEditingController(
-      text: widget.produk == null ? "" : widget.produk!.hargaProduk
+      text: widget.produk == null ? "" : widget.produk!.hargaProduk.toString()
     );
     deskripsi = TextEditingController(
       text: widget.produk == null ? "" : widget.produk!.deskripsiProduk
     );
     stok = TextEditingController(
-      text: widget.produk == null ? "1" : widget.produk!.stok
+      text: widget.produk == null ? "1" : widget.produk!.stok.toString()
     );
-    gambar = widget.produk == null ? "" : widget.produk!.fotoProduk;
+    // _gambar = widget.produk == null ? "" : widget.produk!.fotoProduk;
     super.initState();
     _initPath();
   }
 
   @override
   Widget build(BuildContext context) {
-    File fileGambar = File(p.join(_appDirPath!, gambar)); 
+    // File fileGambar = File(p.join(_appDirPath!, gambar)); 
     return Scaffold(
       appBar: TopBar(title: "Tambah Produk"),
       backgroundColor: Warna.warnaBackground,
@@ -75,7 +75,7 @@ class _FormProdukState extends State<FormProduk> {
                       borderRadius: BorderRadius.circular(10),
                       color: Colors.white
                     ),
-                    child: gambar != "" ? Image.file(fileGambar, height: 80, width: 80, fit: BoxFit.cover,) : Icon(Icons.image_not_supported, 
+                    child: _gambar != null ? Image.file(_gambar!, height: 80, width: 80, fit: BoxFit.cover,) : Icon(Icons.image_not_supported, 
                       color: Warna.warnaTextGray,
                       size: 60,
                     ),
@@ -83,10 +83,7 @@ class _FormProdukState extends State<FormProduk> {
                   SizedBox(height: 10,),
                   TombolNavigasi(
                     function: () async {
-                      String? ambilGambar = await saveImage();
-                      setState(() {
-                        gambar = ambilGambar;
-                      });
+                      await pickImage();
                     }, 
                     backgroundColor: Colors.white,
                     foregroundColor: Colors.black, 
@@ -97,11 +94,6 @@ class _FormProdukState extends State<FormProduk> {
                     fontSize: 10
                    ),
                   ),
-                  Text(gambar!,
-                   style: TextStyle(
-                    fontSize: 10
-                   ),
-                  )
                 ],
               ),
               SizedBox(height: 15,),
@@ -187,7 +179,7 @@ class _FormProdukState extends State<FormProduk> {
   }
 
   Future<void> upsertData() async {
-    if (nama!.text == '' || harga!.text == '' || gambar == '') {
+    if (nama!.text == '' || harga!.text == '' || _gambar == null) {
       const snackbar = SnackBar(
         content: Text("Salah satu form belum terisi.")
       );
@@ -195,32 +187,28 @@ class _FormProdukState extends State<FormProduk> {
       return;
     }
     if (widget.produk == null) {
-      await database
-      .into(database.produk)
-      .insert(ProdukCompanion.insert(
-        deskripsiProduk: deskripsi!.text,
-        fotoProduk: gambar!,
-        hargaProduk: harga!.text,
-        kategoriProduk: "",
-        namaProduk: nama!.text,
-        stok: stok!.text,
-      ));
+      await postProduk(
+        namaProduk: nama!.text, 
+        deskripsiProduk: deskripsi!.text, 
+        hargaProduk: int.parse(harga!.text), 
+        kategoriProduk: "Makanan", 
+        stok: int.parse(stok!.text), 
+        fotoProduk: _gambar!
+      );
       Navigator.pop(context);
     }
   }
 
-  Future<String?> saveImage() async {
+  Future<void> pickImage() async {
     final ImagePicker picker = ImagePicker();
-    final Directory appDir = await getApplicationDocumentsDirectory();
     
-    final XFile? pickedFile = await picker.pickImage(source: ImageSource.gallery);
-    
-    if (pickedFile == null) return "";
+    final XFile? gambar = await picker.pickImage(source: ImageSource.gallery);
 
-    String fileName = "img_${DateTime.now().millisecondsSinceEpoch}${p.extension(pickedFile.path)}";
-    String permanentPath = p.join(appDir.path, fileName);
-    await File(pickedFile.path).copy(permanentPath);
-    
-    return fileName; 
+    if (gambar != null) {
+      setState(() {
+        _gambar = File(gambar.path);
+      });
+    }
+
   }
 }

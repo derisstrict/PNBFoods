@@ -3,10 +3,11 @@ import 'package:path/path.dart' as p;
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:pnbfoods/common/warna.dart';
-import 'package:pnbfoods/database/database.dart';
+import 'package:pnbfoods/models/produk.dart';
+// import 'package:pnbfoods/database/database.dart';
 
 class CardProduk extends StatelessWidget {
-  final ProdukData produk;
+  final Produk produk;
   final String appDir;
   final bool isAccent = false;
 
@@ -33,7 +34,7 @@ class CardProduk extends StatelessWidget {
                 children: [
                   ClipRRect(
                     borderRadius: BorderRadiusGeometry.circular(10),
-                    child: produk.fotoProduk == "" ? Icon(Icons.image_rounded, size: 160, color: Warna.warnaBackground,) : Image.file(fileGambar, height: 160, width: 160, fit: BoxFit.cover,),
+                    child: produk.fotoProduk == "" || produk.fotoProduk == null ? Icon(Icons.image_rounded, size: 160, color: Warna.warnaBackground,) : Image.network(produk.fotoUrl!, height: 160, width: 160, fit: BoxFit.cover,),
                   ),
                 ],
               ),
