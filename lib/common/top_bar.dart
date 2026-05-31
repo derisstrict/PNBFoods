@@ -25,3 +25,20 @@ class TopBar extends StatelessWidget implements PreferredSizeWidget{
   @override
   Size get preferredSize => const Size.fromHeight(kToolbarHeight);
 }
+
+class TopBarless extends StatelessWidget implements PreferredSizeWidget{
+
+  const TopBarless({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return AppBar(
+      backgroundColor: Warna.warnaAccent,
+      foregroundColor: Colors.white,
+      toolbarHeight: 10.0,
+    );
+  }
+
+  @override
+  Size get preferredSize => const Size.fromHeight(0);
+}
