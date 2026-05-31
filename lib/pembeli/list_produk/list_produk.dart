@@ -22,6 +22,8 @@ class _ListProdukState extends State<ListProduk> {
 
   String? _appDirPath;
 
+  String? _filterMakanan = "";
+
   late Future<List<Produk>> futureProduk;
 
   void _changeSelectedNavbar(int index) {
@@ -133,28 +135,40 @@ class _ListProdukState extends State<ListProduk> {
                   Row(
                     children: [
                       TextButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          setState(() {
+                            _filterMakanan = "";
+                          });
+                        },
                         style: TextButton.styleFrom(
-                          backgroundColor: Color(0xFFF9803B),
-                          foregroundColor: Colors.white
+                          backgroundColor: _filterMakanan == "" ? Warna.warnaAccent :Colors.white,
+                          foregroundColor: _filterMakanan == "" ? Colors.white :Colors.black
                         ),
                         child: Text("Semua",)
                       ),
                       SizedBox(width: 10,),
                       TextButton(
-                        onPressed: () {}, 
+                        onPressed: () {
+                          setState(() {
+                            _filterMakanan = "Makanan";
+                          });
+                        }, 
                         style: TextButton.styleFrom(
-                          backgroundColor: Colors.white,
-                          foregroundColor: Colors.black
+                          backgroundColor: _filterMakanan == "Makanan" ? Warna.warnaAccent :Colors.white,
+                          foregroundColor: _filterMakanan == "Makanan" ? Colors.white :Colors.black
                         ), 
                         child: Text("Makanan",)
                       ),
                       SizedBox(width: 10,),
                       TextButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          setState(() {
+                            _filterMakanan = "Minuman";
+                          });
+                        },
                         style: TextButton.styleFrom(
-                          backgroundColor: Colors.white,
-                          foregroundColor: Colors.black
+                          backgroundColor: _filterMakanan == "Minuman" ? Warna.warnaAccent :Colors.white,
+                          foregroundColor: _filterMakanan == "Minuman" ? Colors.white :Colors.black
                         ), 
                         child: Text("Minuman")
                       ),
@@ -164,13 +178,20 @@ class _ListProdukState extends State<ListProduk> {
                     future: futureProduk, 
                     builder: (context, snapshot) {
                       if (snapshot.hasData) {
+                        final items = snapshot.data!;
+
+                        final filterItems = items.where((produk) {
+                          if (_filterMakanan == "") return true;
+                          return produk.kategoriProduk == _filterMakanan;
+                        }).toList();
+
                         return MasonryGridView.builder(
                           shrinkWrap: true,
                           physics: NeverScrollableScrollPhysics(),
                           gridDelegate: SliverSimpleGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
-                          itemCount: snapshot.data!.length,
+                          itemCount: filterItems.length,
                           itemBuilder: (context, index) {
-                            return CardProduk(produk: snapshot.data![index], appDir: _appDirPath!,);
+                              return CardProduk(produk: filterItems[index], appDir: _appDirPath!,);
                           }
                         );
                       } else if (snapshot.hasError) {
@@ -196,6 +217,9 @@ class _ListProdukState extends State<ListProduk> {
                       TombolNavigasi(
                         function: () {
                           Navigator.push(context, MaterialPageRoute(builder: (context) => FormProduk()));
+                          setState(() {
+                            futureProduk = fetchSemuaProduk();
+                          });
                         }, 
                         backgroundColor: Colors.white, 
                         foregroundColor: Colors.black, 
