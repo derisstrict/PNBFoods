@@ -202,7 +202,7 @@ class _FormProdukState extends State<FormProduk> {
   Future<void> pickImage() async {
     final ImagePicker picker = ImagePicker();
     
-    final XFile? gambar = await picker.pickImage(source: ImageSource.gallery);
+    final XFile? gambar = await picker.pickImage(source: ImageSource.gallery, imageQuality: 80);
 
     if (gambar != null) {
       setState(() {
