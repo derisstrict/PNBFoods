@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:pnbfoods/common/warna.dart';
 
@@ -108,9 +109,14 @@ class TextArea extends StatelessWidget {
 
 class Stok extends StatelessWidget {
 
+  final Function(bool) enabled;
+  final bool checkboxValue;
   final TextEditingController controller;
+  final VoidCallback onPressedMinus;
+  final VoidCallback onPressedPlus;
+  final Function(PointerDownEvent) onTapOutside;
 
-  const Stok({super.key, required this.controller});
+  const Stok({super.key, required this.controller, required this.checkboxValue, required this.enabled, required this.onPressedMinus, required this.onPressedPlus, required this.onTapOutside});
 
   @override
   Widget build(BuildContext context) {
@@ -129,63 +135,119 @@ class Stok extends StatelessWidget {
               Row(
                 children: [
                   Checkbox(
-                    value: false, 
-                    onChanged: (bool) {
-
+                    value: checkboxValue, 
+                    onChanged: (value) {
+                      enabled(value!);
                     }
                   ),
-                  Text("Stok")
+                  Text("Stok"),
+                  SizedBox(width: checkboxValue ? 0 : 15,)
                 ],
               ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  IconButton(
-                    onPressed: () {}, 
-                    icon: Icon(Icons.remove)
-                  ),
-                  SizedBox(
-                    width: 35,
-                    height: 35,
-                    child: TextFormField(
-                      controller: controller,
-                      textAlign: TextAlign.center,
-                      keyboardType: TextInputType.number,
-                      minLines: 1,
-                      maxLines: 1,
-                      style: TextStyle(
-                        fontSize: 18,
-                        color: Colors.white
-                      ),
-                      decoration: InputDecoration(
-                        isDense: true,
-                        contentPadding: EdgeInsets.symmetric(vertical: 5),
-                        filled: true,
-                        fillColor: Warna.warnaAccent,
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
+              Visibility(
+                visible: checkboxValue,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    IconButton(
+                      onPressed: onPressedMinus, 
+                      icon: Icon(Icons.remove)
+                    ),
+                    SizedBox(
+                      width: 35,
+                      height: 35,
+                      child: TextFormField(
+                        controller: controller,
+                        textAlign: TextAlign.center,
+                        keyboardType: TextInputType.number,
+                        inputFormatters: [
+                          FilteringTextInputFormatter.digitsOnly
+                        ],
+                        onTapOutside: (tap) {
+                          onTapOutside(tap);
+                        },
+                        minLines: 1,
+                        maxLines: 1,
+                        style: TextStyle(
+                          fontSize: 18,
+                          color: Colors.white
                         ),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
-                          borderSide: BorderSide.none
+                        decoration: InputDecoration(
+                          isDense: true,
+                          contentPadding: EdgeInsets.symmetric(vertical: 5),
+                          filled: true,
+                          fillColor: Warna.warnaAccent,
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            borderSide: BorderSide.none
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            borderSide: BorderSide.none
+                          )
                         ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
-                          borderSide: BorderSide.none
-                        )
                       ),
                     ),
-                  ),
-                  IconButton(
-                    onPressed: () {}, 
-                    icon: Icon(Icons.add)
-                  ),
-                ],
+                    IconButton(
+                      onPressed: onPressedPlus, 
+                      icon: Icon(Icons.add)
+                    ),
+                  ],
+                )
               )
             ],
           ),
         ),
       ],
+    );
+  }
+}
+
+class DropdownButtonFormFieldCustom<T> extends StatelessWidget {
+  final T? initialValue;
+  final IconData icon;
+  final List<DropdownMenuItem<T>> items;
+  final Function(T) onChanged;
+
+  const DropdownButtonFormFieldCustom({super.key, required this.initialValue, required this.icon, required this.items, required this.onChanged});
+
+  @override
+  Widget build(BuildContext context) {
+    // TODO: implement build
+    return DropdownButtonFormField(
+      initialValue: initialValue,
+      items: items,
+      dropdownColor: Colors.white,
+      decoration: InputDecoration(
+        prefixIcon: Icon(icon),
+        prefixIconColor: Warna.warnaAccent,
+        labelStyle: TextStyle(fontSize: 16),
+        filled: true,
+        fillColor: Colors.white,
+        floatingLabelStyle: TextStyle(
+          color: Warna.warnaTextGray,
+          fontSize: 16,
+        ),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(15),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(15),
+          borderSide: BorderSide.none
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(15),
+          borderSide: BorderSide.none
+        )
+      ),
+      onChanged: (T? value) {
+        if (value != null) {
+          onChanged(value);
+        }
+      },
     );
   }
 }

@@ -10,16 +10,15 @@ class CardProduk extends StatelessWidget {
   final Produk produk;
   final String appDir;
   final bool isAccent = false;
+  final double width;
 
-  const CardProduk({super.key, required this.produk, required this.appDir});
+  const CardProduk({super.key, required this.produk, required this.appDir, required this.width});
 
   @override
   Widget build(BuildContext context) {
-    File fileGambar = File(p.join(appDir, produk.fotoProduk));
     return Container(
       margin: EdgeInsets.all(5),
       padding: EdgeInsets.all(10),
-      width: 180,
       decoration: BoxDecoration(
         color: isAccent ? Warna.warnaAccent : Colors.white,
         borderRadius: BorderRadius.circular(10)
@@ -34,8 +33,14 @@ class CardProduk extends StatelessWidget {
                 children: [
                   ClipRRect(
                     borderRadius: BorderRadiusGeometry.circular(10),
-                    child: produk.fotoProduk == "" || produk.fotoProduk == null ? Icon(Icons.image_rounded, size: 160, color: Warna.warnaBackground,) : Image.network(produk.fotoUrl!, height: 160, width: 160, fit: BoxFit.cover,),
-                  ),
+                    child: Container(
+                      child: produk.fotoProduk == "" || produk.fotoProduk == null 
+                      ? 
+                      Icon(Icons.image_rounded, size: 160, color: Warna.warnaBackground,) 
+                      : 
+                      Image.network(produk.fotoUrl!, fit: BoxFit.cover, width: width, height: 220, cacheHeight: 400,),
+                    ) 
+                  )
                 ],
               ),
               SizedBox(height: 5,),
