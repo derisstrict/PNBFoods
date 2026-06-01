@@ -61,69 +61,11 @@ class _ListProdukState extends State<ListProduk> {
             return SingleChildScrollView(
               child: Column(
                 children: [
-                  Container(
-                    width: screenWidth,
-                    height: 150,
-                    decoration: BoxDecoration(
-                      color: Color(0xFFF9803B),
-                      borderRadius: BorderRadius.only(
-                        bottomLeft: Radius.circular(25),
-                        bottomRight: Radius.circular(25)
-                      ),
-                    ),
-                    child: Container(
-                      margin: EdgeInsets.all(20),
-                      child: Column(
-                        children: [
-                          Row(
-                            children: [
-                              ClipRRect(
-                                borderRadius: BorderRadiusGeometry.circular(15),
-                                child: FlutterLogo(),
-                              ),
-                              SizedBox(width: 10,),
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text("Kantin Ibu Gacor",
-                                    style: TextStyle(fontWeight: FontWeight.w500, color: Colors.white, fontSize: 16.0),
-                                  ),
-                                  SizedBox(height: 5,),
-                                  Text("Makanan & Minuman",
-                                    style: TextStyle(fontWeight: FontWeight.w200, color: Colors.white, fontSize: 12.0),
-                                  ),
-                                ],
-                              )
-                            ],
-                          ),
-                          SizedBox(height: 10,),
-                          Container(
-                            padding: EdgeInsets.only(top: 5, left: 10, right: 10, bottom: 5),
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(10)
-                            ),
-                            child: Row(
-                              children: [
-                                Icon(Icons.search_outlined, color: Color(0xFFF9803B),),
-                                SizedBox(width: 5,),
-                                Text("Nasi Goreng",
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  color: Colors.black38
-                                ),),
-                                Spacer(),
-                                Text("cari di kantin ini", 
-                                  style: TextStyle(
-                                    fontSize: 10,
-                                    color: Color(0xFFF9803B)
-                                  ),)
-                              ],
-                            ),
-                          )
-                        ],
-                      ),
-                    ),
+                  TopBarHeader(
+                    width: screenWidth, 
+                    style: TopBarHeader.pembeli, 
+                    text1: "Kantin Ibu Gacor", 
+                    text2: "Makanan & Minuman"
                   ),
                   Container(
                     margin: EdgeInsets.all(10),
