@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 import 'package:path/path.dart' as p;
 import 'package:flutter/material.dart';
@@ -13,15 +14,14 @@ class CardProduk extends StatelessWidget {
   final bool isAccent = false;
   final double width;
   final bool isEditable;
+  final GestureTapCallback onTap;
 
-  const CardProduk({super.key, required this.produk, required this.appDir, required this.width, this.isEditable = false});
+  const CardProduk({super.key, required this.produk, required this.appDir, required this.width, this.isEditable = false, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () {
-        Navigator.push(context, MaterialPageRoute(builder: (context) => FormProduk(produk: produk,)));
-      },
+      onTap: onTap,
       child: Container(
         margin: EdgeInsets.all(5),
         padding: EdgeInsets.all(10),

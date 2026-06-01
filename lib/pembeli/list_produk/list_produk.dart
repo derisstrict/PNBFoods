@@ -141,7 +141,7 @@ class _ListProdukState extends State<ListProduk> {
                                 gridDelegate: SliverSimpleGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
                                 itemCount: filterItems.length,
                                 itemBuilder: (context, index) {
-                                    return CardProduk(produk: filterItems[index], appDir: _appDirPath!, width: finalWidth,);
+                                    return CardProduk(produk: filterItems[index], appDir: _appDirPath!, width: finalWidth, onTap: () {},);
                                 }
                               );
                             } else if (snapshot.hasError) {

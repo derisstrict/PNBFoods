@@ -9,6 +9,7 @@ import 'package:pnbfoods/common/warna.dart';
 import 'package:pnbfoods/models/produk.dart';
 import 'package:pnbfoods/pembeli/list_produk/widget/card_menu.dart';
 import 'package:pnbfoods/penjual/dashboard/widgets/text_heading.dart';
+import 'package:pnbfoods/penjual/form_produk/form_produk.dart';
 import 'package:pnbfoods/services/produk_service.dart';
 
 class Dashboard extends StatefulWidget {
@@ -375,8 +376,8 @@ class _DashboardState extends State<Dashboard> {
                         FutureBuilder(
                           future: _futureProduk, 
                           builder: (context, snapshot) {
-                            final items = snapshot.data!;
                             if (snapshot.hasData) {
+                              final items = snapshot.data!;
                               return MasonryGridView.builder(
                                 shrinkWrap: true,
                                 physics: NeverScrollableScrollPhysics(),
@@ -388,6 +389,9 @@ class _DashboardState extends State<Dashboard> {
                                     appDir: _appDirPath!, 
                                     width: finalWidth,
                                     isEditable: true,
+                                    onTap: () {
+                                      Navigator.push(context, MaterialPageRoute(builder: (context) => FormProduk(produk: items[index],)));
+                                    },
                                   );
                                 },
                               );
