@@ -119,7 +119,8 @@ class _FormProdukState extends State<FormProduk> {
                         TextFormFieldCustom(
                           controller: nama!, 
                           labelText: "Nama Produk", 
-                          prefixIcon: Icon(Icons.edit) 
+                          prefixIcon: Icon(Icons.edit),
+                           obscureText: false, 
                         ),
                         TextFormFieldCustom(
                           controller: harga!, 
@@ -134,6 +135,7 @@ class _FormProdukState extends State<FormProduk> {
                               ),),
                           ),
                           numberOnly: true,
+                           obscureText: false,
                         ),
                         TextArea(
                           controller: deskripsi!, 

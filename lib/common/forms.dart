@@ -8,7 +8,7 @@ class TextFormFieldCustom extends StatelessWidget {
   final Widget prefixIcon;
   final bool numberOnly;
 
-  const TextFormFieldCustom({super.key, required this.controller, required this.labelText, required this.prefixIcon, this.numberOnly = false});
+  const TextFormFieldCustom({super.key, required this.controller, required this.labelText, required this.prefixIcon, this.numberOnly = false, required bool obscureText});
   
   @override
   Widget build(BuildContext context) {
