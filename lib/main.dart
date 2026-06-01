@@ -17,9 +17,9 @@ class PNBFoods extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: "PNBFoods",
       theme: ThemeData(fontFamily: 'Poppins'),
-      home: ListProduk(),
+      // home: ListProduk(),
       // home: FormProduk(),
-      // home: ListKantin(),
+      home: ListKantin(),
       // home: FormKantin(),
       // home: FormKantin(),
     );

@@ -45,6 +45,30 @@ class _ListKantinState extends State<ListKantin> {
       "harga": "500+ terjual | Rp. 8rb-30rb",
       "gambar": "https://picsum.photos/200?4",
     },
+    {
+      "nama": "Kantin Bu Joko",
+      "kategori": "Makanan & Minuman",
+      "harga": "500+ terjual | Rp. 8rb-30rb",
+      "gambar": "https://picsum.photos/200?4",
+    },
+    {
+      "nama": "Kantin Bu Joko",
+      "kategori": "Makanan & Minuman",
+      "harga": "500+ terjual | Rp. 8rb-30rb",
+      "gambar": "https://picsum.photos/200?4",
+    },
+    {
+      "nama": "Kantin Bu Joko",
+      "kategori": "Makanan & Minuman",
+      "harga": "500+ terjual | Rp. 8rb-30rb",
+      "gambar": "https://picsum.photos/200?4",
+    },
+    {
+      "nama": "Kantin Bu Joko",
+      "kategori": "Makanan & Minuman",
+      "harga": "500+ terjual | Rp. 8rb-30rb",
+      "gambar": "https://picsum.photos/200?4",
+    },
   ];
 
   int _selectedNavbar = 0;
@@ -59,217 +83,156 @@ class _ListKantinState extends State<ListKantin> {
     });
   }
 
-  // Future<void> _initPath() async {
-  //   final Directory appDir = await getApplicationDocumentsDirectory();
-  //   setState(() {
-  //     _appDirPath = appDir.path;
-  //   });
-  // }
-
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   futureProduk = fetchSemuaProduk();
-  //   _initPath();
-  // }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Warna.warnaBackground,
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            Container(
-              width: double.infinity,
-              height: 150,
-              decoration: BoxDecoration(
-                color: Color(0xFFF9803B),
-                borderRadius: BorderRadius.only(
-                  bottomLeft: Radius.circular(25),
-                  bottomRight: Radius.circular(25),
-                ),
-              ),
-              child: Container(
-                margin: EdgeInsets.all(20),
-                child: Column(
-                  children: [
-                    Container(
-                      width: double.infinity,
-                      padding: const EdgeInsets.symmetric(horizontal: 0),
-                      child: Row(
-                        children: [
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                "Hello",
-                                style: TextStyle(
-                                  fontWeight: FontWeight.w200,
-                                  color: Colors.white,
-                                  fontSize: 12,
-                                ),
-                              ),
-                              SizedBox(height: 5),
-                              Text(
-                                "Ngab Owi",
-                                style: TextStyle(
-                                  fontWeight: FontWeight.w500,
-                                  color: Colors.white,
-                                  fontSize: 14,
-                                ),
-                              ),
-                            ],
-                          ),
-
-                          Spacer(),
-
-                          CircleAvatar(
-                            radius: 20,
-                            backgroundImage: NetworkImage(
-                              'https://i.pravatar.cc/150',
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    SizedBox(height: 30),
-                    Container(
-                      padding: EdgeInsets.only(
-                        top: 5,
-                        left: 10,
-                        right: 10,
-                        bottom: 5,
-                      ),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: Row(
-                        children: [
-                          Icon(Icons.search_outlined, color: Color(0xFFF9803B)),
-                          SizedBox(width: 5),
-                          Text(
-                            "Kantin Ibu Gacor",
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: Colors.black38,
-                            ),
-                          ),
-                          Spacer(),
-                          Icon(
-                            Icons.restaurant,
-                            color: Warna.warnaAccent,
-                            size: 20,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
+      body: Column(
+        children: [
+          Container(
+            width: double.infinity,
+            height: 150,
+            decoration: BoxDecoration(
+              color: Color(0xFFF9803B),
+              borderRadius: BorderRadius.only(
+                bottomLeft: Radius.circular(25),
+                bottomRight: Radius.circular(25),
               ),
             ),
-            BannerPromo(imageUrl: "https://picsum.photos/800/400"),
-            Container(
-              margin: EdgeInsets.all(10),
+            child: Container(
+              margin: EdgeInsets.all(20),
               child: Column(
                 children: [
-                  SizedBox(height: 10),
-                  Row(
-                    children: [
-                      TextButton(
-                        onPressed: () {},
-                        style: TextButton.styleFrom(
-                          backgroundColor: Color(0xFFF9803B),
-                          foregroundColor: Colors.white,
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.symmetric(horizontal: 0),
+                    child: Row(
+                      children: [
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              "Hello",
+                              style: TextStyle(
+                                fontWeight: FontWeight.w200,
+                                color: Colors.white,
+                                fontSize: 12,
+                              ),
+                            ),
+                            SizedBox(height: 5),
+                            Text(
+                              "Ngab Owi",
+                              style: TextStyle(
+                                fontWeight: FontWeight.w500,
+                                color: Colors.white,
+                                fontSize: 14,
+                              ),
+                            ),
+                          ],
                         ),
-                        child: Text("Semua"),
-                      ),
-                      SizedBox(width: 10),
-                      TextButton(
-                        onPressed: () {},
-                        style: TextButton.styleFrom(
-                          backgroundColor: Colors.white,
-                          foregroundColor: Colors.black,
-                        ),
-                        child: Text("Terlaris"),
-                      ),
-                      SizedBox(width: 10),
-                      TextButton(
-                        onPressed: () {},
-                        style: TextButton.styleFrom(
-                          backgroundColor: Colors.white,
-                          foregroundColor: Colors.black,
-                        ),
-                        child: Text("Termurah"),
-                      ),
-                    ],
-                  ),
-                  // FutureBuilder<List<Produk>>(
-                  //   future: futureProduk,
-                  //   builder: (context, snapshot) {
-                  //     if (snapshot.hasData) {
-                  //       return MasonryGridView.builder(
-                  //         shrinkWrap: true,
-                  //         physics: NeverScrollableScrollPhysics(),
-                  //         gridDelegate:
-                  //             SliverSimpleGridDelegateWithFixedCrossAxisCount(
-                  //               crossAxisCount: 2,
-                  //             ),
-                  //         itemCount: snapshot.data!.length,
-                  //         itemBuilder: (context, index) {
-                  //           return CardProduk(
-                  //             produk: snapshot.data![index],
-                  //             appDir: _appDirPath!,
-                  //           );
-                  //         },
-                  //       );
-                  //     } else if (snapshot.hasError) {
-                  //       return Text('${snapshot.error}');
-                  //     }
-                  //     return const CircularProgressIndicator();
-                  //   },
-                  // ),
-                  SizedBox(height: 25),
-                  ListView.builder(
-                    shrinkWrap: true,
-                    physics: NeverScrollableScrollPhysics(),
-                    itemCount: daftarKantin.length,
-                    itemBuilder: (context, index) {
-                      final kantin = daftarKantin[index];
 
-                      return CardKantin(
-                        namaKantin: kantin["nama"]!,
-                        kategori: kantin["kategori"]!,
-                        infoHarga: kantin["harga"]!,
-                        imageUrl: kantin["gambar"]!,
-                      );
-                    },
+                        Spacer(),
+
+                        CircleAvatar(
+                          radius: 20,
+                          backgroundImage: NetworkImage(
+                            'https://i.pravatar.cc/150',
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                  // Row(
-                  //   mainAxisSize: MainAxisSize.min,
-                  //   children: [
-                  //     TombolNavigasi(
-                  //       function: () {
-                  //         Navigator.push(
-                  //           context,
-                  //           MaterialPageRoute(
-                  //             builder: (context) => FormProduk(),
-                  //           ),
-                  //         );
-                  //       },
-                  //       backgroundColor: Colors.white,
-                  //       foregroundColor: Colors.black,
-                  //       text: "Buat Produk",
-                  //     ),
-                  //   ],
-                  // ),
+                  SizedBox(height: 30),
+                  Container(
+                    padding: EdgeInsets.only(
+                      top: 5,
+                      left: 10,
+                      right: 10,
+                      bottom: 5,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(Icons.search_outlined, color: Color(0xFFF9803B)),
+                        SizedBox(width: 5),
+                        Text(
+                          "Kantin Ibu Gacor",
+                          style: TextStyle(fontSize: 12, color: Colors.black38),
+                        ),
+                        Spacer(),
+                        Icon(
+                          Icons.restaurant,
+                          color: Warna.warnaAccent,
+                          size: 20,
+                        ),
+                      ],
+                    ),
+                  ),
                 ],
               ),
             ),
-          ],
-        ),
+          ),
+          Container(
+            margin: EdgeInsets.all(10),
+            child: Column(
+              children: [
+                SizedBox(height: 5),
+                Row(
+                  children: [
+                    TextButton(
+                      onPressed: () {},
+                      style: TextButton.styleFrom(
+                        backgroundColor: Color(0xFFF9803B),
+                        foregroundColor: Colors.white,
+                      ),
+                      child: Text("Semua"),
+                    ),
+                    SizedBox(width: 10),
+                    TextButton(
+                      onPressed: () {},
+                      style: TextButton.styleFrom(
+                        backgroundColor: Colors.white,
+                        foregroundColor: Colors.black,
+                      ),
+                      child: Text("Terlaris"),
+                    ),
+                    SizedBox(width: 10),
+                    TextButton(
+                      onPressed: () {},
+                      style: TextButton.styleFrom(
+                        backgroundColor: Colors.white,
+                        foregroundColor: Colors.black,
+                      ),
+                      child: Text("Termurah"),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+          SizedBox(height: 5),
+          Expanded(
+            child: ListView.builder(
+              itemCount: daftarKantin.length,
+              padding: EdgeInsets.all(10),
+              itemBuilder: (context, index) {
+                final kantin = daftarKantin[index];
+
+                return CardKantin(
+                  namaKantin: kantin["nama"]!,
+                  kategori: kantin["kategori"]!,
+                  infoHarga: kantin["harga"]!,
+                  imageUrl: kantin["gambar"]!,
+                );
+              },
+            ),
+          ),
+        ],
       ),
+
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
         items: <BottomNavigationBarItem>[
