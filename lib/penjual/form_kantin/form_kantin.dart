@@ -45,6 +45,15 @@ class _FormKantinState extends State<FormKantin> {
     kategori = TextEditingController(
       text: widget.kantin == null ? "" : widget.kantin!.kategori,
     );
+
+    if (widget.kantin != null) {
+      if (kategoriList.contains(widget.kantin!.kategori)) {
+        selectedKategori = widget.kantin!.kategori;
+      } else {
+        kategoriList.add(widget.kantin!.kategori);
+        selectedKategori = widget.kantin!.kategori;
+      }
+    }
   }
 
   @override
@@ -57,7 +66,7 @@ class _FormKantinState extends State<FormKantin> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: TopBar(title: "Tambah Kantin"),
+      appBar: TopBar(title: widget.kantin != null ? "Edit Kantin" : "Tambah Kantin"),
       backgroundColor: Warna.warnaBackground,
       body: SafeArea(
         child: SingleChildScrollView(
@@ -80,11 +89,23 @@ class _FormKantinState extends State<FormKantin> {
                               width: 80,
                               fit: BoxFit.cover,
                             )
-                          : Icon(
-                              Icons.image_not_supported,
-                              color: Warna.warnaTextGray,
-                              size: 60,
-                            ),
+                          : (widget.kantin != null && widget.kantin!.fotoUrl != null)
+                              ? Image.network(
+                                  widget.kantin!.fotoUrl!,
+                                  height: 80,
+                                  width: 80,
+                                  fit: BoxFit.cover,
+                                  errorBuilder: (context, error, stackTrace) => Icon(
+                                    Icons.image_not_supported,
+                                    color: Warna.warnaTextGray,
+                                    size: 60,
+                                  ),
+                                )
+                              : Icon(
+                                  Icons.image_not_supported,
+                                  color: Warna.warnaTextGray,
+                                  size: 60,
+                                ),
                     ),
                     const SizedBox(height: 10),
                     TombolNavigasi(
@@ -177,19 +198,32 @@ class _FormKantinState extends State<FormKantin> {
   Future<void> upsertData() async {
     if (namaKantin.text.isEmpty ||
         selectedKategori == null ||
-        _gambar == null) {
+        (_gambar == null && widget.kantin == null)) {
       const snackbar = SnackBar(content: Text("Salah satu form belum terisi."));
       ScaffoldMessenger.of(context).showSnackBar(snackbar);
       return;
     }
 
-    await postKantin(
-      namaKantin: namaKantin.text,
-      kategori: selectedKategori!,
-      fotoKantin: _gambar!,
-    );
-
-    Navigator.pop(context);
+    try {
+      if (widget.kantin == null) {
+        await postKantin(
+          namaKantin: namaKantin.text,
+          kategori: selectedKategori!,
+          fotoKantin: _gambar!,
+        );
+      } else {
+        await updateKantin(
+          id: widget.kantin!.id,
+          namaKantin: namaKantin.text,
+          kategori: selectedKategori!,
+          fotoKantin: _gambar,
+        );
+      }
+      Navigator.pop(context, true);
+    } catch (e) {
+      final snackbar = SnackBar(content: Text("Gagal menyimpan data: $e"));
+      ScaffoldMessenger.of(context).showSnackBar(snackbar);
+    }
   }
 
   Future<void> pickImage() async {
@@ -204,5 +238,3 @@ class _FormKantinState extends State<FormKantin> {
     }
   }
 }
-
-// sementara gini dulu

@@ -19,6 +19,18 @@ Future<Kantin> fetchKantin(int id) async {
   }
 }
 
+Future<List<Kantin>> fetchSemuaKantin() async {
+  final response = await dio.get('kantin');
+
+  if (response.statusCode == 200) {
+    final List<dynamic> data = response.data['data'];
+    List<Kantin> daftarKantin = data.map((item) => Kantin.fromJson(item as Map<String, dynamic>)).toList();
+    return daftarKantin;
+  } else {
+    throw Exception('Gagal mengambil semua kantin');
+  }
+}
+
 Future<void> postKantin({
   required String namaKantin,
   required String kategori,
@@ -49,4 +61,52 @@ Future<void> postKantin({
   }
 }
 
-// masi bingung
+Future<void> updateKantin({
+  required int id,
+  required String namaKantin,
+  required String kategori,
+  File? fotoKantin,
+}) async {
+  Map<String, dynamic> dataMap = {
+    '_method': 'PUT',
+    'nama_kantin': namaKantin,
+    'kategori': kategori,
+  };
+
+  if (fotoKantin != null) {
+    dataMap['foto_kantin'] = await MultipartFile.fromFile(
+      fotoKantin.path,
+      filename: fotoKantin.path.split('/').last,
+    );
+  }
+
+  FormData formData = FormData.fromMap(dataMap);
+
+  try {
+    final response = await dio.post(
+      'kantin/$id',
+      data: formData,
+      options: Options(headers: {'Accept': 'application/json'}),
+    );
+
+    if (response.statusCode == 200) {
+      print('Kantin berhasil diperbarui!');
+    }
+  } on DioException catch (e) {
+    print('Gagal memperbarui kantin: ${e.response?.data ?? e.message}');
+    throw Exception('Update kantin gagal');
+  }
+}
+
+Future<void> deleteKantin(int id) async {
+  try {
+    final response = await dio.delete('kantin/$id');
+
+    if (response.statusCode == 200) {
+      print('Kantin berhasil dihapus!');
+    }
+  } on DioException catch (e) {
+    print('Gagal menghapus kantin: ${e.response?.data ?? e.message}');
+    throw Exception('Hapus kantin gagal');
+  }
+}

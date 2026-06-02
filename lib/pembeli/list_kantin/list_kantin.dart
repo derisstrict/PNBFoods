@@ -8,10 +8,13 @@ import 'package:pnbfoods/common/warna.dart';
 // import 'package:pnbfoods/database/database.dart';
 import 'package:pnbfoods/main.dart';
 import 'package:pnbfoods/models/produk.dart';
+import 'package:pnbfoods/models/kantin.dart';
 import 'package:pnbfoods/pembeli/list_kantin/widget/card_kantin.dart';
 import 'package:pnbfoods/pembeli/list_produk/widget/card_menu.dart';
 import 'package:pnbfoods/penjual/form_produk/form_produk.dart';
+import 'package:pnbfoods/penjual/form_produk/form_kantin.dart';
 import 'package:pnbfoods/services/produk_service.dart';
+import 'package:pnbfoods/services/kantin_service.dart';
 import 'package:pnbfoods/pembeli/list_kantin/widget/banner_kantin.dart';
 
 class ListKantin extends StatefulWidget {
@@ -20,67 +23,64 @@ class ListKantin extends StatefulWidget {
 }
 
 class _ListKantinState extends State<ListKantin> {
-  final List<Map<String, String>> daftarKantin = [
-    {
-      "nama": "Kantin Ibu Gacor",
-      "kategori": "Makanan & Minuman",
-      "harga": "400+ terjual | Rp. 5rb-35rb",
-      "gambar": "https://picsum.photos/200?1",
-    },
-    {
-      "nama": "Kantin Robert",
-      "kategori": "Cemilan",
-      "harga": "1RB+ terjual | Rp. 5rb-20rb",
-      "gambar": "https://picsum.photos/200?2",
-    },
-    {
-      "nama": "Kantin Pojok Situ",
-      "kategori": "Aneka Nasi",
-      "harga": "897+ terjual | Rp. 10rb-50rb",
-      "gambar": "https://picsum.photos/200?3",
-    },
-    {
-      "nama": "Kantin Bu Joko",
-      "kategori": "Makanan & Minuman",
-      "harga": "500+ terjual | Rp. 8rb-30rb",
-      "gambar": "https://picsum.photos/200?4",
-    },
-    {
-      "nama": "Kantin Bu Joko",
-      "kategori": "Makanan & Minuman",
-      "harga": "500+ terjual | Rp. 8rb-30rb",
-      "gambar": "https://picsum.photos/200?4",
-    },
-    {
-      "nama": "Kantin Bu Joko",
-      "kategori": "Makanan & Minuman",
-      "harga": "500+ terjual | Rp. 8rb-30rb",
-      "gambar": "https://picsum.photos/200?4",
-    },
-    {
-      "nama": "Kantin Bu Joko",
-      "kategori": "Makanan & Minuman",
-      "harga": "500+ terjual | Rp. 8rb-30rb",
-      "gambar": "https://picsum.photos/200?4",
-    },
-    {
-      "nama": "Kantin Bu Joko",
-      "kategori": "Makanan & Minuman",
-      "harga": "500+ terjual | Rp. 8rb-30rb",
-      "gambar": "https://picsum.photos/200?4",
-    },
-  ];
-
+  late Future<List<Kantin>> futureKantin;
   int _selectedNavbar = 0;
 
-  String? _appDirPath;
+  @override
+  void initState() {
+    super.initState();
+    futureKantin = fetchSemuaKantin();
+  }
 
-  late Future<List<Produk>> futureProduk;
+  void refreshKantin() {
+    setState(() {
+      futureKantin = fetchSemuaKantin();
+    });
+  }
 
   void _changeSelectedNavbar(int index) {
     setState(() {
       _selectedNavbar = index;
     });
+  }
+
+  Future<void> _hapusKantin(Kantin kantin) async {
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text("Hapus Kantin"),
+        content: Text("Apakah Anda yakin ingin menghapus ${kantin.namaKantin}?"),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text("Batal"),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            style: TextButton.styleFrom(foregroundColor: Colors.red),
+            child: const Text("Hapus"),
+          ),
+        ],
+      ),
+    );
+
+    if (confirm == true) {
+      try {
+        await deleteKantin(kantin.id);
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text("${kantin.namaKantin} berhasil dihapus")),
+          );
+          refreshKantin();
+        }
+      } catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text("Gagal menghapus kantin: $e")),
+          );
+        }
+      }
+    }
   }
 
   @override
@@ -215,22 +215,77 @@ class _ListKantinState extends State<ListKantin> {
           ),
           SizedBox(height: 5),
           Expanded(
-            child: ListView.builder(
-              itemCount: daftarKantin.length,
-              padding: EdgeInsets.all(10),
-              itemBuilder: (context, index) {
-                final kantin = daftarKantin[index];
+            child: FutureBuilder<List<Kantin>>(
+              future: futureKantin,
+              builder: (context, snapshot) {
+                if (snapshot.hasData) {
+                  if (snapshot.data!.isEmpty) {
+                    return const Center(
+                      child: Text(
+                        "Belum ada kantin.",
+                        style: TextStyle(color: Colors.grey),
+                      ),
+                    );
+                  }
+                  return ListView.builder(
+                    itemCount: snapshot.data!.length,
+                    padding: const EdgeInsets.all(10),
+                    itemBuilder: (context, index) {
+                      final kantin = snapshot.data![index];
 
-                return CardKantin(
-                  namaKantin: kantin["nama"]!,
-                  kategori: kantin["kategori"]!,
-                  infoHarga: kantin["harga"]!,
-                  imageUrl: kantin["gambar"]!,
+                      return CardKantin(
+                        namaKantin: kantin.namaKantin,
+                        kategori: kantin.kategori,
+                        infoHarga: "Lihat Menu",
+                        imageUrl: kantin.fotoUrl ?? 'https://picsum.photos/200?id=${kantin.id}',
+                        onTap: () async {
+                          final result = await Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => FormKantin(kantin: kantin),
+                            ),
+                          );
+                          if (result == true) {
+                            refreshKantin();
+                          }
+                        },
+                        onLongPress: () => _hapusKantin(kantin),
+                      );
+                    },
+                  );
+                } else if (snapshot.hasError) {
+                  return Center(
+                    child: Text(
+                      'Error: ${snapshot.error}',
+                      style: const TextStyle(color: Colors.red),
+                    ),
+                  );
+                }
+                return const Center(
+                  child: CircularProgressIndicator(
+                    valueColor: AlwaysStoppedAnimation<Color>(Color(0xFFF9803B)),
+                  ),
                 );
               },
             ),
           ),
         ],
+      ),
+
+      floatingActionButton: FloatingActionButton(
+        onPressed: () async {
+          final result = await Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const FormKantin(),
+            ),
+          );
+          if (result == true) {
+            refreshKantin();
+          }
+        },
+        backgroundColor: const Color(0xFFF9803B),
+        child: const Icon(Icons.add, color: Colors.white),
       ),
 
       bottomNavigationBar: BottomNavigationBar(
