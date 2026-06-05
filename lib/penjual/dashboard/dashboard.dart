@@ -18,7 +18,7 @@ class Dashboard extends StatefulWidget {
 
 class _DashboardState extends State<Dashboard> {
 
-  late final Future<List<Produk>> _futureProduk;
+  late Future<List<Produk>> _futureProduk;
   String? _appDirPath;
 
 
@@ -34,6 +34,12 @@ class _DashboardState extends State<Dashboard> {
     _futureProduk = fetchSemuaProduk();
     super.initState();
     _initPath();
+  }
+
+  void refreshProduk() {
+    setState(() {
+      _futureProduk = fetchSemuaProduk();
+    });
   }
 
   @override
@@ -367,7 +373,14 @@ class _DashboardState extends State<Dashboard> {
                         ),
                         TextHeading(title: "Menu"),
                         TombolLebar(
-                          function: () {}, 
+                          function: () async {
+                            final result = await Navigator.push(context, MaterialPageRoute(builder: (context) => FormProduk()));
+                            setState(() {
+                              if (result == true) {
+                                refreshProduk();
+                              }
+                            });
+                          }, 
                           backgroundColor: Warna.warnaAccent, 
                           foregroundColor: Colors.white, 
                           text: "Tambah Menu",
@@ -389,8 +402,12 @@ class _DashboardState extends State<Dashboard> {
                                     appDir: _appDirPath!, 
                                     width: finalWidth,
                                     isEditable: true,
-                                    onTap: () {
-                                      Navigator.push(context, MaterialPageRoute(builder: (context) => FormProduk(produk: items[index],)));
+                                    onTap: () async {
+                                      final result = await Navigator.push(context, MaterialPageRoute(builder: (context) => FormProduk(produk: items[index],)));
+                                      if (result == true) {
+                                        refreshProduk();
+                                      }
+                                      
                                     },
                                   );
                                 },
