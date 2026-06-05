@@ -53,6 +53,7 @@ class _FormProdukState extends State<FormProduk> {
     stok = TextEditingController(
       text: widget.produk == null ? "1" : widget.produk!.stok.toString()
     );
+    _kategori = "Makanan";
     // _gambar = widget.produk == null ? "" : widget.produk!.fotoProduk;
     super.initState();
     _initPath();
