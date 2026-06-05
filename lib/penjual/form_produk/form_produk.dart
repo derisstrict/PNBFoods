@@ -59,11 +59,26 @@ class _FormProdukState extends State<FormProduk> {
     _initPath();
   }
 
+  Widget _gambarKaloEdit() {
+    if (widget.produk != null) {
+      if (widget.produk!.fotoProduk != null) {
+        return Image.network(widget.produk!.fotoUrl!, height: 80, width: 80, fit: BoxFit.cover,);
+      } else {
+        return Icon(Icons.image_not_supported, 
+          color: Warna.warnaTextGray,
+          size: 60,
+        );
+      }
+    } else {
+      return Text("");
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     // File fileGambar = File(p.join(_appDirPath!, gambar)); 
     return Scaffold(
-      appBar: TopBar(title: "Tambah Produk"),
+      appBar: TopBar(title: widget.produk == null ? "Tambah Produk" : "Edit Produk"),
       backgroundColor: Warna.warnaBackground,
       body: SafeArea(
         child: SingleChildScrollView(
@@ -79,10 +94,22 @@ class _FormProdukState extends State<FormProduk> {
                         borderRadius: BorderRadius.circular(10),
                         color: Colors.white
                       ),
-                      child: _gambar != null ? Image.file(_gambar!, height: 80, width: 80, fit: BoxFit.cover,) : Icon(Icons.image_not_supported, 
-                        color: Warna.warnaTextGray,
-                        size: 60,
-                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Visibility(
+                            visible: widget.produk == null,
+                            child: _gambar != null ? Image.file(_gambar!, height: 80, width: 80, fit: BoxFit.cover,) : Icon(Icons.image_not_supported, 
+                              color: Warna.warnaTextGray,
+                              size: 60,
+                            ),
+                          ),
+                          Visibility(
+                            visible: widget.produk != null,
+                            child: _gambarKaloEdit()
+                          )
+                        ],
+                      ) 
                     ),
                     SizedBox(height: 10,),
                     TombolNavigasi(
