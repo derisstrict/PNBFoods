@@ -12,7 +12,7 @@ import 'package:pnbfoods/models/kantin.dart';
 import 'package:pnbfoods/pembeli/list_kantin/widget/card_kantin.dart';
 import 'package:pnbfoods/pembeli/list_produk/widget/card_menu.dart';
 import 'package:pnbfoods/penjual/form_produk/form_produk.dart';
-import 'package:pnbfoods/penjual/form_produk/form_kantin.dart';
+import 'package:pnbfoods/penjual/form_kantin/form_kantin.dart';
 import 'package:pnbfoods/services/produk_service.dart';
 import 'package:pnbfoods/services/kantin_service.dart';
 import 'package:pnbfoods/pembeli/list_kantin/widget/banner_kantin.dart';

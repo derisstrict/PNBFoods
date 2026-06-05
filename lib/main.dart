@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:pnbfoods/pembeli/list_kantin/list_kantin.dart';
 import 'package:pnbfoods/pembeli/list_produk/list_produk.dart';
-import 'package:pnbfoods/penjual/form_produk/form_kantin.dart';
+import 'package:pnbfoods/penjual/form_kantin/form_kantin.dart';
 import 'package:pnbfoods/penjual/form_produk/form_produk.dart';
 
 void main() {
