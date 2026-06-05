@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pnbfoods/auth/login_page.dart';
 import 'package:pnbfoods/pembeli/list_produk/list_produk.dart';
 import 'package:pnbfoods/penjual/form_produk/form_produk.dart';
 
@@ -15,7 +16,7 @@ class PNBFoods extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: "PNBFoods",
       theme: ThemeData(fontFamily: 'Poppins'),
-      home: ListProduk(),
+      home: LoginPage(),
     );
   }
 }
