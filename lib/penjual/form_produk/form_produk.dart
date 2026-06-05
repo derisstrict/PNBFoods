@@ -25,8 +25,10 @@ class _FormProdukState extends State<FormProduk> {
   TextEditingController? harga;
   TextEditingController? deskripsi;
   TextEditingController? stok;
-  // String? gambar;
   File? _gambar;
+
+  bool _nilaiCheckbox = false;
+  String? _kategori;
 
   // String? _appDirPath = "";
 
@@ -63,58 +65,46 @@ class _FormProdukState extends State<FormProduk> {
       appBar: TopBar(title: "Tambah Produk"),
       backgroundColor: Warna.warnaBackground,
       body: SafeArea(
-        child: Container(
-          margin: EdgeInsets.all(20),
-          child: Column(
-            children: [
-              Column(
-                children: [
-                  Container(
-                    padding: EdgeInsets.all(15),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10),
-                      color: Colors.white
+        child: SingleChildScrollView(
+          child: Container(
+            margin: EdgeInsets.all(20),
+            child: Column(
+              children: [
+                Column(
+                  children: [
+                    Container(
+                      padding: EdgeInsets.all(15),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10),
+                        color: Colors.white
+                      ),
+                      child: _gambar != null ? Image.file(_gambar!, height: 80, width: 80, fit: BoxFit.cover,) : Icon(Icons.image_not_supported, 
+                        color: Warna.warnaTextGray,
+                        size: 60,
+                      ),
                     ),
-                    child: _gambar != null ? Image.file(_gambar!, height: 80, width: 80, fit: BoxFit.cover,) : Icon(Icons.image_not_supported, 
-                      color: Warna.warnaTextGray,
-                      size: 60,
+                    SizedBox(height: 10,),
+                    TombolNavigasi(
+                      function: () async {
+                        await pickImage();
+                      }, 
+                      backgroundColor: Colors.white,
+                      foregroundColor: Colors.black, 
+                      text: "Upload gambar"
                     ),
-                  ),
-                  SizedBox(height: 10,),
-                  TombolNavigasi(
-                    function: () async {
-                      await pickImage();
-                    }, 
-                    backgroundColor: Colors.white,
-                    foregroundColor: Colors.black, 
-                    text: "Upload gambar"
-                  ),
-                  Text("Ukuran gambar maksimal 5MB",
-                   style: TextStyle(
-                    fontSize: 10
-                   ),
-                  ),
-                ],
-              ),
-              SizedBox(height: 15,),
-              Column(
-                spacing: 15,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Text("Produk",
-                        textAlign: TextAlign.start,
-                          style: TextStyle(
-                            fontWeight: FontWeight.w700,
-                            fontSize: 16
-                          ),
-                        ), 
-                    ],
-                  ),
-                  Form(
-                    child: Column(
-                      spacing: 15,
+                    Text("Ukuran gambar maksimal 5MB",
+                    style: TextStyle(
+                      fontSize: 10
+                    ),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 15,),
+                Column(
+                  spacing: 15,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
                       children: [
                         TextFormFieldCustom(
                           controller: nama!, 
@@ -157,25 +147,120 @@ class _FormProdukState extends State<FormProduk> {
                               foregroundColor: Colors.black,
                               text: "Kembali",
                             ),
-                            Spacer(),
-                            TombolNavigasi(
-                              function: upsertData, 
-                              backgroundColor: Warna.warnaAccent, 
-                              foregroundColor: Colors.white, 
-                              icon: Icons.check,
-                              text: "Simpan",
-                            )
-                          ],
-                        )
-                        
+                          ), 
                       ],
-                    )
-                  ),
-                ],
-              ),
-            ],
-          )
-        )
+                    ),
+                    Form(
+                      child: Column(
+                        spacing: 15,
+                        children: [
+                          TextFormFieldCustom(
+                            controller: nama!, 
+                            labelText: "Nama Produk", 
+                            prefixIcon: Icon(Icons.edit) 
+                          ),
+                          TextFormFieldCustom(
+                            controller: harga!, 
+                            labelText: "Harga", 
+                            prefixIcon: Padding(
+                              padding: EdgeInsetsGeometry.only(top: 13, left: 12),
+                              child: Text("Rp.",
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w500,
+                                  color: Warna.warnaAccent
+                                ),),
+                            ),
+                            numberOnly: true,
+                          ),
+                          DropdownButtonFormFieldCustom(
+                            initialValue: "Makanan", 
+                            icon: Icons.category,
+                            items: [
+                              DropdownMenuItem(
+                                value: "Makanan",
+                                child: Text("Makanan")
+                              ),
+                              DropdownMenuItem(
+                                value: "Minuman",
+                                child: Text("Minuman")
+                              )
+                            ], 
+                            onChanged: (value) {
+                              _kategori = value;
+                            }
+                          ),
+                          TextArea(
+                            controller: deskripsi!, 
+                            minLines: 4, 
+                            maxLines: 4, 
+                            icon: Icons.description_outlined, 
+                            title: "Deskripsi"
+                          ),
+                          Stok(
+                            controller: stok!,
+                            checkboxValue: _nilaiCheckbox,
+                            enabled: (value) {
+                              setState(() {
+                                _nilaiCheckbox = value;
+                              });
+                            },
+                            onPressedMinus: () {
+                              int stokInt = int.parse(stok!.text);
+                              if (stokInt > 0) {
+                                stokInt = stokInt - 1;
+                                setState(() {
+                                  stok!.text = stokInt.toString();
+                                });
+                              }
+                            },
+                            onPressedPlus: () {
+                              int stokInt = int.parse(stok!.text);
+                              if (stokInt < 999) {
+                                stokInt = stokInt + 1;
+                                setState(() {
+                                  stok!.text = stokInt.toString();
+                                });
+                              }
+                            },
+                            onTapOutside: (tap) {
+                              setState(() {
+                                if (stok!.text == "") {
+                                  stok!.text = "1";
+                                }
+                              });
+                            }
+                          ),
+                          Row(
+                            children: [
+                              TombolNavigasi(
+                                function: () {
+                                  Navigator.pop(context);
+                                }, 
+                                backgroundColor: Colors.white, 
+                                foregroundColor: Colors.black,
+                                text: "Kembali",
+                              ),
+                              Spacer(),
+                              TombolNavigasi(
+                                function: upsertData, 
+                                backgroundColor: Warna.warnaAccent, 
+                                foregroundColor: Colors.white, 
+                                icon: Icons.check,
+                                text: "Simpan",
+                              )
+                            ],
+                          )
+                          
+                        ],
+                      )
+                    ),
+                  ],
+                ),
+              ],
+            )
+          ),
+        ) 
       ),
     );
   }
@@ -193,7 +278,7 @@ class _FormProdukState extends State<FormProduk> {
         namaProduk: nama!.text, 
         deskripsiProduk: deskripsi!.text, 
         hargaProduk: int.parse(harga!.text), 
-        kategoriProduk: "Makanan", 
+        kategoriProduk: _kategori!, 
         stok: int.parse(stok!.text), 
         fotoProduk: _gambar!
       );
@@ -204,7 +289,7 @@ class _FormProdukState extends State<FormProduk> {
   Future<void> pickImage() async {
     final ImagePicker picker = ImagePicker();
     
-    final XFile? gambar = await picker.pickImage(source: ImageSource.gallery);
+    final XFile? gambar = await picker.pickImage(source: ImageSource.gallery, imageQuality: 80);
 
     if (gambar != null) {
       setState(() {
