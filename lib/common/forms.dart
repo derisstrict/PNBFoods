@@ -250,3 +250,50 @@ class DropdownButtonFormFieldCustom<T> extends StatelessWidget {
     );
   }
 }
+
+class DropdownFormFieldCustom extends StatelessWidget {
+  final String? value;
+  final String labelText;
+  final Widget prefixIcon;
+  final List<String> items;
+  final Function(String?) onChanged;
+
+  const DropdownFormFieldCustom({
+    super.key,
+    required this.value,
+    required this.labelText,
+    required this.prefixIcon,
+    required this.items,
+    required this.onChanged,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return DropdownButtonFormField<String>(
+      value: value,
+      decoration: InputDecoration(
+        prefixIcon: prefixIcon,
+        prefixIconColor: Warna.warnaAccent,
+        labelStyle: const TextStyle(fontSize: 16),
+        filled: true,
+        fillColor: Colors.white,
+        floatingLabelStyle: TextStyle(color: Warna.warnaTextGray, fontSize: 16),
+        labelText: labelText,
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(15)),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(15),
+          borderSide: BorderSide.none,
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(15),
+          borderSide: BorderSide.none,
+        ),
+      ),
+      dropdownColor: Colors.white,
+      items: items.map((item) {
+        return DropdownMenuItem<String>(value: item, child: Text(item));
+      }).toList(),
+      onChanged: onChanged,
+    );
+  }
+}
