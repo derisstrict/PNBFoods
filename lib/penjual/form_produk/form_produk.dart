@@ -53,25 +53,9 @@ class _FormProdukState extends State<FormProduk> {
     stok = TextEditingController(
       text: widget.produk == null ? "1" : widget.produk!.stok.toString()
     );
-    _kategori = "Makanan";
-    // _gambar = widget.produk == null ? "" : widget.produk!.fotoProduk;
+    _kategori = widget.produk == null ? "Makanan" : widget.produk!.kategoriProduk;
     super.initState();
     _initPath();
-  }
-
-  Widget _gambarKaloEdit() {
-    if (widget.produk != null) {
-      if (widget.produk!.fotoProduk != null) {
-        return Image.network(widget.produk!.fotoUrl!, height: 80, width: 80, fit: BoxFit.cover,);
-      } else {
-        return Icon(Icons.image_not_supported, 
-          color: Warna.warnaTextGray,
-          size: 60,
-        );
-      }
-    } else {
-      return Text("");
-    }
   }
 
   @override
@@ -97,17 +81,13 @@ class _FormProdukState extends State<FormProduk> {
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Visibility(
-                            visible: widget.produk == null,
-                            child: _gambar != null ? Image.file(_gambar!, height: 80, width: 80, fit: BoxFit.cover,) : Icon(Icons.image_not_supported, 
-                              color: Warna.warnaTextGray,
-                              size: 60,
-                            ),
-                          ),
-                          Visibility(
-                            visible: widget.produk != null,
-                            child: _gambarKaloEdit()
-                          )
+                          if (_gambar != null) ...[
+                            Image.file(_gambar!, height: 80, width: 80, fit: BoxFit.cover)
+                          ] else if (widget.produk?.fotoUrl != null) ...[
+                            Image.network(widget.produk!.fotoUrl!, height: 80, width: 80, fit: BoxFit.cover)
+                          ] else ...[
+                            Icon(Icons.image_not_supported, color: Warna.warnaTextGray, size: 60)
+                          ]
                         ],
                       ) 
                     ),
@@ -167,7 +147,7 @@ class _FormProdukState extends State<FormProduk> {
                             numberOnly: true,
                           ),
                           DropdownButtonFormFieldCustom(
-                            initialValue: "Makanan", 
+                            initialValue: _kategori, 
                             icon: Icons.category,
                             items: [
                               DropdownMenuItem(
@@ -228,7 +208,7 @@ class _FormProdukState extends State<FormProduk> {
                             children: [
                               TombolNavigasi(
                                 function: () {
-                                  Navigator.pop(context);
+                                  Navigator.pop(context, true);
                                 }, 
                                 backgroundColor: Colors.white, 
                                 foregroundColor: Colors.black,
@@ -259,23 +239,40 @@ class _FormProdukState extends State<FormProduk> {
   }
 
   Future<void> upsertData() async {
-    if (nama!.text == '' || harga!.text == '' || _gambar == null) {
+    if (nama!.text == '' || harga!.text == '') {
       const snackbar = SnackBar(
         content: Text("Salah satu form belum terisi.")
       );
       ScaffoldMessenger.of(context).showSnackBar(snackbar);
       return;
     }
-    if (widget.produk == null) {
-      await postProduk(
-        namaProduk: nama!.text, 
-        deskripsiProduk: deskripsi!.text, 
-        hargaProduk: int.parse(harga!.text), 
-        kategoriProduk: _kategori!, 
-        stok: int.parse(stok!.text), 
-        fotoProduk: _gambar!
-      );
-      Navigator.pop(context);
+
+    try {
+      if (widget.produk == null) {
+        await postProduk(
+          namaProduk: nama!.text, 
+          deskripsiProduk: deskripsi!.text, 
+          hargaProduk: int.parse(harga!.text), 
+          kategoriProduk: _kategori!, 
+          stok: int.parse(stok!.text), 
+          fotoProduk: _gambar!
+        );
+        Navigator.pop(context, true);
+      } else {
+        await updateProduk(
+          idProduk: widget.produk!.id, 
+          namaProduk: nama!.text, 
+          deskripsiProduk: deskripsi!.text, 
+          hargaProduk: int.parse(harga!.text), 
+          kategoriProduk: _kategori!, 
+          stok: int.parse(stok!.text),
+          fotoProduk: _gambar
+        );
+        Navigator.pop(context, true);
+      }
+    } catch (e) {
+      final snackbar = SnackBar(content: Text("Gagal menyimpan data: $e"));
+      ScaffoldMessenger.of(context).showSnackBar(snackbar);
     }
   }
 
