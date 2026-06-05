@@ -251,3 +251,71 @@ class DropdownButtonFormFieldCustom<T> extends StatelessWidget {
     );
   }
 }
+
+class CustomTextFieldProfile extends StatelessWidget {
+  final TextEditingController controller;
+  final String hintText;
+  final IconData icon;
+
+  const CustomTextFieldProfile({
+    super.key,
+    required this.controller,
+    required this.hintText,
+    required this.icon,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      height: 40,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(10),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.03),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(10),
+        child: Row(
+          children: [
+            Container(
+              width: 40,
+              height: double.infinity,
+              color: Warna.warnaAccent.withOpacity(0.2),
+              child: Icon(
+                icon,
+                color: Warna.warnaAccent, 
+                size: 24,
+              ),
+            ),
+            const SizedBox(width: 15),
+            Expanded(
+              child: TextFormField(
+                controller: controller,
+                style: const TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w400,
+                  color: Colors.black,
+                ),
+                decoration: InputDecoration(
+                  hintText: hintText,
+                  hintStyle: TextStyle(color: Warna.warnaTextGray),
+                  border: InputBorder.none,
+                  enabledBorder: InputBorder.none,
+                  focusedBorder: InputBorder.none,
+                  contentPadding: const EdgeInsets.symmetric(vertical: 15), 
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
