@@ -6,7 +6,7 @@ import 'package:http/http.dart' as http;
 import 'package:pnbfoods/models/produk.dart';
 
 final dio = Dio(BaseOptions(
-  baseUrl: 'http://10.0.2.2:8000/api/',
+  baseUrl: 'http://localhost:8000/api/',
   headers: {'Accept': 'application/json'}
 ));
 
@@ -40,11 +40,10 @@ Future<void> postProduk({
   required int stok,
   required File fotoProduk,
 }) async {
-  final dio = Dio();
-
   FormData formData = FormData.fromMap({
     'nama_produk': namaProduk,
     'harga_produk': hargaProduk,
+    'deskripsi_produk': deskripsiProduk,
     'kategori_produk': kategoriProduk,
     'stok': stok,
     'foto_produk': await MultipartFile.fromFile(
@@ -55,7 +54,7 @@ Future<void> postProduk({
 
   try {
     final response = await dio.post(
-      'http://10.0.2.2:8000/api/produk', 
+      'produk', 
       data: formData,
       options: Options(
         headers: {
@@ -70,5 +69,53 @@ Future<void> postProduk({
   } on DioException catch (e) {
     print('Gagal mengupload data: ${e.response?.data ?? e.message}');
     throw Exception('Upload failed');
+  }
+}
+
+Future<void> updateProduk({
+  required int idProduk,
+  required String namaProduk,
+  required String deskripsiProduk,
+  required int hargaProduk,
+  required String kategoriProduk,
+  required int stok,
+  File? fotoProduk,
+}) async {
+
+  final Map<String, dynamic> mapData = {
+    '_method': 'PUT',
+    'nama_produk': namaProduk,
+    'harga_produk': hargaProduk,
+    'deskripsi_produk': deskripsiProduk,
+    'kategori_produk': kategoriProduk,
+    'stok': stok,
+  };
+
+  if (fotoProduk != null) {
+    mapData['foto_produk'] = await MultipartFile.fromFile(
+      fotoProduk.path,
+      filename: fotoProduk.path.split('/').last,
+    );
+  }
+
+  FormData formData = FormData.fromMap(mapData);
+
+  try {
+    final response = await dio.post(
+      'produk/$idProduk', 
+      data: formData,
+      options: Options(
+        headers: {
+          'Accept': 'application/json',
+        },
+      ),
+    );
+
+    if (response.statusCode == 201 || response.statusCode == 200) {
+      print('Produk berhasil diperbarui!');
+    }
+  } on DioException catch (e) {
+    print('Gagal memperbarui data: ${e.response?.data ?? e.message}');
+    throw Exception('Update failed');
   }
 }
