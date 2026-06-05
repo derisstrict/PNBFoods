@@ -106,46 +106,11 @@ class _FormProdukState extends State<FormProduk> {
                   children: [
                     Row(
                       children: [
-                        TextFormFieldCustom(
-                          controller: nama!, 
-                          labelText: "Nama Produk", 
-                          prefixIcon: Icon(Icons.edit),
-                           obscureText: false, 
-                        ),
-                        TextFormFieldCustom(
-                          controller: harga!, 
-                          labelText: "Harga", 
-                          prefixIcon: Padding(
-                            padding: EdgeInsetsGeometry.only(top: 13, left: 12),
-                            child: Text("Rp.",
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w500,
-                                color: Warna.warnaAccent
-                              ),),
-                          ),
-                          numberOnly: true,
-                           obscureText: false,
-                        ),
-                        TextArea(
-                          controller: deskripsi!, 
-                          minLines: 4, 
-                          maxLines: 4, 
-                          icon: Icons.description_outlined, 
-                          title: "Deskripsi"
-                        ),
-                        Stok(
-                          controller: stok!
-                        ),
-                        Row(
-                          children: [
-                            TombolNavigasi(
-                              function: () {
-                                Navigator.pop(context);
-                              }, 
-                              backgroundColor: Colors.white, 
-                              foregroundColor: Colors.black,
-                              text: "Kembali",
+                        Text("Produk",
+                          textAlign: TextAlign.start,
+                            style: TextStyle(
+                              fontWeight: FontWeight.w700,
+                              fontSize: 16
                             ),
                           ), 
                       ],
