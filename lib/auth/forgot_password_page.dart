@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/services.dart';
 import 'package:pnbfoods/common/warna.dart';
+import 'package:pnbfoods/services/pelanggan_service.dart';
+import 'package:pnbfoods/services/penjual_service.dart';
 
 class ForgotPasswordPage extends StatefulWidget {
-  ForgotPasswordPage({super.key});
+  final String role;
+
+  ForgotPasswordPage({super.key, required this.role});
 
   @override
   State<ForgotPasswordPage> createState() => _ForgotPasswordPageState();
@@ -11,10 +16,20 @@ class ForgotPasswordPage extends StatefulWidget {
 
 class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
   final TextEditingController nimController = TextEditingController();
+  final TextEditingController emailController = TextEditingController();
   final TextEditingController passController = TextEditingController();
   final TextEditingController konfirmasiController = TextEditingController();
   bool _obscurePass = true;
   bool _obscureKonfirmasi = true;
+
+  @override
+  void dispose() {
+    nimController.dispose();
+    emailController.dispose();
+    passController.dispose();
+    konfirmasiController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -52,11 +67,12 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
 
               // NIM
               TextFormField(
-                controller: nimController,
-                keyboardType: TextInputType.number,
-                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                controller: widget.role == 'pelanggan' ? nimController : emailController,
+                keyboardType: widget.role == 'pelanggan' 
+                  ? TextInputType.number 
+                  : TextInputType.emailAddress,
                 decoration: InputDecoration(
-                  labelText: "NIM",
+                  labelText: widget.role == 'pelanggan' ? "NIM" : "Email",
                   filled: true,
                   fillColor: Colors.grey.shade100,
                   border: OutlineInputBorder(
@@ -147,6 +163,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                   ),
                   onPressed: () {
                     // logic reset password
+                    _confirmResetPassword(context);
                   },
                   child: const Text(
                     "Tetapkan Password Baru",
@@ -159,5 +176,59 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
         ),
       ),
     );
+  }
+
+  Future<void> _confirmResetPassword(BuildContext context) async {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Konfirmasi Reset Password', style: TextStyle(fontWeight: FontWeight.w600, color: Colors.black87, fontSize: 16.0)),
+          content: Text('Apakah Anda yakin ingin mengubah password?', style: TextStyle(fontSize: 14, color: Colors.black87)),
+          actions: <Widget>[
+            TextButton(
+              child: Text('Batal', style: TextStyle(color: Colors.black87)),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: Text('Reset', style: TextStyle(color: Colors.red)),
+              onPressed: () {
+                _resetPassword();
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<void> _resetPassword() async {
+    try {
+      if (widget.role == 'pelanggan') {
+        await forgotPasswordPelanggan(
+          nim: nimController.text,
+          password: passController.text,
+        );
+      } else {
+        await forgotPasswordPenjual(
+          email: emailController.text,
+          password: passController.text,
+        );
+      }
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Password berhasil direset!'), backgroundColor: Colors.green),
+      );
+      Navigator.pop(context);
+
+    } on DioException catch (e) {
+      final pesan = e.response?.data['message'] ?? 'Gagal reset password';
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(pesan), backgroundColor: Colors.red),
+      );
+    }
   }
 }

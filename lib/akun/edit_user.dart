@@ -13,17 +13,17 @@ class EditProfile extends StatefulWidget {
   final Pelanggan? pelanggan;
   final Penjual? penjual;
 
-  const EditProfile({this.pelanggan, this.penjual});
+  const EditProfile({super.key, this.pelanggan, this.penjual});
 
   @override
   _EditProfileState createState() => _EditProfileState();
 }
 
 class _EditProfileState extends State<EditProfile> {
-  TextEditingController _namaPelanggan = TextEditingController();
-  TextEditingController _nim = TextEditingController();
-  TextEditingController _namaPenjual = TextEditingController();
-  TextEditingController _emailPenjual = TextEditingController();
+  late final TextEditingController _namaPelanggan;
+  late final TextEditingController _nim;
+  late final TextEditingController _namaPenjual;
+  late final TextEditingController _emailPenjual;
   File? _fotoProfil;
   bool _fotoProfileDihapus = false;
 
@@ -33,10 +33,23 @@ class _EditProfileState extends State<EditProfile> {
     if (widget.pelanggan != null) {
       _namaPelanggan = TextEditingController(text: widget.pelanggan!.namaPelanggan);
       _nim = TextEditingController(text: widget.pelanggan!.nim);
+      _namaPenjual = TextEditingController();
+      _emailPenjual = TextEditingController();
     } else {
       _namaPenjual = TextEditingController(text: widget.penjual!.namaPenjual);
       _emailPenjual = TextEditingController(text: widget.penjual!.email);
+      _namaPelanggan = TextEditingController();
+      _nim = TextEditingController();
     }
+  }
+
+  @override
+  void dispose() {
+    _namaPelanggan.dispose();
+    _nim.dispose();
+    _namaPenjual.dispose();
+    _emailPenjual.dispose();
+    super.dispose();
   }
 
   @override
@@ -276,6 +289,5 @@ class _EditProfileState extends State<EditProfile> {
         _fotoProfil = File(gambar.path);
       });
     }
-
   }
 }

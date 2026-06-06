@@ -90,5 +90,37 @@ Future<Map<String, dynamic>> loginPelanggan({
     'nim': nim,
     'password': password,
   });
+
+  if (response.data['success'] == true) {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('token', response.data['token']);
+    await prefs.setString('role', response.data['role']);
+    await prefs.setInt('userId', response.data['data']['id']);
+  }
+
+  return response.data;
+}
+
+Future<void> logoutPelanggan() async {
+  final prefs = await SharedPreferences.getInstance();
+  final token = prefs.getString('token');
+
+  await _dio.post(
+    'pelanggan/logout',
+    options: Options(headers: {'Authorization': 'Bearer $token'}),
+  );
+
+  await prefs.clear();
+}
+
+Future<Map<String, dynamic>> forgotPasswordPelanggan({
+  required String nim,
+  required String password,
+}) async {
+  final response = await _dio.post('pelanggan/forgot-password', data: {
+    'nim': nim,
+    'password': password,
+    'password_confirmation': password,
+  });
   return response.data;
 }

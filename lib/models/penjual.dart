@@ -1,7 +1,6 @@
 class Penjual {
   final int idPenjual;
   final String namaPenjual;
-  final String rolePenjual;
   final String email;
   final String? fotoProfile;
   final String? password;
@@ -10,7 +9,6 @@ class Penjual {
   const Penjual({
     required this.idPenjual,
     required this.namaPenjual,
-    required this.rolePenjual,
     required this.email,
     this.fotoProfile,
     this.password,
@@ -21,7 +19,6 @@ class Penjual {
     return Penjual(
       idPenjual: json['id'] as int,
       namaPenjual: json['nama'] as String,
-      rolePenjual: json['role'] as String,
       email: json['email'] as String,
       fotoProfile: json['foto_profile'] as String?,
       password: json['password'] as String?,

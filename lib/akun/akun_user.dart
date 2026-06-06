@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pnbfoods/auth/role_page.dart';
 import 'package:pnbfoods/common/warna.dart';
 import 'package:pnbfoods/akun/edit_user.dart';
 import 'package:pnbfoods/models/pelanggan.dart';
@@ -375,13 +376,30 @@ class _ProfilUserState extends State<ProfileUser> {
             TextButton(
               child: Text('Logout', style: TextStyle(color: Colors.red)),
               onPressed: () {
-                // Tambahkan logika untuk logout di sini
-                Navigator.of(context).pop();
+                _logout(context);
               },
             ),
           ],
         );
       },
+    );
+  }
+
+  Future<void> _logout(BuildContext context) async{
+    try {
+      if (widget.role == 'pelanggan') {
+        await logoutPelanggan();
+      } else {
+        await logoutPenjual();
+      }
+    } catch (e) {
+      // tetap lanjut logout walopun request gagal
+    }
+
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(builder: (context) => PilihRole()),
+      (route) => false,
     );
   }
 }

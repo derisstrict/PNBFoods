@@ -20,18 +20,10 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
 
-  late TextEditingController _nimController;
-  late TextEditingController _passwordController;
-  late TextEditingController _emailController; 
+  final TextEditingController _nimController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
   bool _isLoading = false;
-
-   @override
-  void initState() {
-    super.initState();
-    _nimController = TextEditingController();
-    _emailController = TextEditingController();
-    _passwordController = TextEditingController();
-  }
 
   @override
   void dispose() {
@@ -87,7 +79,7 @@ class _LoginPageState extends State<LoginPage> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => ForgotPasswordPage(),
+                        builder: (context) => ForgotPasswordPage(role: 'pelanggan'),
                       ),
                     );
                   },
@@ -102,7 +94,7 @@ class _LoginPageState extends State<LoginPage> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => ForgotPasswordPage(),
+                        builder: (context) => ForgotPasswordPage(role: 'penjual'),
                       ),
                     );
                   },
@@ -117,23 +109,19 @@ class _LoginPageState extends State<LoginPage> {
     setState(() => _isLoading = true);
     try {
 
-      final response = widget.role == 'pelanggan'
+     widget.role == 'pelanggan'
           ? await loginPelanggan(nim: _nimController.text, password: _passwordController.text)
           : await loginPenjual(email: _emailController.text, password: _passwordController.text);
 
-      final token = response['token'];
-      final data = response['data'];
-
-      // simpan ke SharedPreferences
       final prefs = await SharedPreferences.getInstance();
-      await prefs.setString('token', token);
-      await prefs.setInt('user_id', data['id']);
-      await prefs.setString('user_role', data['role']);
+      final role = prefs.getString('role');
+      final userId = prefs.getInt('userId');
+
 
       Navigator.pushReplacement(context,
-        MaterialPageRoute(builder: (context) => data['role'] == 'pelanggan'
-          ? ProfileUser(userId: data['id'], role: data['role']) //SEMENTARA INGET GANTI
-          : ProfileUser(userId: data['id'], role: data['role']) //SEMENTARA INGET GANTI
+        MaterialPageRoute(builder: (context) => role == 'pelanggan'
+          ? ProfileUser(userId: userId!, role: role!) //SEMENTARA INGET GANTI
+          : ProfileUser(userId: userId!, role: role!) //SEMENTARA INGET GANTI
         ),
       );
 
