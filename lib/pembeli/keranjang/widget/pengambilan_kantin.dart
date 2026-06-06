@@ -28,7 +28,7 @@ class PengambilanKantin extends StatelessWidget {
                   width: 36,
                   height: 36,
                   fit: BoxFit.cover,
-                  errorBuilder: (_, __, ___) => Container(
+                  errorBuilder: (context, a, b) => Container(
                     width: 36,
                     height: 36,
                     color: Colors.grey[200],
