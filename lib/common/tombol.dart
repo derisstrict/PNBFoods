@@ -36,7 +36,8 @@ class TombolNavigasi extends StatelessWidget {
           ),
           Text(text,
             style: TextStyle(
-              color: foregroundColor
+              color: foregroundColor,
+              fontWeight: FontWeight.w400
             ),
           )
         ],
