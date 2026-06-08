@@ -11,7 +11,7 @@ final dio = Dio(BaseOptions(
 ));
 
 Future<Produk> fetchProduk(int id) async {
-  final response = await dio.get('produk');
+  final response = await dio.get('produk/$id');
 
   if (response.statusCode == 200) {
     return Produk.fromJson(response.data['data']);
@@ -117,5 +117,18 @@ Future<void> updateProduk({
   } on DioException catch (e) {
     print('Gagal memperbarui data: ${e.response?.data ?? e.message}');
     throw Exception('Update failed');
+  }
+}
+
+Future<void> deleteProduk(int id) async {
+  try {
+    final response = await dio.delete('produk/$id');
+
+    if (response.statusCode == 200) {
+      print('Produk berhasil dihapus!');
+    }
+  } on DioException catch (e) {
+    print('Gagal menghapus produk: ${e.response?.data ?? e.message}');
+    throw Exception('Hapus produk gagal');
   }
 }
