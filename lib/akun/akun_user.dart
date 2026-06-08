@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pnbfoods/akun/ubah_password.dart';
 import 'package:pnbfoods/auth/role_page.dart';
 import 'package:pnbfoods/common/warna.dart';
 import 'package:pnbfoods/akun/edit_user.dart';
@@ -123,6 +124,26 @@ class _ProfilUserState extends State<ProfileUser> {
                                 Icon(Icons.manage_accounts_outlined),
                                 SizedBox(width: 10),
                                 Text("Edit Profile",
+                                  style: TextStyle(fontWeight: FontWeight.w400, fontSize: 14, color: Colors.black87),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        SizedBox(height: 10),
+                        GestureDetector(
+                          onTap: () => _openChangePasswordPelanggan(context, pelanggan),
+                          child: Container(
+                            padding: EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(15),
+                            ),
+                            child: Row(
+                              children: [
+                                Icon(Icons.lock_outline),
+                                SizedBox(width: 10),
+                                Text("Ubah Password",
                                   style: TextStyle(fontWeight: FontWeight.w400, fontSize: 14, color: Colors.black87),
                                 ),
                               ],
@@ -269,6 +290,26 @@ class _ProfilUserState extends State<ProfileUser> {
                         ),
                         SizedBox(height: 10),
                         GestureDetector(
+                          onTap: () => _openChangePasswordPenjual(context, penjual),
+                          child: Container(
+                            padding: EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(15),
+                            ),
+                            child: Row(
+                              children: [
+                                Icon(Icons.lock_outline),
+                                SizedBox(width: 10),
+                                Text("Ubah Password",
+                                  style: TextStyle(fontWeight: FontWeight.w400, fontSize: 14, color: Colors.black87),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        SizedBox(height: 10),
+                        GestureDetector(
                           onTap: () {
                             _openRiwayat(context);
                           },
@@ -325,6 +366,30 @@ class _ProfilUserState extends State<ProfileUser> {
 
   Future<void> _openRiwayat(BuildContext context) async {
     //buka halaman riwayat pembelian
+  }
+
+  Future<void> _openChangePasswordPelanggan(BuildContext context, Pelanggan pelanggan) async {
+    final result = await Navigator.push(
+      context, 
+      MaterialPageRoute(builder: (context) => UbahPassword(pelanggan: pelanggan))
+    );
+    if (result == true) {
+      setState(() {
+        futurePelanggan = fetchPelanggan(pelanggan.idPelanggan);
+      });
+    }
+  }
+
+  Future<void> _openChangePasswordPenjual(BuildContext context, Penjual penjual) async {
+    final result = await Navigator.push(
+      context, 
+      MaterialPageRoute(builder: (context) => UbahPassword(penjual: penjual))
+    );
+    if (result == true) {
+      setState(() {
+        futurePenjual = fetchPenjual(penjual.idPenjual);
+      });
+    }
   }
 
   Future<void> _openEditProfilePelanggan(BuildContext context, Pelanggan pelanggan) async {

@@ -113,14 +113,26 @@ Future<void> logoutPelanggan() async {
   await prefs.clear();
 }
 
-Future<Map<String, dynamic>> forgotPasswordPelanggan({
-  required String nim,
-  required String password,
+Future<Map<String, dynamic>> changePasswordPelanggan({
+  required String passwordLama,
+  required String passwordBaru,
+  required String passwordKonfirmasi,
 }) async {
-  final response = await _dio.post('pelanggan/forgot-password', data: {
-    'nim': nim,
-    'password': password,
-    'password_confirmation': password,
-  });
+  final prefs = await SharedPreferences.getInstance();
+  final token = prefs.getString('token');
+
+  final response = await _dio.post(
+    'pelanggan/change-password',
+    data: {
+      'password_lama': passwordLama,
+      'password': passwordBaru,
+      'password_confirmation': passwordKonfirmasi,
+    },
+    options: Options(
+      headers: {
+        'Authorization': 'Bearer $token',
+      },
+    ),
+  );
   return response.data;
 }

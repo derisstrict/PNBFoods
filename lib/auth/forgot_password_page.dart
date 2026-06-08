@@ -195,7 +195,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
             TextButton(
               child: Text('Reset', style: TextStyle(color: Colors.red)),
               onPressed: () {
-                _resetPassword();
+                // _resetPassword();
                 Navigator.of(context).pop();
               },
             ),
@@ -205,30 +205,30 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
     );
   }
 
-  Future<void> _resetPassword() async {
-    try {
-      if (widget.role == 'pelanggan') {
-        await forgotPasswordPelanggan(
-          nim: nimController.text,
-          password: passController.text,
-        );
-      } else {
-        await forgotPasswordPenjual(
-          email: emailController.text,
-          password: passController.text,
-        );
-      }
+  // Future<void> _resetPassword() async {
+  //   try {
+  //     if (widget.role == 'pelanggan') {
+  //       await forgotPasswordPelanggan(
+  //         nim: nimController.text,
+  //         password: passController.text,
+  //       );
+  //     } else {
+  //       await forgotPasswordPenjual(
+  //         email: emailController.text,
+  //         password: passController.text,
+  //       );
+  //     }
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Password berhasil direset!'), backgroundColor: Colors.green),
-      );
-      Navigator.pop(context);
+  //     ScaffoldMessenger.of(context).showSnackBar(
+  //       SnackBar(content: Text('Password berhasil direset!'), backgroundColor: Colors.green),
+  //     );
+  //     Navigator.pop(context);
 
-    } on DioException catch (e) {
-      final pesan = e.response?.data['message'] ?? 'Gagal reset password';
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(pesan), backgroundColor: Colors.red),
-      );
-    }
-  }
+  //   } on DioException catch (e) {
+  //     final pesan = e.response?.data['message'] ?? 'Gagal reset password';
+  //     ScaffoldMessenger.of(context).showSnackBar(
+  //       SnackBar(content: Text(pesan), backgroundColor: Colors.red),
+  //     );
+  //   }
+  // }
 }
