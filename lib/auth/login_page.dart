@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pnbfoods/akun/akun_user.dart';
+import 'package:pnbfoods/auth/autentikasi.dart';
 import 'package:pnbfoods/common/warna.dart';
 import 'package:pnbfoods/common/login_form.dart'; 
 import 'package:pnbfoods/auth/forgot_password_page.dart';
@@ -113,16 +114,18 @@ class _LoginPageState extends State<LoginPage> {
           ? await loginPelanggan(nim: _nimController.text, password: _passwordController.text)
           : await loginPenjual(email: _emailController.text, password: _passwordController.text);
 
-      final prefs = await SharedPreferences.getInstance();
-      final role = prefs.getString('role');
+      // final prefs = await SharedPreferences.getInstance();
+      // final role = prefs.getString('role');
       // final userId = prefs.getInt('userId');
 
-      Navigator.pushReplacement(context,
-        MaterialPageRoute(builder: (context) => role == 'pelanggan'
-          ? ProfileUser() //SEMENTARA INGET GANTI
-          : ProfileUser() //SEMENTARA INGET GANTI
-        ),
-      );
+      // Navigator.pushReplacement(context,
+      //   MaterialPageRoute(builder: (context) => role == 'pelanggan'
+      //     ? ProfileUser() //SEMENTARA INGET GANTI
+      //     : ProfileUser() //SEMENTARA INGET GANTI
+      //   ),
+      // );
+
+      Navigator.push(context, MaterialPageRoute(builder: (context) => Autentikasi()));
 
     } on DioException catch (e) {
       final pesan = e.response?.data['message'] ?? 'Login gagal';
