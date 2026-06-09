@@ -115,13 +115,12 @@ class _LoginPageState extends State<LoginPage> {
 
       final prefs = await SharedPreferences.getInstance();
       final role = prefs.getString('role');
-      final userId = prefs.getInt('userId');
-
+      // final userId = prefs.getInt('userId');
 
       Navigator.pushReplacement(context,
         MaterialPageRoute(builder: (context) => role == 'pelanggan'
-          ? ProfileUser(userId: userId!, role: role!) //SEMENTARA INGET GANTI
-          : ProfileUser(userId: userId!, role: role!) //SEMENTARA INGET GANTI
+          ? ProfileUser() //SEMENTARA INGET GANTI
+          : ProfileUser() //SEMENTARA INGET GANTI
         ),
       );
 

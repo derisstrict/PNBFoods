@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:pnbfoods/common/navbar.dart';
 import 'package:pnbfoods/common/tombol.dart';
 import 'package:pnbfoods/common/warna.dart';
 // import 'package:pnbfoods/database/database.dart';
@@ -271,7 +272,6 @@ class _ListKantinState extends State<ListKantin> {
           ),
         ],
       ),
-
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
           final result = await Navigator.push(
@@ -286,36 +286,6 @@ class _ListKantinState extends State<ListKantin> {
         },
         backgroundColor: const Color(0xFFF9803B),
         child: const Icon(Icons.add, color: Colors.white),
-      ),
-
-      bottomNavigationBar: BottomNavigationBar(
-        type: BottomNavigationBarType.fixed,
-        items: <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home_outlined),
-            label: "Beranda",
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.assignment_outlined),
-            label: "Order",
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.favorite_border),
-            label: "Favorit",
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person_outline),
-            label: "Profil",
-          ),
-        ],
-        currentIndex: _selectedNavbar,
-        backgroundColor: Colors.white,
-        selectedItemColor: Color(0xFFF9803B),
-        unselectedItemColor: Colors.grey,
-        selectedFontSize: 11.0,
-        unselectedFontSize: 11.0,
-        showUnselectedLabels: true,
-        onTap: _changeSelectedNavbar,
       ),
     );
   }

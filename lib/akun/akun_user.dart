@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pnbfoods/akun/ubah_password.dart';
+import 'package:pnbfoods/auth/login_page.dart';
 import 'package:pnbfoods/auth/role_page.dart';
 import 'package:pnbfoods/common/warna.dart';
 import 'package:pnbfoods/akun/edit_user.dart';
@@ -7,15 +8,12 @@ import 'package:pnbfoods/models/pelanggan.dart';
 import 'package:pnbfoods/services/pelanggan_service.dart';
 import 'package:pnbfoods/models/penjual.dart';
 import 'package:pnbfoods/services/penjual_service.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ProfileUser extends StatefulWidget {
-  final int userId;
-  final String role;
 
   const ProfileUser({
     super.key, 
-    required this.userId, 
-    required this.role,
   });
   
   @override
@@ -27,21 +25,39 @@ class _ProfilUserState extends State<ProfileUser> {
   Future<Pelanggan>? futurePelanggan;
   Future<Penjual>? futurePenjual;
 
+  String? rolePengguna;
+  int? idPengguna;
+
+  void _ambilDataUser() async {
+    final prefs = await SharedPreferences.getInstance();
+
+    final role = prefs.getString('role');
+    final id = prefs.getInt('userId');
+
+    if (id != null) {
+      setState(() {
+        rolePengguna = prefs.getString('role');
+        idPengguna = prefs.getInt('userId');
+      });
+      if (rolePengguna == 'pelanggan') {
+        futurePelanggan= fetchPelanggan(idPengguna!);
+      } else {
+        futurePenjual= fetchPenjual(idPengguna!);
+      }  
+    }
+  }
+
   @override
   void initState() {
     super.initState();
-    if (widget.role == 'pelanggan') {
-      futurePelanggan= fetchPelanggan(widget.userId);
-    } else {
-      futurePenjual= fetchPenjual(widget.userId);
-    }
+    _ambilDataUser();
   }
 
   @override 
   Widget build(BuildContext context) {
     return Scaffold(
     backgroundColor: Warna.warnaBackground,
-    body: widget.role == 'pelanggan'
+    body: rolePengguna == 'pelanggan'
         ? _buildViewPelanggan()
         : _buildViewPenjual(),
     );
@@ -452,7 +468,7 @@ class _ProfilUserState extends State<ProfileUser> {
 
   Future<void> _logout(BuildContext context) async{
     try {
-      if (widget.role == 'pelanggan') {
+      if (rolePengguna == 'pelanggan') {
         await logoutPelanggan();
       } else {
         await logoutPenjual();

@@ -186,35 +186,6 @@ class _ListProdukState extends State<ListProduk> {
           }
         ) 
       ), 
-      bottomNavigationBar: BottomNavigationBar(
-        type: BottomNavigationBarType.fixed,
-        items: <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home_outlined),
-            label: "Beranda"
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.assignment_outlined),
-            label: "Order"
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.favorite_border),
-            label: "Favorit"
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person_outline),
-            label: "Profil"
-          ),
-        ],
-        currentIndex: _selectedNavbar,
-        backgroundColor: Colors.white,
-        selectedItemColor: Color(0xFFF9803B),
-        unselectedItemColor: Colors.grey,
-        selectedFontSize: 11.0,
-        unselectedFontSize: 11.0,
-        showUnselectedLabels: true,
-        onTap: _changeSelectedNavbar,
-      ),
     );
   }
 }
