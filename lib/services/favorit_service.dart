@@ -1,8 +1,9 @@
 import 'package:dio/dio.dart';
 import 'package:pnbfoods/models/favorit.dart';
+import 'package:pnbfoods/services/base_url.dart';
 
 final dio = Dio(BaseOptions(
-  baseUrl: 'http://localhost:8000/api/',
+  baseUrl: BaseUrl.baseUrl,
   headers: {'Accept': 'application/json'},
 ));
 

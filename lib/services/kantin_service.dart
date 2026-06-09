@@ -1,10 +1,11 @@
 import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:pnbfoods/models/kantin.dart';
+import 'package:pnbfoods/services/base_url.dart';
 
 final dio = Dio(
   BaseOptions(
-    baseUrl: 'http://10.0.2.2:8000/api/',
+    baseUrl: BaseUrl.baseUrl,
     headers: {'Accept': 'application/json'},
   ),
 );

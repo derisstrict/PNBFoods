@@ -4,9 +4,10 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:http/http.dart' as http;
 import 'package:pnbfoods/models/produk.dart';
+import 'package:pnbfoods/services/base_url.dart';
 
 final dio = Dio(BaseOptions(
-  baseUrl: 'http://localhost:8000/api/',
+  baseUrl: BaseUrl.baseUrl,
   headers: {'Accept': 'application/json'}
 ));
 
