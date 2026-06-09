@@ -9,15 +9,21 @@ class TextFormFieldCustom extends StatelessWidget {
   final Widget prefixIcon;
   final bool numberOnly;
 
-  const TextFormFieldCustom({super.key, required this.controller, required this.labelText, required this.prefixIcon, this.numberOnly = false});
-  
+  const TextFormFieldCustom({
+    super.key,
+    required this.controller,
+    required this.labelText,
+    required this.prefixIcon,
+    this.numberOnly = false,
+  });
+
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
     return TextFormField(
       controller: controller,
       inputFormatters: <TextInputFormatter>[
-        if (numberOnly) FilteringTextInputFormatter.digitsOnly
+        if (numberOnly) FilteringTextInputFormatter.digitsOnly,
       ],
       decoration: InputDecoration(
         prefixIcon: prefixIcon,
@@ -25,36 +31,37 @@ class TextFormFieldCustom extends StatelessWidget {
         labelStyle: TextStyle(fontSize: 16),
         filled: true,
         fillColor: Colors.white,
-        floatingLabelStyle: TextStyle(
-          color: Warna.warnaTextGray,
-          fontSize: 16,
-        ),
+        floatingLabelStyle: TextStyle(color: Warna.warnaTextGray, fontSize: 16),
         labelText: labelText,
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(15),
-        ),
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(15)),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(15),
-          borderSide: BorderSide.none
+          borderSide: BorderSide.none,
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(15),
-          borderSide: BorderSide.none
-        )
+          borderSide: BorderSide.none,
+        ),
       ),
     );
   }
 }
 
 class TextArea extends StatelessWidget {
-
   final TextEditingController controller;
   final int minLines;
   final int maxLines;
   final IconData icon;
   final String title;
 
-  const TextArea({super.key, required this.controller, required this.minLines, required this.maxLines, required this.icon, required this.title});
+  const TextArea({
+    super.key,
+    required this.controller,
+    required this.minLines,
+    required this.maxLines,
+    required this.icon,
+    required this.title,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -63,20 +70,14 @@ class TextArea extends StatelessWidget {
       padding: EdgeInsets.all(0),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(15)
+        borderRadius: BorderRadius.circular(15),
       ),
       child: Column(
         children: [
           Padding(
             padding: EdgeInsetsGeometry.only(top: 15, left: 15),
             child: Row(
-              children: [
-                Icon(icon,
-                  size: 20,
-                ),
-                SizedBox(width: 5,),
-                Text(title)
-              ],
+              children: [Icon(icon, size: 20), SizedBox(width: 5), Text(title)],
             ),
           ),
           TextFormField(
@@ -87,22 +88,20 @@ class TextArea extends StatelessWidget {
               labelStyle: TextStyle(fontSize: 14),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(10),
-                borderSide: BorderSide(
-                  color: Warna.warnaTextGray
-                )
+                borderSide: BorderSide(color: Warna.warnaTextGray),
               ),
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(15),
-                borderSide: BorderSide.none
+                borderSide: BorderSide.none,
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(15),
-                borderSide: BorderSide.none
-              )
+                borderSide: BorderSide.none,
+              ),
             ),
-          )
+          ),
         ],
-      )
+      ),
     );
   }
 }
@@ -127,7 +126,7 @@ class Stok extends StatelessWidget {
           padding: EdgeInsets.all(5),
           decoration: BoxDecoration(
             color: Colors.white,
-            borderRadius: BorderRadius.circular(15)
+            borderRadius: BorderRadius.circular(15),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -248,6 +247,53 @@ class DropdownButtonFormFieldCustom<T> extends StatelessWidget {
           onChanged(value);
         }
       },
+    );
+  }
+}
+
+class DropdownFormFieldCustom extends StatelessWidget {
+  final String? value;
+  final String labelText;
+  final Widget prefixIcon;
+  final List<String> items;
+  final Function(String?) onChanged;
+
+  const DropdownFormFieldCustom({
+    super.key,
+    required this.value,
+    required this.labelText,
+    required this.prefixIcon,
+    required this.items,
+    required this.onChanged,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return DropdownButtonFormField<String>(
+      value: value,
+      decoration: InputDecoration(
+        prefixIcon: prefixIcon,
+        prefixIconColor: Warna.warnaAccent,
+        labelStyle: const TextStyle(fontSize: 16),
+        filled: true,
+        fillColor: Colors.white,
+        floatingLabelStyle: TextStyle(color: Warna.warnaTextGray, fontSize: 16),
+        labelText: labelText,
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(15)),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(15),
+          borderSide: BorderSide.none,
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(15),
+          borderSide: BorderSide.none,
+        ),
+      ),
+      dropdownColor: Colors.white,
+      items: items.map((item) {
+        return DropdownMenuItem<String>(value: item, child: Text(item));
+      }).toList(),
+      onChanged: onChanged,
     );
   }
 }
