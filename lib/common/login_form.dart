@@ -3,17 +3,19 @@ import 'package:flutter/services.dart';
 import 'package:pnbfoods/common/warna.dart';
 
 class LoginForm extends StatefulWidget {
-  final TextEditingController nimController;
+  final TextEditingController controller;
   final TextEditingController passController;
   final VoidCallback onLogin;
   final VoidCallback onLupaPassword;
+  final String labelForm;
 
   const LoginForm({
     super.key,
-    required this.nimController,
+    required this.controller,
     required this.passController,
     required this.onLogin,
     required this.onLupaPassword,
+    required this.labelForm,
   });
 
   @override
@@ -29,11 +31,10 @@ class _LoginFormState extends State<LoginForm> {
       children: [
         // Input NIM
         TextFormField(
-          controller: widget.nimController,
-          keyboardType: TextInputType.number,
-          inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+          controller: widget.controller,
+          keyboardType: TextInputType.text,
           decoration: InputDecoration(
-            labelText: "NIM",
+            labelText: widget.labelForm,
             prefixIcon: const Icon(Icons.phone_android, color: Colors.orange),
             filled: true,
             fillColor: Colors.grey.shade100,
