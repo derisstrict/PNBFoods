@@ -3,6 +3,7 @@ import 'package:pnbfoods/models/item_keranjang.dart';
 import 'package:pnbfoods/pembeli/pembayaran/widget/countdown_kadaluwarsa.dart';
 import 'package:pnbfoods/pembeli/pembayaran/widget/qris_box.dart';
 import 'package:pnbfoods/pembeli/pembayaran/widget/tombol_pembayaran.dart';
+import 'package:pnbfoods/services/cart_service.dart';
 
 class PembayaranPage extends StatefulWidget {
   final int totalHarga;
@@ -91,6 +92,28 @@ class _PembayaranPageState extends State<PembayaranPage> {
 
             TombolPembayaran(
               onKembali: () => Navigator.pop(context),
+            ),
+            const SizedBox(height: 12),
+            SizedBox(
+              width: double.infinity,
+              height: 50,
+              child: ElevatedButton(
+                onPressed: () {
+                  CartService().clear();
+                  Navigator.of(context).popUntil((route) => route.isFirst);
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.red.shade400,
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(15),
+                  ),
+                ),
+                child: const Text(
+                  "Selesaikan Pembayaran",
+                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+                ),
+              ),
             ),
           ],
         ),

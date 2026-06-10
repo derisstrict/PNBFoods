@@ -5,6 +5,7 @@ import 'package:pnbfoods/pembeli/keranjang/widget/metode_pembayaran.dart';
 import 'package:pnbfoods/pembeli/keranjang/widget/pengambilan_kantin.dart';
 import 'package:pnbfoods/pembeli/keranjang/widget/rincian_pesanan.dart';
 import 'package:pnbfoods/pembeli/pembayaran/page_pembayaran.dart';
+import 'package:pnbfoods/services/cart_service.dart';
 
 class KeranjangPage extends StatefulWidget {
   const KeranjangPage({super.key});
@@ -15,7 +16,8 @@ class KeranjangPage extends StatefulWidget {
 
 class _KeranjangPageState extends State<KeranjangPage> {
   final Color warnaOrange = const Color(0xFFF9803B);
-  List<ItemKeranjang> keranjang = List.from(dummyKeranjang);
+
+  List<ItemKeranjang> get keranjang => CartService().getAllItems();
 
   int get totalItem => keranjang.fold(0, (sum, item) => sum + item.jumlah);
   int get totalHarga => keranjang.fold(0, (sum, item) => sum + item.subtotal);
@@ -29,17 +31,25 @@ class _KeranjangPageState extends State<KeranjangPage> {
   }
 
   void tambah(int index) {
-    setState(() => keranjang[index].jumlah++);
+    final item = keranjang[index];
+    final id = item.produkId ?? item.nama.hashCode;
+    CartService().addOrUpdate(id, item.nama, item.harga, item.imageUrl, item.jumlah + 1);
+    setState(() {});
   }
 
   void kurang(int index) {
-    setState(() {
-      if (keranjang[index].jumlah > 1) keranjang[index].jumlah--;
-    });
+    final item = keranjang[index];
+    if (item.jumlah > 1) {
+      final id = item.produkId ?? item.nama.hashCode;
+      CartService().addOrUpdate(id, item.nama, item.harga, item.imageUrl, item.jumlah - 1);
+      setState(() {});
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    final items = keranjang;
+
     return Scaffold(
       backgroundColor: const Color(0xFFF5F5F5),
       appBar: PreferredSize(
@@ -77,14 +87,14 @@ class _KeranjangPageState extends State<KeranjangPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              '$totalItem Item',
+              '${items.length} Item',
               style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 10),
 
-            ...List.generate(keranjang.length, (index) {
+            ...List.generate(items.length, (index) {
               return CardItemKeranjang(
-                item: keranjang[index],
+                item: items[index],
                 formatRupiah: formatRupiah,
                 onTambah: () => tambah(index),
                 onKurang: () => kurang(index),
@@ -99,7 +109,7 @@ class _KeranjangPageState extends State<KeranjangPage> {
             const SizedBox(height: 10),
 
             RincianPesanan(
-              keranjang: keranjang,
+              keranjang: items,
               totalHarga: totalHarga,
               formatRupiah: formatRupiah,
               warnaOrange: warnaOrange,
@@ -116,7 +126,7 @@ class _KeranjangPageState extends State<KeranjangPage> {
                     MaterialPageRoute(
                       builder: (context) => PembayaranPage(
                         totalHarga: totalHarga,
-                        items: keranjang,
+                        items: items,
                       ),
                     ),
                   );

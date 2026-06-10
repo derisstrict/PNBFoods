@@ -1,22 +1,17 @@
-import 'dart:async';
-import 'dart:io';
-import 'package:path/path.dart' as p;
 import 'package:flutter/material.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:pnbfoods/common/warna.dart';
 import 'package:pnbfoods/models/produk.dart';
-import 'package:pnbfoods/penjual/form_produk/form_produk.dart';
-// import 'package:pnbfoods/database/database.dart';
 
 class CardProduk extends StatelessWidget {
   final Produk produk;
   final String appDir;
-  final bool isAccent = false;
+  final bool isAccent;
+  final int cartCount;
   final double width;
   final bool isEditable;
   final GestureTapCallback onTap;
 
-  const CardProduk({super.key, required this.produk, required this.appDir, required this.width, this.isEditable = false, required this.onTap});
+  const CardProduk({super.key, required this.produk, required this.appDir, required this.width, this.isAccent = false, this.cartCount = 0, this.isEditable = false, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -75,7 +70,7 @@ class CardProduk extends StatelessWidget {
                               color: Colors.white,
                               borderRadius: BorderRadius.circular(6)
                             ),
-                            child: Text("2", 
+                            child: Text("$cartCount", 
                             style: TextStyle(
                               fontSize: 12,
                               color: Color(0xFFF9803B)

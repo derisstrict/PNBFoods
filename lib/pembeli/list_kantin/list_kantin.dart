@@ -1,22 +1,9 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
-import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:pnbfoods/common/navbar.dart';
-import 'package:pnbfoods/common/tombol.dart';
 import 'package:pnbfoods/common/warna.dart';
-// import 'package:pnbfoods/database/database.dart';
-import 'package:pnbfoods/main.dart';
-import 'package:pnbfoods/models/produk.dart';
 import 'package:pnbfoods/models/kantin.dart';
 import 'package:pnbfoods/pembeli/list_kantin/widget/card_kantin.dart';
-import 'package:pnbfoods/pembeli/list_produk/widget/card_menu.dart';
-import 'package:pnbfoods/penjual/form_produk/form_produk.dart';
-import 'package:pnbfoods/penjual/form_kantin/form_kantin.dart';
-import 'package:pnbfoods/services/produk_service.dart';
+import 'package:pnbfoods/pembeli/list_produk/list_produk.dart';
 import 'package:pnbfoods/services/kantin_service.dart';
-import 'package:pnbfoods/pembeli/list_kantin/widget/banner_kantin.dart';
 
 class ListKantin extends StatefulWidget {
   @override
@@ -25,7 +12,6 @@ class ListKantin extends StatefulWidget {
 
 class _ListKantinState extends State<ListKantin> {
   late Future<List<Kantin>> futureKantin;
-  int _selectedNavbar = 0;
 
   @override
   void initState() {
@@ -37,51 +23,6 @@ class _ListKantinState extends State<ListKantin> {
     setState(() {
       futureKantin = fetchSemuaKantin();
     });
-  }
-
-  void _changeSelectedNavbar(int index) {
-    setState(() {
-      _selectedNavbar = index;
-    });
-  }
-
-  Future<void> _hapusKantin(Kantin kantin) async {
-    final confirm = await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text("Hapus Kantin"),
-        content: Text("Apakah Anda yakin ingin menghapus ${kantin.namaKantin}?"),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: const Text("Batal"),
-          ),
-          TextButton(
-            onPressed: () => Navigator.pop(context, true),
-            style: TextButton.styleFrom(foregroundColor: Colors.red),
-            child: const Text("Hapus"),
-          ),
-        ],
-      ),
-    );
-
-    if (confirm == true) {
-      try {
-        await deleteKantin(kantin.id);
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text("${kantin.namaKantin} berhasil dihapus")),
-          );
-          refreshKantin();
-        }
-      } catch (e) {
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text("Gagal menghapus kantin: $e")),
-          );
-        }
-      }
-    }
   }
 
   @override
@@ -239,18 +180,14 @@ class _ListKantinState extends State<ListKantin> {
                         kategori: kantin.kategori,
                         infoHarga: "Lihat Menu",
                         imageUrl: kantin.fotoUrl ?? 'https://picsum.photos/200?id=${kantin.id}',
-                        onTap: () async {
-                          final result = await Navigator.push(
+                        onTap: () {
+                          Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => FormKantin(kantin: kantin),
+                              builder: (context) => ListProduk(kantin: kantin),
                             ),
                           );
-                          if (result == true) {
-                            refreshKantin();
-                          }
                         },
-                        onLongPress: () => _hapusKantin(kantin),
                       );
                     },
                   );
@@ -272,21 +209,7 @@ class _ListKantinState extends State<ListKantin> {
           ),
         ],
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () async {
-          final result = await Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => const FormKantin(),
-            ),
-          );
-          if (result == true) {
-            refreshKantin();
-          }
-        },
-        backgroundColor: const Color(0xFFF9803B),
-        child: const Icon(Icons.add, color: Colors.white),
-      ),
+
     );
   }
 }

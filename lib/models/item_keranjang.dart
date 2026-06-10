@@ -4,12 +4,14 @@ class ItemKeranjang {
   final int harga;
   final String imageUrl;
   int jumlah;
+  final int? produkId;
 
   ItemKeranjang({
     required this.nama,
     required this.harga,
     required this.imageUrl,
     required this.jumlah,
+    this.produkId,
   });
 
   int get subtotal => harga * jumlah;

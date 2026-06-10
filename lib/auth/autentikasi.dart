@@ -10,6 +10,11 @@ class Autentikasi extends StatelessWidget {
     return prefs.containsKey('userId');
   }
 
+  Future<void> clearsp() async {
+  final prefs = await SharedPreferences.getInstance();
+  await prefs.clear(); 
+}
+
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<bool>(
@@ -20,6 +25,7 @@ class Autentikasi extends StatelessWidget {
         }
         
         if (snapshot.data == true) {
+          // clearsp();
           return HomePengguna(); 
         } else {
           return PilihRole();
