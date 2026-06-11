@@ -7,6 +7,7 @@ class CardKantin extends StatelessWidget {
   final String kategori;
   final String infoHarga;
   final String imageUrl;
+  final int cartItemCount;
   final VoidCallback? onTap;
   final VoidCallback? onLongPress;
 
@@ -16,6 +17,7 @@ class CardKantin extends StatelessWidget {
     required this.kategori,
     required this.infoHarga,
     required this.imageUrl,
+    this.cartItemCount = 0,
     this.onTap,
     this.onLongPress,
   });
@@ -107,6 +109,29 @@ class CardKantin extends StatelessWidget {
                 ],
               ),
             ),
+            if (cartItemCount > 0)
+              Container(
+                padding: EdgeInsets.fromLTRB(12, 5, 12, 5),
+                decoration: BoxDecoration(
+                  color: Warna.warnaAccent,
+                  borderRadius: BorderRadius.circular(25)
+                ),
+                child: Row(
+                  children: [
+                    Icon(Icons.shopping_cart_outlined,
+                      size: 18,
+                      color: Colors.white,
+                    ),
+                    SizedBox(width: 5,),
+                    Text("$cartItemCount",
+                      style: TextStyle(
+                        color: Colors.white
+                      ),
+                    )
+                  ],
+                ),
+              ),
+            SizedBox(width: 10,)
           ],
         ),
       ),

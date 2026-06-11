@@ -3,6 +3,7 @@ import 'package:pnbfoods/common/warna.dart';
 import 'package:pnbfoods/models/kantin.dart';
 import 'package:pnbfoods/pembeli/list_kantin/widget/card_kantin.dart';
 import 'package:pnbfoods/pembeli/list_produk/list_produk.dart';
+import 'package:pnbfoods/services/cart_service.dart';
 import 'package:pnbfoods/services/kantin_service.dart';
 
 class ListKantin extends StatefulWidget {
@@ -180,13 +181,15 @@ class _ListKantinState extends State<ListKantin> {
                         kategori: kantin.kategori,
                         infoHarga: "Lihat Menu",
                         imageUrl: kantin.fotoUrl ?? 'https://picsum.photos/200?id=${kantin.id}',
-                        onTap: () {
-                          Navigator.push(
+                        cartItemCount: CartService().totalItems(kantinId: kantin.id),
+                        onTap: () async {
+                          await Navigator.push(
                             context,
                             MaterialPageRoute(
                               builder: (context) => ListProduk(kantin: kantin),
                             ),
                           );
+                          setState(() {});
                         },
                       );
                     },
