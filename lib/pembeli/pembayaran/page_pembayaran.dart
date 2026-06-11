@@ -153,21 +153,6 @@ class _PembayaranPageState extends State<PembayaranPage> {
           ],
         ),
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        type: BottomNavigationBarType.fixed,
-        currentIndex: 1,
-        selectedItemColor: warnaOrange,
-        unselectedItemColor: Colors.grey,
-        selectedFontSize: 11,
-        unselectedFontSize: 11,
-        showUnselectedLabels: true,
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home_outlined), label: 'Beranda'),
-          BottomNavigationBarItem(icon: Icon(Icons.assignment_outlined), label: 'Order'),
-          BottomNavigationBarItem(icon: Icon(Icons.favorite_border), label: 'Favorit'),
-          BottomNavigationBarItem(icon: Icon(Icons.person_outline), label: 'Akun'),
-        ],
-      ),
     );
   }
 }
