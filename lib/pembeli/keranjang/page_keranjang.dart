@@ -8,7 +8,9 @@ import 'package:pnbfoods/pembeli/pembayaran/page_pembayaran.dart';
 import 'package:pnbfoods/services/cart_service.dart';
 
 class KeranjangPage extends StatefulWidget {
-  const KeranjangPage({super.key});
+  final Kantin kantin;
+
+  const KeranjangPage({super.key, required this.kantin});
 
   @override
   State<KeranjangPage> createState() => _KeranjangPageState();
@@ -103,7 +105,7 @@ class _KeranjangPageState extends State<KeranjangPage> {
             }),
 
             const SizedBox(height: 8),
-            const PengambilanKantin(),
+            PengambilanKantin(namaKantin: widget.kantin.namaKantin),
             const SizedBox(height: 10),
             const MetodePembayaran(),
             const SizedBox(height: 10),

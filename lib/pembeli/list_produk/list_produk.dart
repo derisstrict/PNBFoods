@@ -200,7 +200,7 @@ class _ListProdukState extends State<ListProduk> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => KeranjangPage(),
+                            builder: (context) => KeranjangPage(kantin: widget.kantin,),
                           ),
                         ).then((_) => setState(() {}));
                       },
