@@ -72,7 +72,26 @@ class _ProfilUserState extends State<ProfileUser> {
           return Center(child: CircularProgressIndicator());
         }
         if (snapshot.hasError) {
-          return Center(child: Text('Error: ${snapshot.error}'));
+          return Center(
+            child: Column(
+              spacing: 10,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text('Error: ${snapshot.error}'),
+                TextButton.icon(
+                  onPressed: () {
+                    _showLogoutConfirmationDialog(context);
+                  }, 
+                  style: TextButton.styleFrom(
+                    foregroundColor: Colors.red
+                  ),
+                  label: Text("Logout"),
+                  icon: Icon(Icons.logout),
+                  )
+              ],
+            ),
+          );
+         
         }
         if (snapshot.hasData) {
          final pelanggan = snapshot.data!;
