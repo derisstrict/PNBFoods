@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pnbfoods/models/item_keranjang.dart';
+import 'package:pnbfoods/models/kantin.dart';
 import 'package:pnbfoods/pembeli/keranjang/widget/card_item_keranjang.dart';
 import 'package:pnbfoods/pembeli/keranjang/widget/metode_pembayaran.dart';
 import 'package:pnbfoods/pembeli/keranjang/widget/pengambilan_kantin.dart';
@@ -19,7 +20,7 @@ class KeranjangPage extends StatefulWidget {
 class _KeranjangPageState extends State<KeranjangPage> {
   final Color warnaOrange = const Color(0xFFF9803B);
 
-  List<ItemKeranjang> get keranjang => CartService().getAllItems();
+  List<ItemKeranjang> get keranjang => CartService().getAllItems(kantinId: widget.kantin.id);
 
   int get totalItem => keranjang.fold(0, (sum, item) => sum + item.jumlah);
   int get totalHarga => keranjang.fold(0, (sum, item) => sum + item.subtotal);
@@ -35,7 +36,7 @@ class _KeranjangPageState extends State<KeranjangPage> {
   void tambah(int index) {
     final item = keranjang[index];
     final id = item.produkId ?? item.nama.hashCode;
-    CartService().addOrUpdate(id, item.nama, item.harga, item.imageUrl, item.jumlah + 1);
+    CartService().addOrUpdate(widget.kantin.id, id, item.nama, item.harga, item.imageUrl, item.jumlah + 1);
     setState(() {});
   }
 
@@ -43,7 +44,7 @@ class _KeranjangPageState extends State<KeranjangPage> {
     final item = keranjang[index];
     if (item.jumlah > 1) {
       final id = item.produkId ?? item.nama.hashCode;
-      CartService().addOrUpdate(id, item.nama, item.harga, item.imageUrl, item.jumlah - 1);
+      CartService().addOrUpdate(widget.kantin.id, id, item.nama, item.harga, item.imageUrl, item.jumlah - 1);
       setState(() {});
     }
   }
@@ -51,7 +52,7 @@ class _KeranjangPageState extends State<KeranjangPage> {
   @override
   Widget build(BuildContext context) {
     final items = keranjang;
-
+    final kantin = widget.kantin;
     return Scaffold(
       backgroundColor: const Color(0xFFF5F5F5),
       appBar: PreferredSize(
@@ -129,6 +130,7 @@ class _KeranjangPageState extends State<KeranjangPage> {
                       builder: (context) => PembayaranPage(
                         totalHarga: totalHarga,
                         items: items,
+                        kantinId: widget.kantin.id,
                       ),
                     ),
                   );

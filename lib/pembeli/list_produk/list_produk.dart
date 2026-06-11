@@ -136,7 +136,7 @@ class _ListProdukState extends State<ListProduk> {
                                       itemCount: filterItems.length,
                                       itemBuilder: (context, index) {
                                         final produk = filterItems[index];
-                                        final qty = CartService().getQuantity(produk.id);
+                                        final qty = CartService().getQuantity(widget.kantin.id, produk.id);
                                         return CardProduk(
                                           produk: produk,
                                           appDir: "",
@@ -155,11 +155,13 @@ class _ListProdukState extends State<ListProduk> {
                                             );
                                             if (result != null) {
                                               CartService().addOrUpdate(
+                                                widget.kantin.id,
                                                 produk.id,
                                                 produk.namaProduk,
                                                 produk.hargaProduk,
                                                 produk.fotoUrl ?? '',
-                                                qty + result['quantity'] as int,
+                                                qty + (result['quantity'] as int),
+                                                catatan: result['note'] as String?,
                                               );
                                               setState(() {});
                                             }
@@ -190,7 +192,7 @@ class _ListProdukState extends State<ListProduk> {
                     ),
                   ),
                 ),
-                if (!CartService().isEmpty)
+                if (!CartService().isEmpty(kantinId: widget.kantin.id))
                   Positioned(
                     bottom: 20,
                     left: 15,
@@ -217,13 +219,13 @@ class _ListProdukState extends State<ListProduk> {
                               Icons.shopping_cart_outlined,
                               color: Colors.white,
                             ),
-                            Text("${CartService().totalItems} Item",
+                            Text("${CartService().totalItems(kantinId: widget.kantin.id)} Item",
                               style: TextStyle(
                                 color: Colors.white
                               ),
                             ),
                             Spacer(),
-                            Text(formatRupiah(CartService().totalHarga),
+                            Text(formatRupiah(CartService().totalHarga(kantinId: widget.kantin.id)),
                               style: TextStyle(
                                 color: Colors.white,
                                 fontWeight: FontWeight.w300
