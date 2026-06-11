@@ -34,7 +34,7 @@ class _ListProdukState extends State<ListProduk> {
   @override
   void initState() {
     super.initState();
-    futureProduk = fetchProdukByKantin(widget.kantin.id);
+    futureProduk = fetchProdukByPenjual(widget.kantin.idPenjual);
   }
 
   @override

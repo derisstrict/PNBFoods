@@ -21,16 +21,6 @@ Future<Produk> fetchProduk(int id) async {
   }
 }
 
-Future<Produk> fetchProdukDariIdPenjual(int id) async {
-  final response = await dio.get('produk/penjual/$id');
-
-  if (response.statusCode == 200) {
-    return Produk.fromJson(response.data['data']);
-  } else {
-    throw Exception('Gagal mengambil produk');
-  }
-}
-
 Future<List<Produk>> fetchSemuaProduk() async {
   final response = await dio.get('produk');
 
@@ -43,8 +33,8 @@ Future<List<Produk>> fetchSemuaProduk() async {
   }
 }
 
-Future<List<Produk>> fetchProdukByKantin(int kantinId) async {
-  final response = await dio.get('produk/penjual/$kantinId');
+Future<List<Produk>> fetchProdukByPenjual(int id) async {
+  final response = await dio.get('produk/penjual/$id');
 
   if (response.statusCode == 200) {
     final List<dynamic> data = response.data['data'];

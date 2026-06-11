@@ -4,6 +4,7 @@ class Kantin {
   final String? fotoKantin;
   final String? fotoUrl;
   final String kategori;
+  final int idPenjual;
 
   const Kantin({
     required this.id,
@@ -11,6 +12,7 @@ class Kantin {
     required this.fotoKantin,
     required this.fotoUrl,
     required this.kategori,
+    required this.idPenjual,
   });
 
   factory Kantin.fromJson(Map<String, dynamic> json) {
@@ -20,6 +22,7 @@ class Kantin {
       fotoKantin: json['foto_kantin'] as String?,
       fotoUrl: json['foto_url'] as String?,
       kategori: json['kategori'] as String,
+      idPenjual: json['penjual_id'] as int
     );
   }
 }
