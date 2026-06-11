@@ -50,7 +50,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Logo
-              Center(child: Image.asset('assets/img/Logo.png', height: 200)),
+              Center(child: Image.asset('assets/img/logo.png', height: 200)),
               const SizedBox(height: 30),
 
               // Judul
