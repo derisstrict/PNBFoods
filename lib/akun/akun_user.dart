@@ -5,6 +5,7 @@ import 'package:pnbfoods/auth/role_page.dart';
 import 'package:pnbfoods/common/warna.dart';
 import 'package:pnbfoods/akun/edit_user.dart';
 import 'package:pnbfoods/models/pelanggan.dart';
+import 'package:pnbfoods/services/cart_service.dart';
 import 'package:pnbfoods/services/pelanggan_service.dart';
 import 'package:pnbfoods/models/penjual.dart';
 import 'package:pnbfoods/services/penjual_service.dart';
@@ -489,6 +490,7 @@ class _ProfilUserState extends State<ProfileUser> {
     try {
       if (rolePengguna == 'pelanggan') {
         await logoutPelanggan();
+        CartService().clear();
       } else {
         await logoutPenjual();
       }
