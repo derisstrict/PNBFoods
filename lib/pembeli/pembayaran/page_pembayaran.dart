@@ -3,15 +3,22 @@ import 'package:pnbfoods/models/item_keranjang.dart';
 import 'package:pnbfoods/pembeli/pembayaran/widget/countdown_kadaluwarsa.dart';
 import 'package:pnbfoods/pembeli/pembayaran/widget/qris_box.dart';
 import 'package:pnbfoods/pembeli/pembayaran/widget/tombol_pembayaran.dart';
+import 'package:pnbfoods/services/cart_service.dart';
+import 'package:pnbfoods/services/detail_orderan_service.dart';
+import 'package:pnbfoods/services/orderan_service.dart';
+import 'package:pnbfoods/services/pembayaran_service.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class PembayaranPage extends StatefulWidget {
   final int totalHarga;
   final List<ItemKeranjang> items;
+  final int kantinId;
 
   const PembayaranPage({
     super.key,
     required this.totalHarga,
     required this.items,
+    required this.kantinId,
   });
 
   @override
@@ -92,23 +99,59 @@ class _PembayaranPageState extends State<PembayaranPage> {
             TombolPembayaran(
               onKembali: () => Navigator.pop(context),
             ),
+            const SizedBox(height: 12),
+            SizedBox(
+              width: double.infinity,
+              height: 50,
+              child: ElevatedButton(
+                onPressed: () async {
+                  final prefs = await SharedPreferences.getInstance();
+                  final pelangganId = prefs.getInt('userId');
+                  if (pelangganId == null) return;
+
+                  final orderan = await postOrderan(
+                    statusOrderan: 'diproses',
+                    totalHarga: widget.totalHarga.toDouble(),
+                    tanggalOrderan: DateTime.now(),
+                    pelangganId: pelangganId,
+                  );
+
+                  for (final item in widget.items) {
+                    await postDetailOrderan(
+                      orderanId: orderan.id,
+                      produkId: item.produkId ?? 0,
+                      jumlah: item.jumlah,
+                      catatan: item.catatan,
+                    );
+                  }
+
+                  await postPembayaran(
+                    orderanId: orderan.id,
+                    metodePembayaran: 'QRIS',
+                    totalPembayaran: widget.totalHarga.toDouble(),
+                    statusPembayaran: 'lunas',
+                  );
+
+                  CartService().clear(kantinId: widget.kantinId);
+                  if (context.mounted) {
+                    Navigator.of(context).popUntil((route) => route.isFirst);
+                  }
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.red.shade400,
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(15),
+                  ),
+                ),
+                child: const Text(
+                  "Selesaikan Pembayaran",
+                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+                ),
+              ),
+            ),
           ],
         ),
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        type: BottomNavigationBarType.fixed,
-        currentIndex: 1,
-        selectedItemColor: warnaOrange,
-        unselectedItemColor: Colors.grey,
-        selectedFontSize: 11,
-        unselectedFontSize: 11,
-        showUnselectedLabels: true,
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home_outlined), label: 'Beranda'),
-          BottomNavigationBarItem(icon: Icon(Icons.assignment_outlined), label: 'Order'),
-          BottomNavigationBarItem(icon: Icon(Icons.favorite_border), label: 'Favorit'),
-          BottomNavigationBarItem(icon: Icon(Icons.person_outline), label: 'Akun'),
-        ],
       ),
     );
   }

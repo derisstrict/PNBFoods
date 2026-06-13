@@ -33,6 +33,18 @@ Future<List<Produk>> fetchSemuaProduk() async {
   }
 }
 
+Future<List<Produk>> fetchProdukByPenjual(int id) async {
+  final response = await dio.get('produk/penjual/$id');
+
+  if (response.statusCode == 200) {
+    final List<dynamic> data = response.data['data'];
+    List<Produk> daftarProduk = data.map((item) => Produk.fromJson(item as Map<String, dynamic>)).toList();
+    return daftarProduk;
+  } else {
+    throw Exception('Gagal mengambil produk kantin');
+  }
+}
+
 Future<void> postProduk({
   required String namaProduk,
   required String deskripsiProduk,

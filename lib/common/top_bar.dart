@@ -78,6 +78,14 @@ class TopBarHeader extends StatelessWidget {
                   visible: style == pembeli,
                   child: Row(
                     children: [
+                      IconButton(
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                        icon: Icon(Icons.arrow_back,
+                          color: Colors.white,
+                        )
+                      ),
                       ClipRRect(
                         borderRadius: BorderRadiusGeometry.circular(15),
                         child: FlutterLogo(),

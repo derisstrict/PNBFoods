@@ -5,6 +5,7 @@ import 'package:pnbfoods/auth/role_page.dart';
 import 'package:pnbfoods/common/warna.dart';
 import 'package:pnbfoods/akun/edit_user.dart';
 import 'package:pnbfoods/models/pelanggan.dart';
+import 'package:pnbfoods/services/cart_service.dart';
 import 'package:pnbfoods/services/pelanggan_service.dart';
 import 'package:pnbfoods/models/penjual.dart';
 import 'package:pnbfoods/services/penjual_service.dart';
@@ -72,7 +73,26 @@ class _ProfilUserState extends State<ProfileUser> {
           return Center(child: CircularProgressIndicator());
         }
         if (snapshot.hasError) {
-          return Center(child: Text('Error: ${snapshot.error}'));
+          return Center(
+            child: Column(
+              spacing: 10,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text('Error: ${snapshot.error}'),
+                TextButton.icon(
+                  onPressed: () {
+                    _showLogoutConfirmationDialog(context);
+                  }, 
+                  style: TextButton.styleFrom(
+                    foregroundColor: Colors.red
+                  ),
+                  label: Text("Logout"),
+                  icon: Icon(Icons.logout),
+                  )
+              ],
+            ),
+          );
+         
         }
         if (snapshot.hasData) {
          final pelanggan = snapshot.data!;
@@ -470,6 +490,7 @@ class _ProfilUserState extends State<ProfileUser> {
     try {
       if (rolePengguna == 'pelanggan') {
         await logoutPelanggan();
+        CartService().clear();
       } else {
         await logoutPenjual();
       }

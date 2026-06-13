@@ -1,12 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:pnbfoods/akun/akun_user.dart';
-import 'package:pnbfoods/auth/role_page.dart';
 import 'package:pnbfoods/common/navbar.dart';
 import 'package:pnbfoods/common/warna.dart';
 import 'package:pnbfoods/pembeli/list_kantin/list_kantin.dart';
-import 'package:pnbfoods/pembeli/list_produk/list_produk.dart';
 import 'package:pnbfoods/pembeli/order/page_order.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class HomePengguna extends StatefulWidget {
   @override
@@ -20,7 +17,7 @@ class _HomeState extends State<HomePengguna> {
   List<Widget> halaman = [
     ListKantin(),
     OrderPage(),
-    ListProduk(),
+    const Center(child: Text("Favorit", style: TextStyle(fontSize: 16))),
     ProfileUser()
     // PilihRole()
   ];

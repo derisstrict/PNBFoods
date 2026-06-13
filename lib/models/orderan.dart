@@ -5,12 +5,14 @@ class Orderan {
   final DateTime tanggalOrderan;
   final DateTime? createdAt;
   final DateTime? updatedAt;
+  final int pelangganId;
 
   const Orderan({
     required this.id,
     required this.statusOrderan,
     required this.totalHarga,
     required this.tanggalOrderan,
+    required this.pelangganId,
     this.createdAt,
     this.updatedAt,
   });
@@ -21,6 +23,7 @@ class Orderan {
       statusOrderan: json['status_orderan'] as String,
       totalHarga: (json['total_harga'] as num).toDouble(),
       tanggalOrderan: DateTime.parse(json['tanggal_orderan'] as String),
+      pelangganId: json['pelanggan_id'],
       createdAt: json['created_at'] != null
           ? DateTime.parse(json['created_at'] as String)
           : null,

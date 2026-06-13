@@ -91,7 +91,7 @@ class CardItemKeranjang extends StatelessWidget {
                 height: 32,
                 decoration: BoxDecoration(
                   color: warnaOrange,
-                  shape: BoxShape.circle,
+                  borderRadius: BorderRadius.circular(12),
                 ),
                 alignment: Alignment.center,
                 child: Text(
