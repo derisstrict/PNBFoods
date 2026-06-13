@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pnbfoods/akun/akun_user.dart';
 import 'package:pnbfoods/common/warna.dart';
 
 class TopBar extends StatelessWidget implements PreferredSizeWidget{
@@ -98,12 +99,44 @@ class TopBarHeader extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(text1,
-                      style: TextStyle(fontWeight: style == "pembeli" ? FontWeight.w500 : FontWeight.w200, color: Colors.white, fontSize: style == "pembeli" ? 16.0 : 12.0),
+                      style: TextStyle(fontWeight: style == "Pembeli" ? FontWeight.w500 : FontWeight.w200, color: Colors.white, fontSize: style == "Pembeli" ? 16.0 : 12.0),
                     ),
                     SizedBox(height: 5,),
-                    Text(text2,
-                      style: TextStyle(fontWeight: style == "pembeli" ? FontWeight.w200 : FontWeight.w500, color: Colors.white, fontSize: style == "pembeli" ? 12.0 : 16.0),
-                    ),
+                    if (style == "Pembeli")
+                      Text(text2,
+                        style: TextStyle(fontWeight: FontWeight.w200, 
+                        color: Colors.white, 
+                        fontSize: 12.0),
+                      ),
+
+                    if (style == "Penjual")
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.push(context, MaterialPageRoute(builder: (context) => ProfileUser()));
+                        },
+                        child: Container(
+                          padding: EdgeInsets.fromLTRB(15, 5, 15, 5),
+                          decoration: BoxDecoration(
+                            color: Colors.white12,
+                            borderRadius: BorderRadius.circular(25)
+                          ),
+                          child: Row(
+                            children: [
+                              SizedBox(width: 5,),
+                              Text(text2,
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w300, 
+                                  color: Colors.white, 
+                                  fontSize: 16.0
+                                ),
+                              ),
+                              Icon(Icons.keyboard_arrow_right_outlined,
+                                color: Colors.white,
+                              )
+                            ],
+                          )
+                        ),
+                      )
                   ],
                 )
               ],
