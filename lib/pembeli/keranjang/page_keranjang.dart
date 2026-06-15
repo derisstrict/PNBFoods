@@ -42,11 +42,13 @@ class _KeranjangPageState extends State<KeranjangPage> {
 
   void kurang(int index) {
     final item = keranjang[index];
-    if (item.jumlah > 1) {
-      final id = item.produkId ?? item.nama.hashCode;
+    final id = item.produkId ?? item.nama.hashCode;
+    if (item.jumlah <= 1) {
+      CartService().removeItem(widget.kantin.id, id);
+    } else {
       CartService().addOrUpdate(widget.kantin.id, id, item.nama, item.harga, item.imageUrl, item.jumlah - 1);
-      setState(() {});
     }
+    setState(() {});
   }
 
   @override
