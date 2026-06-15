@@ -55,7 +55,7 @@ class _ListProdukState extends State<ListProduk> {
                     child: Column(
                       children: [
                         TopBarHeader(
-                          width: screenWidth,
+                          width: double.infinity,
                           style: TopBarHeader.pembeli,
                           text1: widget.kantin.namaKantin,
                           text2: widget.kantin.kategori,
