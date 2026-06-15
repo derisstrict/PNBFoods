@@ -13,6 +13,14 @@ class CardProduk extends StatelessWidget {
 
   const CardProduk({super.key, required this.produk, required this.appDir, required this.width, this.isAccent = false, this.cartCount = 0, this.isEditable = false, required this.onTap});
 
+  String formatRupiah(int nilai) {
+    final formatted = nilai.toString().replaceAllMapped(
+      RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
+      (m) => '${m[1]}.',
+    );
+    return 'Rp. $formatted';
+  }
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -53,7 +61,7 @@ class CardProduk extends StatelessWidget {
                 ),
                 Row(
                   children: [
-                    Text("Rp. ${produk.hargaProduk}",
+                    Text(formatRupiah(produk.hargaProduk),
                       style: TextStyle(
                         color: isAccent ? Colors.white : Warna.warnaAccent,
                         fontWeight: FontWeight.w500
