@@ -125,7 +125,7 @@ class _LoginPageState extends State<LoginPage> {
       //   ),
       // );
 
-      Navigator.push(context, MaterialPageRoute(builder: (context) => Autentikasi()));
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Autentikasi()));
 
     } on DioException catch (e) {
       final pesan = e.response?.data['message'] ?? 'Login gagal';
