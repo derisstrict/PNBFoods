@@ -27,8 +27,9 @@ class _FormProdukState extends State<FormProduk> {
   TextEditingController? deskripsi;
   TextEditingController? stok;
   File? _gambar;
+  String? _memStok;
 
-  bool _nilaiCheckbox = false;
+  bool? _nilaiCheckbox;
   String? _kategori;
 
   // String? _appDirPath = "";
@@ -55,6 +56,8 @@ class _FormProdukState extends State<FormProduk> {
       text: widget.produk == null ? "1" : widget.produk!.stok.toString()
     );
     _kategori = widget.produk == null ? "Makanan" : widget.produk!.kategoriProduk;
+    _nilaiCheckbox = stok!.text != "-1";
+    _memStok = widget.produk!.stok == -1 ? "1" : widget.produk!.stok.toString();
     super.initState();
     _initPath();
   }
@@ -173,10 +176,18 @@ class _FormProdukState extends State<FormProduk> {
                           ),
                           Stok(
                             controller: stok!,
-                            checkboxValue: _nilaiCheckbox,
+                            checkboxValue: _nilaiCheckbox!,
                             enabled: (value) {
                               setState(() {
                                 _nilaiCheckbox = value;
+                                if (!value) {
+                                  if (stok!.text != "-1") {
+                                    _memStok = stok!.text;
+                                  }
+                                  stok!.text = "-1";
+                                } else {
+                                  stok!.text = _memStok!;
+                                }
                               });
                             },
                             onPressedMinus: () {
