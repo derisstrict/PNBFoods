@@ -21,6 +21,9 @@ class ListProduk extends StatefulWidget {
 
 class _ListProdukState extends State<ListProduk> {
   String _filterMakanan = "";
+  String _searchQuery = "";
+  String? _searchHint;
+  final _searchController = TextEditingController();
   late Future<List<Produk>> futureProduk;
 
   String formatRupiah(int nilai) {
@@ -34,7 +37,19 @@ class _ListProdukState extends State<ListProduk> {
   @override
   void initState() {
     super.initState();
-    futureProduk = fetchProdukByPenjual(widget.kantin.idPenjual);
+    futureProduk = fetchProdukByPenjual(widget.kantin.idPenjual).then((list) {
+      if (list.isNotEmpty) {
+        final random = list[DateTime.now().millisecondsSinceEpoch % list.length];
+        _searchHint = random.namaProduk;
+      }
+      return list;
+    });
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
   }
 
   @override
@@ -59,6 +74,11 @@ class _ListProdukState extends State<ListProduk> {
                           style: TopBarHeader.pembeli,
                           text1: widget.kantin.namaKantin,
                           text2: widget.kantin.kategori,
+                          searchController: _searchController,
+                          searchHint: _searchHint,
+                          onSearchChanged: (value) {
+                            setState(() => _searchQuery = value);
+                          },
                         ),
                         Container(
                           margin: EdgeInsets.all(10),
@@ -125,8 +145,9 @@ class _ListProdukState extends State<ListProduk> {
                                     final items = snapshot.data!;
 
                                     final filterItems = items.where((produk) {
-                                      if (_filterMakanan == "") return true;
-                                      return produk.kategoriProduk == _filterMakanan;
+                                      if (_filterMakanan != "" && produk.kategoriProduk != _filterMakanan) return false;
+                                      if (_searchQuery.isNotEmpty && !produk.namaProduk.toLowerCase().contains(_searchQuery.toLowerCase())) return false;
+                                      return true;
                                     }).toList();
 
                                     return MasonryGridView.builder(

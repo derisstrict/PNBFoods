@@ -50,15 +50,17 @@ class TopBarHeader extends StatelessWidget {
   final String style;
   final String text1;
   final String text2;
+  final TextEditingController? searchController;
+  final ValueChanged<String>? onSearchChanged;
+  final String? searchHint;
 
   static const String pembeli = "Pembeli";
   static const String penjual = "Penjual";
 
-  const TopBarHeader({super.key, required this.width, required this.style, required this.text1, required this.text2});
+  const TopBarHeader({super.key, required this.width, required this.style, required this.text1, required this.text2, this.searchController, this.onSearchChanged, this.searchHint});
 
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
     return Container(
       width: width,
       height: 150,
@@ -152,11 +154,24 @@ class TopBarHeader extends StatelessWidget {
                 children: [
                   Icon(Icons.search_outlined, color: Color(0xFFF9803B),),
                   SizedBox(width: 5,),
-                  Text("Nasi Goreng",
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: Colors.black38
-                  ),),
+                  Expanded(
+                    child: searchController != null
+                      ? TextField(
+                          controller: searchController,
+                          onChanged: onSearchChanged,
+                          style: TextStyle(fontSize: 12, color: Colors.black),
+                          decoration: InputDecoration(
+                            hintText: searchHint ?? "Nasi Goreng",
+                            hintStyle: TextStyle(fontSize: 12, color: Colors.black38),
+                            border: InputBorder.none,
+                            isDense: true,
+                            contentPadding: EdgeInsets.zero,
+                          ),
+                        )
+                      : Text(searchHint ?? "Nasi Goreng",
+                          style: TextStyle(fontSize: 12, color: Colors.black38),
+                        ),
+                  ),
                   Spacer(),
                   Text("cari di kantin ini", 
                     style: TextStyle(
