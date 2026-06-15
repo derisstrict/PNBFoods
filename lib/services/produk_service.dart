@@ -51,6 +51,7 @@ Future<void> postProduk({
   required int hargaProduk,
   required String kategoriProduk,
   required int stok,
+  required int penjualId,
   required File fotoProduk,
 }) async {
   FormData formData = FormData.fromMap({
@@ -59,6 +60,7 @@ Future<void> postProduk({
     'deskripsi_produk': deskripsiProduk,
     'kategori_produk': kategoriProduk,
     'stok': stok,
+    'penjual_id': penjualId,
     'foto_produk': await MultipartFile.fromFile(
       fotoProduk.path,
       filename: fotoProduk.path.split('/').last,
@@ -92,6 +94,7 @@ Future<void> updateProduk({
   required int hargaProduk,
   required String kategoriProduk,
   required int stok,
+  required int penjualId,
   File? fotoProduk,
 }) async {
 
@@ -102,6 +105,7 @@ Future<void> updateProduk({
     'deskripsi_produk': deskripsiProduk,
     'kategori_produk': kategoriProduk,
     'stok': stok,
+    'penjual_id': penjualId
   };
 
   if (fotoProduk != null) {

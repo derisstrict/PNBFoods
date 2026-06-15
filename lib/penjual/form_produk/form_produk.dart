@@ -9,6 +9,7 @@ import 'package:pnbfoods/common/top_bar.dart';
 import 'package:pnbfoods/common/warna.dart';
 import 'package:pnbfoods/models/produk.dart';
 import 'package:pnbfoods/services/produk_service.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class FormProduk extends StatefulWidget {
   final Produk? produk;
@@ -247,6 +248,9 @@ class _FormProdukState extends State<FormProduk> {
       return;
     }
 
+    final prefs = await SharedPreferences.getInstance();
+    final penjual_id = prefs.getInt('userId');
+
     try {
       if (widget.produk == null) {
         await postProduk(
@@ -255,6 +259,7 @@ class _FormProdukState extends State<FormProduk> {
           hargaProduk: int.parse(harga!.text), 
           kategoriProduk: _kategori!, 
           stok: int.parse(stok!.text), 
+          penjualId: penjual_id!,
           fotoProduk: _gambar!
         );
         Navigator.pop(context, true);
@@ -266,6 +271,7 @@ class _FormProdukState extends State<FormProduk> {
           hargaProduk: int.parse(harga!.text), 
           kategoriProduk: _kategori!, 
           stok: int.parse(stok!.text),
+          penjualId: penjual_id!,
           fotoProduk: _gambar
         );
         Navigator.pop(context, true);
