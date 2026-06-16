@@ -178,9 +178,9 @@ class _ListKantinState extends State<ListKantin> {
                         ),
                         Spacer(),
                         Icon(
-                          Icons.restaurant,
+                          Icons.store_mall_directory_rounded,
                           color: Warna.warnaAccent,
-                          size: 20,
+                          size: 24,
                         ),
                       ],
                     ),
