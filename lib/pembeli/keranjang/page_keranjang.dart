@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pnbfoods/common/top_bar.dart';
 import 'package:pnbfoods/models/item_keranjang.dart';
 import 'package:pnbfoods/models/kantin.dart';
 import 'package:pnbfoods/pembeli/keranjang/widget/card_item_keranjang.dart';
@@ -57,35 +58,7 @@ class _KeranjangPageState extends State<KeranjangPage> {
     final kantin = widget.kantin;
     return Scaffold(
       backgroundColor: const Color(0xFFF5F5F5),
-      appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(kToolbarHeight),
-        child: ClipRRect(
-          borderRadius: const BorderRadius.only(
-            bottomLeft: Radius.circular(20),
-            bottomRight: Radius.circular(20),
-          ),
-          child: AppBar(
-            backgroundColor: warnaOrange,
-            foregroundColor: Colors.white,
-            centerTitle: true,
-            title: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: const [
-                Icon(Icons.shopping_cart_outlined, size: 20),
-                SizedBox(width: 8),
-                Text(
-                  'Keranjang',
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
-                ),
-              ],
-            ),
-            leading: IconButton(
-              icon: const Icon(Icons.arrow_back),
-              onPressed: () => Navigator.pop(context),
-            ),
-          ),
-        ),
-      ),
+      appBar: TopBar(title: "Keranjang", icon: Icons.shopping_cart_outlined,),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -124,7 +97,7 @@ class _KeranjangPageState extends State<KeranjangPage> {
 
             SizedBox(
               width: double.infinity,
-              child: ElevatedButton(
+              child: TextButton(
                 onPressed: () {
                   Navigator.push(
                     context,
@@ -137,7 +110,7 @@ class _KeranjangPageState extends State<KeranjangPage> {
                     ),
                   );
                 },
-                style: ElevatedButton.styleFrom(
+                style: TextButton.styleFrom(
                   backgroundColor: warnaOrange,
                   foregroundColor: Colors.white,
                   padding: const EdgeInsets.symmetric(vertical: 16),
