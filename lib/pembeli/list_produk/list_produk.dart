@@ -80,6 +80,7 @@ class _ListProdukState extends State<ListProduk> {
                           onSearchChanged: (value) {
                             setState(() => _searchQuery = value);
                           },
+                          kantin: widget.kantin,
                         ),
                         Container(
                           margin: EdgeInsets.all(10),

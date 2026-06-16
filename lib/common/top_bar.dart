@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:pnbfoods/akun/akun_user.dart';
 import 'package:pnbfoods/common/warna.dart';
+import 'package:pnbfoods/models/kantin.dart';
 
 class TopBar extends StatelessWidget implements PreferredSizeWidget{
   final String title;
@@ -53,11 +54,12 @@ class TopBarHeader extends StatelessWidget {
   final TextEditingController? searchController;
   final ValueChanged<String>? onSearchChanged;
   final String? searchHint;
+  final Kantin? kantin;
 
   static const String pembeli = "Pembeli";
   static const String penjual = "Penjual";
 
-  const TopBarHeader({super.key, required this.width, required this.style, required this.text1, required this.text2, this.searchController, this.onSearchChanged, this.searchHint});
+  const TopBarHeader({super.key, required this.width, required this.style, required this.text1, required this.text2, this.searchController, this.onSearchChanged, this.searchHint, this.kantin});
 
   @override
   Widget build(BuildContext context) {
@@ -91,7 +93,16 @@ class TopBarHeader extends StatelessWidget {
                       ),
                       ClipRRect(
                         borderRadius: BorderRadiusGeometry.circular(15),
-                        child: FlutterLogo(),
+                        child: ClipRRect(
+                          borderRadius: BorderRadiusGeometry.circular(10),
+                          child: Container(
+                            child: kantin!.fotoUrl == "" || kantin!.fotoUrl == null 
+                            ? 
+                            Icon(Icons.image_rounded, size: 30, color: Colors.white,) 
+                            : 
+                            Image.network(kantin!.fotoUrl!, fit: BoxFit.cover, width: double.infinity, height: 220, cacheHeight: 400,),
+                          ) 
+                        ),
                       ),
                       SizedBox(width: 10,),
                     ],
