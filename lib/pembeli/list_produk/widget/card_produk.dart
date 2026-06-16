@@ -81,7 +81,7 @@ class CardProduk extends StatelessWidget {
                             child: Text("$cartCount", 
                             style: TextStyle(
                               fontSize: 12,
-                              color: Color(0xFFF9803B)
+                              color: Warna.warnaAccent
                             ),),
                           )
                         ],

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pnbfoods/common/warna.dart';
 import 'package:pnbfoods/models/item_keranjang.dart';
 
 class CardItemKeranjang extends StatelessWidget {
@@ -6,7 +7,6 @@ class CardItemKeranjang extends StatelessWidget {
   final String Function(int) formatRupiah;
   final VoidCallback onTambah;
   final VoidCallback onKurang;
-  final Color warnaOrange;
 
   const CardItemKeranjang({
     super.key,
@@ -14,7 +14,6 @@ class CardItemKeranjang extends StatelessWidget {
     required this.formatRupiah,
     required this.onTambah,
     required this.onKurang,
-    required this.warnaOrange,
   });
 
   @override
@@ -67,7 +66,7 @@ class CardItemKeranjang extends StatelessWidget {
                 Text(
                   'x${item.jumlah}  ${formatRupiah(item.subtotal)}',
                   style: TextStyle(
-                    color: warnaOrange,
+                    color: Warna.warnaAccent,
                     fontWeight: FontWeight.w600,
                     fontSize: 13,
                   ),
@@ -90,7 +89,7 @@ class CardItemKeranjang extends StatelessWidget {
                 width: 32,
                 height: 32,
                 decoration: BoxDecoration(
-                  color: warnaOrange,
+                  color: Warna.warnaAccent,
                   borderRadius: BorderRadius.circular(12),
                 ),
                 alignment: Alignment.center,

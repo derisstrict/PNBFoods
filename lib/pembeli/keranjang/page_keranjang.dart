@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pnbfoods/common/top_bar.dart';
+import 'package:pnbfoods/common/warna.dart';
 import 'package:pnbfoods/models/item_keranjang.dart';
 import 'package:pnbfoods/models/kantin.dart';
 import 'package:pnbfoods/pembeli/keranjang/widget/card_item_keranjang.dart';
@@ -19,8 +20,6 @@ class KeranjangPage extends StatefulWidget {
 }
 
 class _KeranjangPageState extends State<KeranjangPage> {
-  final Color warnaOrange = const Color(0xFFF9803B);
-
   List<ItemKeranjang> get keranjang => CartService().getAllItems(kantinId: widget.kantin.id);
 
   int get totalItem => keranjang.fold(0, (sum, item) => sum + item.jumlah);
@@ -76,7 +75,6 @@ class _KeranjangPageState extends State<KeranjangPage> {
                 formatRupiah: formatRupiah,
                 onTambah: () => tambah(index),
                 onKurang: () => kurang(index),
-                warnaOrange: warnaOrange,
               );
             }),
 
@@ -90,7 +88,6 @@ class _KeranjangPageState extends State<KeranjangPage> {
               keranjang: items,
               totalHarga: totalHarga,
               formatRupiah: formatRupiah,
-              warnaOrange: warnaOrange,
             ),
 
             const SizedBox(height: 20),
@@ -111,7 +108,7 @@ class _KeranjangPageState extends State<KeranjangPage> {
                   );
                 },
                 style: TextButton.styleFrom(
-                  backgroundColor: warnaOrange,
+                  backgroundColor: Warna.warnaAccent,
                   foregroundColor: Colors.white,
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   shape: RoundedRectangleBorder(

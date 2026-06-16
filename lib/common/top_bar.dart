@@ -83,7 +83,7 @@ class TopBarHeader extends StatelessWidget {
       width: width,
       height: 130,
       decoration: BoxDecoration(
-        color: Color(0xFFF9803B),
+        color: Warna.warnaAccent,
         borderRadius: BorderRadius.only(
           bottomLeft: Radius.circular(25),
           bottomRight: Radius.circular(25)
@@ -179,7 +179,7 @@ class TopBarHeader extends StatelessWidget {
               ),
               child: Row(
                 children: [
-                  Icon(Icons.search_outlined, color: Color(0xFFF9803B),),
+                  Icon(Icons.search_outlined, color: Warna.warnaAccent,),
                   SizedBox(width: 5,),
                   Expanded(
                     child: searchController != null
@@ -202,7 +202,7 @@ class TopBarHeader extends StatelessWidget {
                   Text("cari di kantin ini", 
                     style: TextStyle(
                       fontSize: 10,
-                      color: Color(0xFFF9803B)
+                      color: Warna.warnaAccent
                     ),)
                 ],
               ),

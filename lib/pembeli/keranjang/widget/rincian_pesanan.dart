@@ -1,18 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:pnbfoods/common/warna.dart';
 import 'package:pnbfoods/models/item_keranjang.dart';
 
 class RincianPesanan extends StatelessWidget {
   final List<ItemKeranjang> keranjang;
   final int totalHarga;
   final String Function(int) formatRupiah;
-  final Color warnaOrange;
 
   const RincianPesanan({
     super.key,
     required this.keranjang,
     required this.totalHarga,
     required this.formatRupiah,
-    required this.warnaOrange,
   });
 
   @override
@@ -52,7 +51,7 @@ class RincianPesanan extends StatelessWidget {
               Text(
                 formatRupiah(totalHarga),
                 style: TextStyle(
-                    fontWeight: FontWeight.bold, color: warnaOrange),
+                    fontWeight: FontWeight.w600, color: Warna.warnaAccent),
               ),
             ],
           ),
