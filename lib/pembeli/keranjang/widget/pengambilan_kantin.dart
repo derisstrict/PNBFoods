@@ -18,7 +18,7 @@ class PengambilanKantin extends StatelessWidget {
         children: [
           const Text(
             'Pengambilan di Kantin',
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+            style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
           ),
           const SizedBox(height: 10),
           Row(

@@ -7,7 +7,7 @@ import 'package:pnbfoods/common/tombol.dart';
 import 'package:pnbfoods/common/top_bar.dart';
 import 'package:pnbfoods/common/warna.dart';
 import 'package:pnbfoods/models/produk.dart';
-import 'package:pnbfoods/pembeli/list_produk/widget/card_menu.dart';
+import 'package:pnbfoods/pembeli/list_produk/widget/card_produk.dart';
 import 'package:pnbfoods/penjual/dashboard/widgets/text_heading.dart';
 import 'package:pnbfoods/penjual/form_produk/form_produk.dart';
 import 'package:pnbfoods/services/produk_service.dart';

@@ -97,7 +97,7 @@ class CardItemKeranjang extends StatelessWidget {
                   '${item.jumlah}',
                   style: const TextStyle(
                     color: Colors.white,
-                    fontWeight: FontWeight.bold,
+                    fontWeight: FontWeight.w600,
                   ),
                 ),
               ),

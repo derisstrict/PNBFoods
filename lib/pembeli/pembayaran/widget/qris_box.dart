@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:pnbfoods/common/warna.dart';
 
 class QrisBox extends StatelessWidget {
   final int totalHarga;
-  final Color warnaOrange;
   final VoidCallback onSimpanQr;
 
   const QrisBox({
     super.key,
     required this.totalHarga,
-    required this.warnaOrange,
     required this.onSimpanQr,
   });
 
@@ -60,17 +59,18 @@ class QrisBox extends StatelessWidget {
           const SizedBox(height: 16),
           SizedBox(
             width: double.infinity,
-            child: ElevatedButton.icon(
+            height: 40,
+            child: TextButton.icon(
               onPressed: onSimpanQr,
               icon: const Icon(Icons.download),
               label: const Text(
                 'Simpan Kode QR',
-                style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
               ),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: warnaOrange,
+              style: TextButton.styleFrom(
+                backgroundColor: Warna.warnaAccent,
                 foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(vertical: 14),
+                padding: EdgeInsets.fromLTRB(0, 15, 0, 15),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),

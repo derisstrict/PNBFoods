@@ -27,7 +27,7 @@ class RincianPesanan extends StatelessWidget {
         children: [
           const Text(
             'Rincian Pesanan',
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+            style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
           ),
           const SizedBox(height: 10),
           ...keranjang.map((item) => Padding(
@@ -47,7 +47,7 @@ class RincianPesanan extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               const Text('Total Pembayaran',
-                  style: TextStyle(fontWeight: FontWeight.bold)),
+                  style: TextStyle(fontWeight: FontWeight.w600)),
               Text(
                 formatRupiah(totalHarga),
                 style: TextStyle(
