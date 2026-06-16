@@ -5,19 +5,35 @@ import 'package:pnbfoods/models/kantin.dart';
 
 class TopBar extends StatelessWidget implements PreferredSizeWidget{
   final String title;
+  final IconData? icon;
 
-  const TopBar({super.key, required this.title});
+  const TopBar({super.key, required this.title, this.icon});
 
   @override
   Widget build(BuildContext context) {
     return AppBar(
       backgroundColor: Warna.warnaAccent,
       foregroundColor: Colors.white,
-      title: Text(title, 
-        style: TextStyle(
-          fontSize: 16
-        ),
-      ),
+      centerTitle: true,
+      title: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (icon != null) 
+          Row(
+            children: [
+              Icon(icon,
+                size: 20,
+              ),
+              SizedBox(width: 5,)
+            ],
+          ),
+          Text(title, 
+            style: TextStyle(
+              fontSize: 16
+            ),
+          ),
+        ],
+      ), 
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadiusGeometry.only(bottomLeft: Radius.circular(25), bottomRight: Radius.circular(25))
       ),
