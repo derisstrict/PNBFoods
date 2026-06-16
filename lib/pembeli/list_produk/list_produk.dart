@@ -6,7 +6,7 @@ import 'package:pnbfoods/models/kantin.dart';
 import 'package:pnbfoods/models/produk.dart';
 import 'package:pnbfoods/pembeli/deskripsi_makanan/deskripsi_makanan.dart';
 import 'package:pnbfoods/pembeli/keranjang/page_keranjang.dart';
-import 'package:pnbfoods/pembeli/list_produk/widget/card_menu.dart';
+import 'package:pnbfoods/pembeli/list_produk/widget/card_produk.dart';
 import 'package:pnbfoods/services/cart_service.dart';
 import 'package:pnbfoods/services/produk_service.dart';
 
@@ -171,7 +171,7 @@ class _ListProdukState extends State<ListProduk> {
                                               showDragHandle: true,
                                               useSafeArea: true,
                                               barrierColor: Colors.black45,
-                                              backgroundColor: Colors.white,
+                                              backgroundColor: Warna.warnaBackground,
                                               isScrollControlled: true,
                                               builder: (context) => DeskripsiMakanan(produk: produk),
                                             );
