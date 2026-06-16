@@ -41,6 +41,7 @@ class _ListProdukState extends State<ListProduk> {
       if (list.isNotEmpty) {
         final random = list[DateTime.now().millisecondsSinceEpoch % list.length];
         _searchHint = random.namaProduk;
+        setState(() {});
       }
       return list;
     });

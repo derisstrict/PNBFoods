@@ -161,14 +161,14 @@ class TopBarHeader extends StatelessWidget {
                           onChanged: onSearchChanged,
                           style: TextStyle(fontSize: 12, color: Colors.black),
                           decoration: InputDecoration(
-                            hintText: searchHint ?? "Nasi Goreng",
+                            hintText: searchHint,
                             hintStyle: TextStyle(fontSize: 12, color: Colors.black38),
                             border: InputBorder.none,
                             isDense: true,
                             contentPadding: EdgeInsets.zero,
                           ),
                         )
-                      : Text(searchHint ?? "Nasi Goreng",
+                      : Text(searchHint!,
                           style: TextStyle(fontSize: 12, color: Colors.black38),
                         ),
                   ),
