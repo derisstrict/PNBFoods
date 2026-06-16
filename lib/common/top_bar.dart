@@ -183,7 +183,6 @@ class TopBarHeader extends StatelessWidget {
                           style: TextStyle(fontSize: 12, color: Colors.black38),
                         ),
                   ),
-                  Spacer(),
                   Text("cari di kantin ini", 
                     style: TextStyle(
                       fontSize: 10,
