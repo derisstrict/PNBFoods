@@ -63,7 +63,7 @@ class TopBarHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: width,
-      height: 150,
+      height: 130,
       decoration: BoxDecoration(
         color: Color(0xFFF9803B),
         borderRadius: BorderRadius.only(
