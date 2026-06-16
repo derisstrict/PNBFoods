@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:pnbfoods/common/warna.dart';
 import 'package:pnbfoods/models/kantin.dart';
+import 'package:pnbfoods/models/pelanggan.dart';
 import 'package:pnbfoods/pembeli/list_kantin/widget/card_kantin.dart';
 import 'package:pnbfoods/pembeli/list_produk/list_produk.dart';
 import 'package:pnbfoods/services/cart_service.dart';
 import 'package:pnbfoods/services/kantin_service.dart';
+import 'package:pnbfoods/services/pelanggan_service.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ListKantin extends StatefulWidget {
   @override
@@ -13,10 +16,26 @@ class ListKantin extends StatefulWidget {
 
 class _ListKantinState extends State<ListKantin> {
   late Future<List<Kantin>> futureKantin;
+  Future<Pelanggan>? pelanggan;
+  Pelanggan? pelangganData; // Untuk hint di search bar nantinya.
+
+  int? idPelanggan;
+
+    void getIdPengguna() async {
+      final prefs = await SharedPreferences.getInstance();
+      final id = prefs.getInt('userId');
+      setState(() {
+        idPelanggan = id;
+      });
+      if (idPelanggan != null) {
+        pelanggan = fetchPelanggan(idPelanggan!);
+      }
+  }
 
   @override
   void initState() {
     super.initState();
+    getIdPengguna();    
     futureKantin = fetchSemuaKantin();
   }
 
@@ -63,25 +82,77 @@ class _ListKantinState extends State<ListKantin> {
                               ),
                             ),
                             SizedBox(height: 5),
-                            Text(
-                              "Ngab Owi",
-                              style: TextStyle(
-                                fontWeight: FontWeight.w500,
-                                color: Colors.white,
-                                fontSize: 14,
-                              ),
-                            ),
+                            FutureBuilder(
+                              future: pelanggan, 
+                              builder: (context, snapshot) {
+                                if (snapshot.connectionState == ConnectionState.waiting) {
+                                  return Text('Loading...', style: TextStyle(color: Colors.white),);
+                                }
+                                if (snapshot.hasError) {
+                                  return Center(
+                                    child: Column(
+                                      spacing: 10,
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Text('Error: ${snapshot.error}'),
+                                      ],
+                                    ),
+                                  );
+                                }
+                                if (snapshot.hasData) {
+                                  pelangganData = snapshot.data;
+                                  return Text(snapshot.data!.namaPelanggan,
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w500,
+                                      color: Colors.white,
+                                      fontSize: 14,
+                                    ),
+                                  );
+                                }
+                                return Text('Loading...', style: TextStyle(color: Colors.white),);
+                              }
+                            )
                           ],
                         ),
 
                         Spacer(),
 
-                        CircleAvatar(
-                          radius: 20,
-                          backgroundImage: NetworkImage(
-                            'https://i.pravatar.cc/150',
-                          ),
-                        ),
+                        FutureBuilder(
+                          future: pelanggan, 
+                          builder: (context, snapshot) {
+                            if (snapshot.connectionState == ConnectionState.waiting) {
+                              return CircleAvatar(
+                                radius: 20,
+                                backgroundColor: Colors.white24,
+                                child: Icon(Icons.person, size: 32, color: Colors.white,),
+                              ); 
+                            }
+                            if (snapshot.hasError) {
+                              return Center(
+                                child: Column(
+                                  spacing: 10,
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Text('Error: ${snapshot.error}'),
+                                  ],
+                                ),
+                              );
+                            }
+                            if (snapshot.hasData && snapshot.data!.fotoUrl != null) {
+                              return CircleAvatar(
+                                radius: 20,
+                                backgroundImage: NetworkImage(
+                                  snapshot.data!.fotoUrl!,
+                                ),
+                              );
+                            } 
+                            return CircleAvatar(
+                              radius: 20,
+                              backgroundColor: Colors.white24,
+                              child: Icon(Icons.person, size: 32, color: Colors.white,),
+                            ); 
+                          }
+                        )
                       ],
                     ),
                   ),
