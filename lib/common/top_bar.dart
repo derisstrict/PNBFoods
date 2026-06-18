@@ -81,7 +81,7 @@ class TopBarHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: width,
-      height: 130,
+      height: style == pembeli ? 130 : 140,
       decoration: BoxDecoration(
         color: Warna.warnaAccent,
         borderRadius: BorderRadius.only(
@@ -95,35 +95,36 @@ class TopBarHeader extends StatelessWidget {
           children: [
             Row(
               children: [
-                Visibility(
-                  visible: style == pembeli,
-                  child: Row(
-                    children: [
-                      IconButton(
-                        onPressed: () {
-                          Navigator.pop(context);
-                        },
-                        icon: Icon(Icons.arrow_back,
-                          color: Colors.white,
-                        )
-                      ),
-                      ClipRRect(
-                        borderRadius: BorderRadiusGeometry.circular(15),
-                        child: ClipRRect(
-                          borderRadius: BorderRadiusGeometry.circular(10),
-                          child: Container(
-                            child: kantin!.fotoUrl == "" || kantin!.fotoUrl == null 
-                            ? 
-                            Icon(Icons.image_rounded, size: 30, color: Colors.white,) 
-                            : 
-                            Image.network(kantin!.fotoUrl!, fit: BoxFit.cover, width: double.infinity, height: 220, cacheHeight: 400,),
-                          ) 
+                if (style == pembeli)
+                  Visibility(
+                    visible: style == pembeli,
+                    child: Row(
+                      children: [
+                        IconButton(
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                          icon: Icon(Icons.arrow_back,
+                            color: Colors.white,
+                          )
                         ),
-                      ),
-                      SizedBox(width: 10,),
-                    ],
-                  )
-                ),
+                        ClipRRect(
+                          borderRadius: BorderRadiusGeometry.circular(15),
+                          child: ClipRRect(
+                            borderRadius: BorderRadiusGeometry.circular(10),
+                            child: Container(
+                              child: kantin!.fotoUrl == "" || kantin!.fotoUrl == null 
+                              ? 
+                              Icon(Icons.image_rounded, size: 30, color: Colors.white,) 
+                              : 
+                              Image.network(kantin!.fotoUrl!, fit: BoxFit.cover, width: double.infinity, height: 220, cacheHeight: 400,),
+                            ) 
+                          ),
+                        ),
+                        SizedBox(width: 10,),
+                      ],
+                    )
+                  ),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -195,7 +196,7 @@ class TopBarHeader extends StatelessWidget {
                             contentPadding: EdgeInsets.zero,
                           ),
                         )
-                      : Text(searchHint!,
+                      : Text(searchHint ?? "",
                           style: TextStyle(fontSize: 12, color: Colors.black38),
                         ),
                   ),
