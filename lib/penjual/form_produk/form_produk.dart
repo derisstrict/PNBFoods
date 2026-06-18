@@ -57,7 +57,9 @@ class _FormProdukState extends State<FormProduk> {
     );
     _kategori = widget.produk == null ? "Makanan" : widget.produk!.kategoriProduk;
     _nilaiCheckbox = stok!.text != "-1";
-    _memStok = widget.produk!.stok == -1 ? "1" : widget.produk!.stok.toString();
+    if (widget.produk != null) {
+      _memStok = widget.produk!.stok == -1 ? "1" : widget.produk!.stok.toString();
+    }
     super.initState();
     _initPath();
   }
