@@ -117,7 +117,7 @@ class _KeranjangPageState extends State<KeranjangPage> {
                 ),
                 child: const Text(
                   'Pesan',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
                 ),
               ),
             ),
