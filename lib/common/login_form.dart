@@ -107,8 +107,8 @@ class _LoginFormState extends State<LoginForm> {
         SizedBox(
           width: double.infinity,
           height: 50,
-          child: ElevatedButton(
-            style: ElevatedButton.styleFrom(
+          child: TextButton(
+            style: TextButton.styleFrom(
               backgroundColor: Warna.warnaAccent,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(15),
