@@ -7,6 +7,7 @@ import 'package:pnbfoods/pembeli/list_produk/list_produk.dart';
 import 'package:pnbfoods/services/cart_service.dart';
 import 'package:pnbfoods/services/kantin_service.dart';
 import 'package:pnbfoods/services/pelanggan_service.dart';
+import 'package:pnbfoods/services/produk_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ListKantin extends StatefulWidget {
@@ -17,19 +18,22 @@ class ListKantin extends StatefulWidget {
 class _ListKantinState extends State<ListKantin> {
   late Future<List<Kantin>> futureKantin;
   Future<Pelanggan>? pelanggan;
-  Pelanggan? pelangganData; // Untuk hint di search bar nantinya.
+  Pelanggan? pelangganData;
 
   int? idPelanggan;
+  final _searchController = TextEditingController();
+  String _searchQuery = "";
+  Map<int, ({int min, int max})> _priceRanges = {};
 
-    void getIdPengguna() async {
-      final prefs = await SharedPreferences.getInstance();
-      final id = prefs.getInt('userId');
-      setState(() {
-        idPelanggan = id;
-      });
-      if (idPelanggan != null) {
-        pelanggan = fetchPelanggan(idPelanggan!);
-      }
+  void getIdPengguna() async {
+    final prefs = await SharedPreferences.getInstance();
+    final id = prefs.getInt('userId');
+    setState(() {
+      idPelanggan = id;
+    });
+    if (idPelanggan != null) {
+      pelanggan = fetchPelanggan(idPelanggan!);
+    }
   }
 
   @override
@@ -37,6 +41,32 @@ class _ListKantinState extends State<ListKantin> {
     super.initState();
     getIdPengguna();    
     futureKantin = fetchSemuaKantin();
+    fetchSemuaProduk().then((produkList) {
+      for (final p in produkList) {
+        if (p.penjualId == null) continue;
+        final existing = _priceRanges[p.penjualId];
+        if (existing == null) {
+          _priceRanges[p.penjualId!] = (min: p.hargaProduk, max: p.hargaProduk);
+        } else {
+          _priceRanges[p.penjualId!] = (
+            min: p.hargaProduk < existing.min ? p.hargaProduk : existing.min,
+            max: p.hargaProduk > existing.max ? p.hargaProduk : existing.max,
+          );
+        }
+      }
+      setState(() {});
+    });
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  String _formatHarga(int harga) {
+    if (harga >= 1000) return '${harga ~/ 1000}rb';
+    return '$harga';
   }
 
   void refreshKantin() {
@@ -172,11 +202,20 @@ class _ListKantinState extends State<ListKantin> {
                       children: [
                         Icon(Icons.search_outlined, color: Color(0xFFF9803B)),
                         SizedBox(width: 5),
-                        Text(
-                          "Kantin Ibu Gacor",
-                          style: TextStyle(fontSize: 12, color: Colors.black38),
+                        Expanded(
+                          child: TextField(
+                            controller: _searchController,
+                            onChanged: (value) => setState(() => _searchQuery = value),
+                            style: TextStyle(fontSize: 12, color: Colors.black),
+                            decoration: InputDecoration(
+                              hintText: "Cari kantin...",
+                              hintStyle: TextStyle(fontSize: 12, color: Colors.black38),
+                              border: InputBorder.none,
+                              isDense: true,
+                              contentPadding: EdgeInsets.zero,
+                            ),
+                          ),
                         ),
-                        Spacer(),
                         Icon(
                           Icons.store_mall_directory_rounded,
                           color: Warna.warnaAccent,
@@ -233,7 +272,12 @@ class _ListKantinState extends State<ListKantin> {
               future: futureKantin,
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
-                  if (snapshot.data!.isEmpty) {
+                  final filterKantin = snapshot.data!.where((k) =>
+                    _searchQuery.isEmpty ||
+                    k.namaKantin.toLowerCase().contains(_searchQuery.toLowerCase())
+                  ).toList();
+
+                  if (filterKantin.isEmpty) {
                     return const Center(
                       child: Text(
                         "Belum ada kantin.",
@@ -242,15 +286,17 @@ class _ListKantinState extends State<ListKantin> {
                     );
                   }
                   return ListView.builder(
-                    itemCount: snapshot.data!.length,
+                    itemCount: filterKantin.length,
                     padding: const EdgeInsets.all(10),
                     itemBuilder: (context, index) {
-                      final kantin = snapshot.data![index];
+                      final kantin = filterKantin[index];
 
                       return CardKantin(
                         namaKantin: kantin.namaKantin,
                         kategori: kantin.kategori,
-                        infoHarga: "Lihat Menu",
+                        infoHarga: _priceRanges.containsKey(kantin.idPenjual)
+                          ? 'Rp. ${_formatHarga(_priceRanges[kantin.idPenjual]!.min)} - ${_formatHarga(_priceRanges[kantin.idPenjual]!.max)}'
+                          : "Lihat Menu",
                         imageUrl: kantin.fotoUrl ?? 'https://picsum.photos/200?id=${kantin.id}',
                         cartItemCount: CartService().totalItems(kantinId: kantin.id),
                         onTap: () async {
