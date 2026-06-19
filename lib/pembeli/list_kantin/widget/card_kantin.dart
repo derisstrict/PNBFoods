@@ -82,29 +82,33 @@ class CardKantin extends StatelessWidget {
                       fontSize: 15,
                     ),
                   ),
+
                   const SizedBox(height: 5),
-                  Text(
-                    kategori,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(color: Warna.warnaTextGray, fontSize: 12),
+                  Row(
+                    spacing: 5,
+                    children: [
+                      Icon(Icons.label_outline, size: 16, color: Warna.warnaTextGray,),
+                      Text(
+                        kategori,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(color: Warna.warnaTextGray, fontSize: 12),
+                      ),
+                    ],
                   ),
+                  
                   const SizedBox(height: 9),
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 9,
-                      vertical: 5,
-                    ),
-                    decoration: BoxDecoration(
-                      color: Warna.warnaAccent,
-                      borderRadius: BorderRadius.circular(6),
-                    ),
-                    child: Text(
-                      infoHarga,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(color: Colors.white, fontSize: 10),
-                    ),
+                  Row(
+                    spacing: 5,
+                    children: [
+                      Icon(Icons.sell_outlined, size: 16, color: Warna.warnaAccent,),
+                      Text(
+                        infoHarga,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(color: Warna.warnaAccent, fontSize: 12),
+                      ),
+                    ],
                   ),
                 ],
               ),
