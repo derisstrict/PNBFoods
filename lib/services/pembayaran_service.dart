@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:pnbfoods/models/item_keranjang.dart';
 import 'package:pnbfoods/models/pembayaran.dart';
 import 'package:pnbfoods/services/base_url.dart';
 
@@ -81,6 +82,49 @@ Future<Pembayaran> updatePembayaran({
     throw Exception(
         'Gagal memperbarui pembayaran: ${e.response?.data ?? e.message}');
   }
+}
+
+Future<Map<String, dynamic>> createSnapTransaction({
+  required int pelangganId,
+  required int totalHarga,
+  required int kantinId,
+  required List<ItemKeranjang> items,
+}) async {
+  try {
+    final response = await dio.post('pembayaran/snap', data: {
+      'pelanggan_id': pelangganId,
+      'total_harga': totalHarga,
+      'kantin_id': kantinId,
+      'items': items
+          .map((item) => {
+                'produk_id': item.produkId ?? 0,
+                'nama': item.nama,
+                'harga': item.harga,
+                'jumlah': item.jumlah,
+                if (item.catatan != null) 'catatan': item.catatan,
+              })
+          .toList(),
+    });
+
+    if (response.statusCode == 201) {
+      return response.data['data'] as Map<String, dynamic>;
+    }
+
+    throw Exception(response.data['message'] ?? 'Gagal membuat pembayaran');
+  } on DioException catch (e) {
+    throw Exception(
+        'Gagal membuat pembayaran: ${e.response?.data ?? e.message}');
+  }
+}
+
+Future<Pembayaran> getPaymentStatus(int id) async {
+  final response = await dio.get('pembayaran/$id/status');
+
+  if (response.statusCode == 200 && response.data['success'] == true) {
+    return Pembayaran.fromJson(response.data['data']);
+  }
+
+  throw Exception('Gagal mengambil status pembayaran');
 }
 
 Future<void> deletePembayaran(int id) async {
