@@ -67,8 +67,6 @@ class _PembayaranPageState extends State<PembayaranPage> {
       _pembayaranId = data['id'] as int;
       _qrImageUrl = result['qr_image_url'] as String?;
 
-      CartService().clear(kantinId: widget.kantinId);
-
       if (mounted) {
         setState(() => _isLoading = false);
         _startPolling();
@@ -85,9 +83,8 @@ class _PembayaranPageState extends State<PembayaranPage> {
 
   void _startPolling() {
     _pollTimer?.cancel();
-    _pollTimer = Timer.periodic(const Duration(seconds: 3), (_) async {
+    _pollTimer = Timer.periodic(const Duration(seconds: 1), (_) async {
       if (_pembayaranId == null) return;
-
       try {
         final p = await getPaymentStatus(_pembayaranId!);
 
@@ -102,6 +99,7 @@ class _PembayaranPageState extends State<PembayaranPage> {
               'Pesanan Anda sedang diproses.',
               true,
             );
+            CartService().clear(kantinId: widget.kantinId);
           } else {
             final msg = p.statusPembayaran == 'kadaluwarsa'
                 ? 'Waktu pembayaran telah habis.'
@@ -137,7 +135,19 @@ class _PembayaranPageState extends State<PembayaranPage> {
 
   int get _sisaDetik {
     if (_pembayaran?.expiredAt == null) return 86400;
-    return _pembayaran!.expiredAt!.difference(DateTime.now()).inSeconds;
+
+    String rawString = _pembayaran!.expiredAt!.toIso8601String();
+
+    if (rawString.endsWith('Z')) {
+      rawString = rawString.substring(0, rawString.length - 1);
+    }
+
+    String fixedIsoString = rawString.replaceAll(' ', 'T') + '+08:00';
+    
+    final timezone = DateTime.parse(fixedIsoString);
+    final nowLocal = DateTime.now();
+
+    return timezone.difference(nowLocal).inSeconds;
   }
 
   String get _formatWaktu {

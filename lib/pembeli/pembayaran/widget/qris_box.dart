@@ -59,7 +59,7 @@ class QrisBox extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,
-        border: Border.all(color: Colors.grey[300]!),
+        // border: Border.all(color: Colors.grey[300]!),
         borderRadius: BorderRadius.circular(12),
       ),
       child: Column(
@@ -69,17 +69,18 @@ class QrisBox extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
-                  color: Colors.black,
+                  color: Warna.warnaBackground,
                   borderRadius: BorderRadius.circular(4),
                 ),
-                child: const Text(
-                  'QRIS',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 10,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
+                child: Image.network('https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/QRIS_Logo.svg/330px-QRIS_Logo.svg.png', 
+                height: 20,
+                fit: BoxFit.cover, 
+                errorBuilder: (context, error, stackTrace) => Container(
+                  width: 20,
+                  height: 20,
+                  color: Warna.warnaBackground,
+                  child: Icon(Icons.image_not_supported, size: 20, color: Colors.black,),
+                ))
               ),
               const SizedBox(width: 8),
               const Text('QRIS', style: TextStyle(fontWeight: FontWeight.bold)),
@@ -118,14 +119,6 @@ class QrisBox extends StatelessWidget {
               color: Colors.grey[200],
               child: const Icon(Icons.qr_code, size: 100),
             ),
-          const SizedBox(height: 8),
-          Text(
-            formatRupiah(totalHarga),
-            style: const TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
           const SizedBox(height: 16),
           SizedBox(
             width: double.infinity,
