@@ -106,7 +106,7 @@ Future<Map<String, dynamic>> createSnapTransaction({
           .toList(),
     });
 
-    if (response.statusCode == 201) {
+    if (response.statusCode == 201 || response.statusCode == 200) {
       return response.data['data'] as Map<String, dynamic>;
     }
 

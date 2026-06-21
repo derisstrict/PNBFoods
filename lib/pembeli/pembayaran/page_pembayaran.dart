@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:pnbfoods/common/tombol.dart';
 import 'package:pnbfoods/common/top_bar.dart';
+import 'package:pnbfoods/common/warna.dart';
 import 'package:pnbfoods/models/item_keranjang.dart';
 import 'package:pnbfoods/models/pembayaran.dart';
 import 'package:pnbfoods/pembeli/pembayaran/widget/countdown_kadaluwarsa.dart';
@@ -94,11 +96,7 @@ class _PembayaranPageState extends State<PembayaranPage> {
           _pollTimer?.cancel();
 
           if (p.isLunas) {
-            _showDoneDialog(
-              'Pembayaran Berhasil',
-              'Pesanan Anda sedang diproses.',
-              true,
-            );
+            _showDoneDialog("Pesanan Berhasil Dibuat", "Pembayaran anda telah berhasil. Silahkan ditunggu pesanan anda.", true);
             CartService().clear(kantinId: widget.kantinId);
           } else {
             final msg = p.statusPembayaran == 'kadaluwarsa'
@@ -116,17 +114,23 @@ class _PembayaranPageState extends State<PembayaranPage> {
       context: context,
       barrierDismissible: false,
       builder: (ctx) => AlertDialog(
-        title: Text(title),
-        content: Text(msg),
+        backgroundColor: Colors.white,
+        icon: Icon(Icons.done, size: 58,),
+        iconColor: Warna.warnaSuccess,
+        title: Text(title, style: TextStyle(fontWeight: FontWeight.w600,)),
+        content: Text(msg, textAlign: TextAlign.center,),
+        actionsAlignment: MainAxisAlignment.center,
         actions: [
-          TextButton(
-            onPressed: () {
+          TombolNavigasi(
+            function: () {
               Navigator.of(ctx).pop();
               if (success) {
                 Navigator.of(context).popUntil((route) => route.isFirst);
               }
             },
-            child: const Text('OK'),
+            text: "Kembali",
+            backgroundColor: Warna.warnaAccent,
+            foregroundColor: Colors.white, 
           ),
         ],
       ),
