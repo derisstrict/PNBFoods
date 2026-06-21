@@ -48,6 +48,9 @@ class _KeranjangPageState extends State<KeranjangPage> {
     } else {
       CartService().addOrUpdate(widget.kantin.id, id, item.nama, item.harga, item.imageUrl, item.jumlah - 1);
     }
+    if (CartService().isEmpty(kantinId: widget.kantin.id)) {
+      Navigator.pop(context);
+    }
     setState(() {});
   }
 
