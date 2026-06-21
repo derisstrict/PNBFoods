@@ -15,6 +15,16 @@ class TopBar extends StatelessWidget implements PreferredSizeWidget{
       backgroundColor: Warna.warnaAccent,
       foregroundColor: Colors.white,
       centerTitle: true,
+      leading: IconButton(
+        onPressed: () {
+          if (title != "Pembayaran") {
+            Navigator.pop(context);
+          } else {
+            Navigator.of(context).popUntil((route) => route.isFirst);
+          }
+        }, 
+        icon: Icon(Icons.arrow_back)
+      ),
       title: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
