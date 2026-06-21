@@ -138,20 +138,8 @@ class _PembayaranPageState extends State<PembayaranPage> {
   }
 
   int get _sisaDetik {
-    if (_pembayaran?.expiredAt == null) return 86400;
-
-    String rawString = _pembayaran!.expiredAt!.toIso8601String();
-
-    if (rawString.endsWith('Z')) {
-      rawString = rawString.substring(0, rawString.length - 1);
-    }
-
-    String fixedIsoString = rawString.replaceAll(' ', 'T') + '+08:00';
-    
-    final timezone = DateTime.parse(fixedIsoString);
-    final nowLocal = DateTime.now();
-
-    return timezone.difference(nowLocal).inSeconds;
+    if (_pembayaran?.expiredAt == null) return 900;
+    return _pembayaran!.expiredAt!.difference(DateTime.now().toUtc()).inSeconds;
   }
 
   String get _formatWaktu {
