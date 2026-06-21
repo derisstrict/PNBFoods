@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:pnbfoods/akun/akun_user.dart';
 import 'package:pnbfoods/auth/autentikasi.dart';
 import 'package:pnbfoods/homepage/home.dart';
 import 'package:pnbfoods/pembeli/list_kantin/list_kantin.dart';
 import 'package:pnbfoods/auth/login_page.dart';
 import 'package:pnbfoods/pembeli/list_produk/list_produk.dart';
+import 'package:pnbfoods/pembeli/riwayat/page_riwayat.dart';
 import 'package:pnbfoods/penjual/form_kantin/form_kantin.dart';
 import 'package:pnbfoods/penjual/form_produk/form_produk.dart';
 import '/pembeli/keranjang/page_keranjang.dart';
@@ -21,7 +23,7 @@ class PNBFoods extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: "PNBFoods",
       theme: ThemeData(fontFamily: 'Poppins'),
-      home: Autentikasi(), // Defaultnya Autentikasi()
+      home: RiwayatPage(), // Defaultnya Autentikasi()
     );
   }
 }
