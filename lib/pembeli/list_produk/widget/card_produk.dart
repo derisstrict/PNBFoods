@@ -45,7 +45,7 @@ class CardProduk extends StatelessWidget {
                       child: Container(
                         child: produk.fotoProduk == "" || produk.fotoProduk == null 
                         ? 
-                        Icon(Icons.image_rounded, size: 160, color: Warna.warnaBackground,) 
+                        Icon(Icons.image_rounded, size: 100, color: Warna.warnaBackground,) 
                         : 
                         Image.network(produk.fotoUrl!, fit: BoxFit.cover, width: width, height: 220, cacheHeight: 400,),
                       ) 
