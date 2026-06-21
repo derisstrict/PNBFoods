@@ -73,14 +73,15 @@ class QrisBox extends StatelessWidget {
                   borderRadius: BorderRadius.circular(4),
                 ),
                 child: Image.network('https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/QRIS_Logo.svg/330px-QRIS_Logo.svg.png', 
-                height: 20,
-                fit: BoxFit.cover, 
-                errorBuilder: (context, error, stackTrace) => Container(
-                  width: 20,
                   height: 20,
-                  color: Warna.warnaBackground,
-                  child: Icon(Icons.image_not_supported, size: 20, color: Colors.black,),
-                ))
+                  fit: BoxFit.cover, 
+                  errorBuilder: (context, error, stackTrace) => Container(
+                    width: 20,
+                    height: 20,
+                    color: Warna.warnaBackground,
+                    child: Icon(Icons.image_not_supported, size: 20, color: Colors.black,),
+                  )
+                )
               ),
               const SizedBox(width: 8),
               const Text('QRIS', style: TextStyle(fontWeight: FontWeight.bold)),
