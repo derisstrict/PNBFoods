@@ -229,7 +229,7 @@ class _PembayaranPageState extends State<PembayaranPage> {
           ),
           const SizedBox(height: 16),
           TombolPembayaran(
-            onKembali: () => Navigator.pop(context),
+            onKembali: () => Navigator.of(context).popUntil((route) => route.isFirst),
           ),
           if (_pembayaran != null)
             Padding(
