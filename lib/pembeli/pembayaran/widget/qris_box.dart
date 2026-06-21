@@ -1,8 +1,7 @@
-import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:path_provider/path_provider.dart';
+import 'package:gal/gal.dart';
 import 'package:pnbfoods/common/warna.dart';
 
 class QrisBox extends StatelessWidget {
@@ -32,15 +31,11 @@ class QrisBox extends StatelessWidget {
         options: Options(responseType: ResponseType.bytes),
       );
 
-      final dir = await getTemporaryDirectory();
-      final file = File(
-        '${dir.path}/qris_${DateTime.now().millisecondsSinceEpoch}.png',
-      );
-      await file.writeAsBytes(response.data);
+      await Gal.putImageBytes(response.data, name: "qris_${totalHarga}_${DateTime.now().millisecondsSinceEpoch}");
 
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Kode QR berhasil disimpan')),
+          const SnackBar(content: Text('Kode QR berhasil disimpan ke galeri')),
         );
       }
     } catch (e) {
