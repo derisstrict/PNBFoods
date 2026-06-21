@@ -72,6 +72,7 @@ class _PembayaranPageState extends State<PembayaranPage> {
       if (mounted) {
         setState(() => _isLoading = false);
         _startPolling();
+        CartService().clear(kantinId: widget.kantinId);
       }
     } catch (e) {
       if (mounted) {
@@ -97,7 +98,6 @@ class _PembayaranPageState extends State<PembayaranPage> {
 
           if (p.isLunas) {
             _showDoneDialog("Pesanan Berhasil Dibuat", "Pembayaran anda telah berhasil. Silahkan ditunggu pesanan anda.", true);
-            CartService().clear(kantinId: widget.kantinId);
           } else {
             final msg = p.statusPembayaran == 'kadaluwarsa'
                 ? 'Waktu pembayaran telah habis.'
