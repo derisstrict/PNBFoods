@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pnbfoods/models/item_riwayat.dart';
+import 'package:pnbfoods/services/riwayat_service.dart';
 import 'package:pnbfoods/pembeli/riwayat/widget/section_tanggal.dart';
 
 class RiwayatPage extends StatefulWidget {
@@ -11,7 +12,19 @@ class RiwayatPage extends StatefulWidget {
 
 class _RiwayatPageState extends State<RiwayatPage> {
   final Color warnaOrange = const Color(0xFFF9803B);
-  List<RiwayatPerTanggal> riwayat = List.from(dummyRiwayat);
+  late Future<List<TransaksiRiwayat>> futureRiwayat;
+
+  @override
+  void initState() {
+    super.initState();
+    futureRiwayat = fetchRiwayat();
+  }
+
+  void refreshRiwayat() {
+    setState(() {
+      futureRiwayat = fetchRiwayat();
+    });
+  }
 
   String formatRupiah(int nilai) {
     final formatted = nilai.toString().replaceAllMapped(
@@ -54,49 +67,85 @@ class _RiwayatPageState extends State<RiwayatPage> {
           ),
         ),
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            //?list riwayat per tanggal
-            ...riwayat.map((r) {
-              return Padding(
-                padding: const EdgeInsets.only(bottom: 10),
-                child: SectionTanggal(
-                  riwayat: r,
-                  formatRupiah: formatRupiah,
-                  warnaOrange: warnaOrange,
-                ),
-              );
-            }),
-
-            //*Tombol Kembali
-            SizedBox(
-              width: double.infinity,
-              child: OutlinedButton(
-                onPressed: () => Navigator.pop(context),
-                style: OutlinedButton.styleFrom(
-                  backgroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(vertical: 14),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  side: BorderSide(color: Colors.grey[300]!),
-                ),
-                child: const Text(
-                  'Kembali',
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 15,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
+      body: FutureBuilder<List<TransaksiRiwayat>>(
+        future: futureRiwayat,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(
+              child: CircularProgressIndicator(
+                valueColor: AlwaysStoppedAnimation<Color>(warnaOrange),
               ),
+            );
+          }
+
+          if (snapshot.hasError) {
+            return Center(
+              child: Text(
+                'Gagal memuat riwayat: ${snapshot.error}',
+                style: const TextStyle(color: Colors.red),
+                textAlign: TextAlign.center,
+              ),
+            );
+          }
+
+          final semuaTransaksi = snapshot.data ?? [];
+
+          if (semuaTransaksi.isEmpty) {
+            return const Center(
+              child: Text(
+                'Belum ada riwayat transaksi.',
+                style: TextStyle(color: Colors.grey),
+              ),
+            );
+          }
+
+          final riwayatPerTanggal = kelompokkanRiwayatPerTanggal(semuaTransaksi);
+
+          return SingleChildScrollView(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // List riwayat per tanggal
+                ...riwayatPerTanggal.map((r) {
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: 10),
+                    child: SectionTanggal(
+                      riwayat: r,
+                      formatRupiah: formatRupiah,
+                      warnaOrange: warnaOrange,
+                    ),
+                  );
+                }),
+
+                // Tombol Kembali
+                SizedBox(
+                  width: double.infinity,
+                  child: OutlinedButton(
+                    onPressed: () => Navigator.pop(context),
+                    style: OutlinedButton.styleFrom(
+                      backgroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      side: BorderSide(color: Colors.grey[300]!),
+                    ),
+                    child: const Text(
+                      'Kembali',
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 15,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 20),
+              ],
             ),
-            const SizedBox(height: 20),
-          ],
-        ),
+          );
+        },
       ),
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,

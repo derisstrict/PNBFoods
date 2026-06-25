@@ -23,7 +23,7 @@ class PNBFoods extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: "PNBFoods",
       theme: ThemeData(fontFamily: 'Poppins'),
-      home: RiwayatPage(), // Defaultnya Autentikasi()
+      home: Autentikasi(), // Defaultnya Autentikasi()
     );
   }
 }

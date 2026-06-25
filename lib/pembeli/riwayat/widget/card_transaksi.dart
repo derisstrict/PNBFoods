@@ -16,29 +16,35 @@ class CardTransaksi extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
       ),
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.end, 
         children: [
           //?Foto kantin
           ClipRRect(
             borderRadius: BorderRadius.circular(8),
-            child: Image.network(
-              transaksi.imageUrl,
-              width: 80,
-              height: 80,
-              fit: BoxFit.cover,
-              errorBuilder: (contex, a, b) => Container(
-                width: 80,
-                height: 80,
-                color: Colors.grey[200],
-                child: const Icon(Icons.store, size: 30),
-              ),
-            ),
+            child: transaksi.imageUrl != null
+                ? Image.network(
+                    transaksi.imageUrl!,
+                    width: 60,
+                    height: 60,
+                    fit: BoxFit.cover,
+                    errorBuilder: (_, __, ___) => Container(
+                      width: 60,
+                      height: 60,
+                      color: Colors.grey[200],
+                      child: const Icon(Icons.store, size: 30),
+                    ),
+                  )
+                : Container(
+                    width: 60,
+                    height: 60,
+                    color: Colors.grey[200],
+                    child: const Icon(Icons.store, size: 30),
+                  ),
           ),
           const SizedBox(width: 12),
 
@@ -47,7 +53,6 @@ class CardTransaksi extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                //?nama kantin
                 Text(
                   transaksi.namaKantin,
                   style: const TextStyle(
@@ -56,7 +61,6 @@ class CardTransaksi extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 2),
-                //?kategori kantin
                 Text(
                   transaksi.kategoriKantin,
                   style: const TextStyle(
@@ -64,8 +68,7 @@ class CardTransaksi extends StatelessWidget {
                     fontSize: 12,
                   ),
                 ),
-                const SizedBox(height: 25),
-                //?jumlah item produk yang dibeli
+                const SizedBox(height: 6),
                 Text(
                   '${transaksi.totalItem} item',
                   style: const TextStyle(fontSize: 12, color: Colors.black87),
