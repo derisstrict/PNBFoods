@@ -5,6 +5,7 @@ import 'package:pnbfoods/auth/role_page.dart';
 import 'package:pnbfoods/common/warna.dart';
 import 'package:pnbfoods/akun/edit_user.dart';
 import 'package:pnbfoods/models/pelanggan.dart';
+import 'package:pnbfoods/services/cart_service.dart';
 import 'package:pnbfoods/services/pelanggan_service.dart';
 import 'package:pnbfoods/models/penjual.dart';
 import 'package:pnbfoods/services/penjual_service.dart';
@@ -72,7 +73,26 @@ class _ProfilUserState extends State<ProfileUser> {
           return Center(child: CircularProgressIndicator());
         }
         if (snapshot.hasError) {
-          return Center(child: Text('Error: ${snapshot.error}'));
+          return Center(
+            child: Column(
+              spacing: 10,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text('Error: ${snapshot.error}'),
+                TextButton.icon(
+                  onPressed: () {
+                    _showLogoutConfirmationDialog(context);
+                  }, 
+                  style: TextButton.styleFrom(
+                    foregroundColor: Colors.red
+                  ),
+                  label: Text("Logout"),
+                  icon: Icon(Icons.logout),
+                  )
+              ],
+            ),
+          );
+         
         }
         if (snapshot.hasData) {
          final pelanggan = snapshot.data!;
@@ -346,6 +366,33 @@ class _ProfilUserState extends State<ProfileUser> {
                             ),
                           ),
                         ),
+                        if (rolePengguna == "penjual")
+                          Column(
+                            children: [
+                              SizedBox(height: 10),
+                              GestureDetector(
+                                onTap: () {
+                                  Navigator.pop(context);
+                                },
+                                child: Container(
+                                  padding: EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(15),
+                                  ),
+                                  child: Row(
+                                    children: [
+                                      Icon(Icons.arrow_back),
+                                      SizedBox(width: 10),
+                                      Text("Kembali",
+                                        style: TextStyle(fontWeight: FontWeight.w400, fontSize: 14, color: Colors.black87),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
                         SizedBox(height: 250),
                         GestureDetector(
                           onTap: () {
@@ -470,6 +517,7 @@ class _ProfilUserState extends State<ProfileUser> {
     try {
       if (rolePengguna == 'pelanggan') {
         await logoutPelanggan();
+        CartService().clear();
       } else {
         await logoutPenjual();
       }

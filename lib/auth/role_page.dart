@@ -13,14 +13,14 @@ class PilihRole extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           TombolNavigasi(
-            function: () => Navigator.push(context, MaterialPageRoute(builder: (context)=> LoginPage(role: 'pelanggan'))), 
+            function: () => Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> LoginPage(role: 'pelanggan'))), 
             backgroundColor: Warna.warnaAccent, 
             foregroundColor: Colors.white, 
             text: "Pelanggan",
           ),
           SizedBox(height: 10),
           TombolNavigasi(
-            function: () => Navigator.push(context, MaterialPageRoute(builder: (context)=> LoginPage(role: 'penjual'))), 
+            function: () => Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> LoginPage(role: 'penjual'))), 
             backgroundColor: Warna.warnaAccent, 
             foregroundColor: Colors.white, 
             text: "Penjual",

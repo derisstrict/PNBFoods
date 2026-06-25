@@ -9,6 +9,7 @@ import 'package:pnbfoods/common/top_bar.dart';
 import 'package:pnbfoods/common/warna.dart';
 import 'package:pnbfoods/models/produk.dart';
 import 'package:pnbfoods/services/produk_service.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class FormProduk extends StatefulWidget {
   final Produk? produk;
@@ -26,8 +27,9 @@ class _FormProdukState extends State<FormProduk> {
   TextEditingController? deskripsi;
   TextEditingController? stok;
   File? _gambar;
+  String? _memStok;
 
-  bool _nilaiCheckbox = false;
+  bool? _nilaiCheckbox;
   String? _kategori;
 
   // String? _appDirPath = "";
@@ -54,6 +56,10 @@ class _FormProdukState extends State<FormProduk> {
       text: widget.produk == null ? "1" : widget.produk!.stok.toString()
     );
     _kategori = widget.produk == null ? "Makanan" : widget.produk!.kategoriProduk;
+    _nilaiCheckbox = stok!.text != "-1";
+    if (widget.produk != null) {
+      _memStok = widget.produk!.stok == -1 ? "1" : widget.produk!.stok.toString();
+    }
     super.initState();
     _initPath();
   }
@@ -172,10 +178,18 @@ class _FormProdukState extends State<FormProduk> {
                           ),
                           Stok(
                             controller: stok!,
-                            checkboxValue: _nilaiCheckbox,
+                            checkboxValue: _nilaiCheckbox!,
                             enabled: (value) {
                               setState(() {
                                 _nilaiCheckbox = value;
+                                if (!value) {
+                                  if (stok!.text != "-1") {
+                                    _memStok = stok!.text;
+                                  }
+                                  stok!.text = "-1";
+                                } else {
+                                  stok!.text = _memStok!;
+                                }
                               });
                             },
                             onPressedMinus: () {
@@ -247,6 +261,9 @@ class _FormProdukState extends State<FormProduk> {
       return;
     }
 
+    final prefs = await SharedPreferences.getInstance();
+    final penjual_id = prefs.getInt('userId');
+
     try {
       if (widget.produk == null) {
         await postProduk(
@@ -255,6 +272,7 @@ class _FormProdukState extends State<FormProduk> {
           hargaProduk: int.parse(harga!.text), 
           kategoriProduk: _kategori!, 
           stok: int.parse(stok!.text), 
+          penjualId: penjual_id!,
           fotoProduk: _gambar!
         );
         Navigator.pop(context, true);
@@ -266,6 +284,7 @@ class _FormProdukState extends State<FormProduk> {
           hargaProduk: int.parse(harga!.text), 
           kategoriProduk: _kategori!, 
           stok: int.parse(stok!.text),
+          penjualId: penjual_id!,
           fotoProduk: _gambar
         );
         Navigator.pop(context, true);

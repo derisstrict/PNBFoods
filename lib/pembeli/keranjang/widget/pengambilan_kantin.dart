@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 
 class PengambilanKantin extends StatelessWidget {
-  const PengambilanKantin({super.key});
+  final String namaKantin;
+
+  const PengambilanKantin({super.key, required this.namaKantin});
 
   @override
   Widget build(BuildContext context) {
@@ -16,7 +18,7 @@ class PengambilanKantin extends StatelessWidget {
         children: [
           const Text(
             'Pengambilan di Kantin',
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+            style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
           ),
           const SizedBox(height: 10),
           Row(
@@ -37,7 +39,7 @@ class PengambilanKantin extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 10),
-              const Text('Kantin Ibu Gacor', style: TextStyle(fontSize: 13)),
+              Text(namaKantin, style: TextStyle(fontSize: 13)),
             ],
           ),
         ],

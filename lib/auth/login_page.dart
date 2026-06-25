@@ -47,7 +47,7 @@ class _LoginPageState extends State<LoginPage> {
           child: Column(
             children: [
               // Logo
-              Image.asset('assets/img/Logo.png', height: 200),
+              Image.asset('assets/img/logo.png', height: 200),
               const SizedBox(height: 40),
 
               // Judul
@@ -125,7 +125,7 @@ class _LoginPageState extends State<LoginPage> {
       //   ),
       // );
 
-      Navigator.push(context, MaterialPageRoute(builder: (context) => Autentikasi()));
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Autentikasi()));
 
     } on DioException catch (e) {
       final pesan = e.response?.data['message'] ?? 'Login gagal';

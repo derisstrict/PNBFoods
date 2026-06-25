@@ -1,22 +1,25 @@
-import 'dart:async';
-import 'dart:io';
-import 'package:path/path.dart' as p;
 import 'package:flutter/material.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:pnbfoods/common/warna.dart';
 import 'package:pnbfoods/models/produk.dart';
-import 'package:pnbfoods/penjual/form_produk/form_produk.dart';
-// import 'package:pnbfoods/database/database.dart';
 
 class CardProduk extends StatelessWidget {
   final Produk produk;
   final String appDir;
-  final bool isAccent = false;
+  final bool isAccent;
+  final int cartCount;
   final double width;
   final bool isEditable;
   final GestureTapCallback onTap;
 
-  const CardProduk({super.key, required this.produk, required this.appDir, required this.width, this.isEditable = false, required this.onTap});
+  const CardProduk({super.key, required this.produk, required this.appDir, required this.width, this.isAccent = false, this.cartCount = 0, this.isEditable = false, required this.onTap});
+
+  String formatRupiah(int nilai) {
+    final formatted = nilai.toString().replaceAllMapped(
+      RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
+      (m) => '${m[1]}.',
+    );
+    return 'Rp. $formatted';
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -42,7 +45,7 @@ class CardProduk extends StatelessWidget {
                       child: Container(
                         child: produk.fotoProduk == "" || produk.fotoProduk == null 
                         ? 
-                        Icon(Icons.image_rounded, size: 160, color: Warna.warnaBackground,) 
+                        Icon(Icons.image_rounded, size: 100, color: Warna.warnaBackground,) 
                         : 
                         Image.network(produk.fotoUrl!, fit: BoxFit.cover, width: width, height: 220, cacheHeight: 400,),
                       ) 
@@ -58,7 +61,7 @@ class CardProduk extends StatelessWidget {
                 ),
                 Row(
                   children: [
-                    Text("Rp. ${produk.hargaProduk}",
+                    Text(formatRupiah(produk.hargaProduk),
                       style: TextStyle(
                         color: isAccent ? Colors.white : Warna.warnaAccent,
                         fontWeight: FontWeight.w500
@@ -75,10 +78,10 @@ class CardProduk extends StatelessWidget {
                               color: Colors.white,
                               borderRadius: BorderRadius.circular(6)
                             ),
-                            child: Text("2", 
+                            child: Text("$cartCount", 
                             style: TextStyle(
                               fontSize: 12,
-                              color: Color(0xFFF9803B)
+                              color: Warna.warnaAccent
                             ),),
                           )
                         ],

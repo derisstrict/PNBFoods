@@ -8,6 +8,7 @@ class Produk {
   final int hargaProduk;
   final int stok;
   final int? penjualId;
+  final int? kantinId;
   final DateTime? createdAt;
   final DateTime? updatedAt;
 
@@ -21,6 +22,7 @@ class Produk {
     required this.hargaProduk,
     required this.stok,
     this.penjualId,
+    this.kantinId,
     this.createdAt,
     this.updatedAt,
   });
@@ -36,6 +38,7 @@ class Produk {
       hargaProduk: json['harga_produk'] as int,
       stok: json['stok'] as int,
       penjualId: json['penjual_id'] as int?,
+      kantinId: json['kantin_id'] as int?,
       createdAt: json['created_at'] != null
           ? DateTime.parse(json['created_at'] as String)
           : null,

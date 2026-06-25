@@ -8,6 +8,7 @@ import 'package:pnbfoods/common/top_bar.dart';
 import 'package:pnbfoods/common/warna.dart';
 import 'package:pnbfoods/models/kantin.dart';
 import 'package:pnbfoods/services/kantin_service.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class FormKantin extends StatefulWidget {
   final Kantin? kantin;
@@ -206,11 +207,27 @@ class _FormKantinState extends State<FormKantin> {
 
     try {
       if (widget.kantin == null) {
+        final prefs = await SharedPreferences.getInstance();
+        final penjualId = prefs.getInt('userId');
+        if (penjualId == null) {
+          throw Exception("ID Penjual tidak ditemukan. Silakan login kembali.");
+        }
         await postKantin(
           namaKantin: namaKantin.text,
           kategori: selectedKategori!,
           fotoKantin: _gambar!,
+          penjualId: penjualId,
         );
+
+        final newKantin = Kantin(
+          id: penjualId,
+          namaKantin: namaKantin.text,
+          fotoKantin: _gambar!.path.split('/').last,
+          fotoUrl: null,
+          kategori: selectedKategori!,
+          idPenjual: penjualId,
+        );
+        Navigator.pop(context, newKantin);
       } else {
         await updateKantin(
           id: widget.kantin!.id,
@@ -218,8 +235,17 @@ class _FormKantinState extends State<FormKantin> {
           kategori: selectedKategori!,
           fotoKantin: _gambar,
         );
+
+        final updatedKantin = Kantin(
+          id: widget.kantin!.id,
+          namaKantin: namaKantin.text,
+          fotoKantin: _gambar != null ? _gambar!.path.split('/').last : widget.kantin!.fotoKantin,
+          fotoUrl: widget.kantin!.fotoUrl,
+          kategori: selectedKategori!,
+          idPenjual: widget.kantin!.idPenjual,
+        );
+        Navigator.pop(context, updatedKantin);
       }
-      Navigator.pop(context, true);
     } catch (e) {
       final snackbar = SnackBar(content: Text("Gagal menyimpan data: $e"));
       ScaffoldMessenger.of(context).showSnackBar(snackbar);

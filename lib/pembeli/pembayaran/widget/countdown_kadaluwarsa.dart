@@ -23,6 +23,8 @@ class CountdownKadaluwarsa extends StatelessWidget {
             borderRadius: BorderRadius.circular(6),
           ),
           child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               const Icon(Icons.access_time, color: Colors.white, size: 14),
               const SizedBox(width: 4),
@@ -30,8 +32,8 @@ class CountdownKadaluwarsa extends StatelessWidget {
                 formatWaktu,
                 style: const TextStyle(
                   color: Colors.white,
-                  fontSize: 13,
-                  fontWeight: FontWeight.bold,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w400,
                 ),
               ),
             ],

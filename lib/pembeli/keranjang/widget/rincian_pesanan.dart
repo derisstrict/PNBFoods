@@ -1,18 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:pnbfoods/common/warna.dart';
 import 'package:pnbfoods/models/item_keranjang.dart';
 
 class RincianPesanan extends StatelessWidget {
   final List<ItemKeranjang> keranjang;
   final int totalHarga;
   final String Function(int) formatRupiah;
-  final Color warnaOrange;
 
   const RincianPesanan({
     super.key,
     required this.keranjang,
     required this.totalHarga,
     required this.formatRupiah,
-    required this.warnaOrange,
   });
 
   @override
@@ -28,7 +27,7 @@ class RincianPesanan extends StatelessWidget {
         children: [
           const Text(
             'Rincian Pesanan',
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+            style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
           ),
           const SizedBox(height: 10),
           ...keranjang.map((item) => Padding(
@@ -48,11 +47,11 @@ class RincianPesanan extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               const Text('Total Pembayaran',
-                  style: TextStyle(fontWeight: FontWeight.bold)),
+                  style: TextStyle(fontWeight: FontWeight.w600)),
               Text(
                 formatRupiah(totalHarga),
                 style: TextStyle(
-                    fontWeight: FontWeight.bold, color: warnaOrange),
+                    fontWeight: FontWeight.w600, color: Warna.warnaAccent),
               ),
             ],
           ),

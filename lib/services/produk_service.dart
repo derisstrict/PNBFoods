@@ -33,12 +33,25 @@ Future<List<Produk>> fetchSemuaProduk() async {
   }
 }
 
+Future<List<Produk>> fetchProdukByPenjual(int id) async {
+  final response = await dio.get('produk/penjual/$id');
+
+  if (response.statusCode == 200) {
+    final List<dynamic> data = response.data['data'];
+    List<Produk> daftarProduk = data.map((item) => Produk.fromJson(item as Map<String, dynamic>)).toList();
+    return daftarProduk;
+  } else {
+    throw Exception('Gagal mengambil produk kantin');
+  }
+}
+
 Future<void> postProduk({
   required String namaProduk,
   required String deskripsiProduk,
   required int hargaProduk,
   required String kategoriProduk,
   required int stok,
+  required int penjualId,
   required File fotoProduk,
 }) async {
   FormData formData = FormData.fromMap({
@@ -47,6 +60,7 @@ Future<void> postProduk({
     'deskripsi_produk': deskripsiProduk,
     'kategori_produk': kategoriProduk,
     'stok': stok,
+    'penjual_id': penjualId,
     'foto_produk': await MultipartFile.fromFile(
       fotoProduk.path,
       filename: fotoProduk.path.split('/').last,
@@ -80,6 +94,7 @@ Future<void> updateProduk({
   required int hargaProduk,
   required String kategoriProduk,
   required int stok,
+  required int penjualId,
   File? fotoProduk,
 }) async {
 
@@ -90,6 +105,7 @@ Future<void> updateProduk({
     'deskripsi_produk': deskripsiProduk,
     'kategori_produk': kategoriProduk,
     'stok': stok,
+    'penjual_id': penjualId
   };
 
   if (fotoProduk != null) {

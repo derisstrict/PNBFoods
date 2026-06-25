@@ -1,22 +1,14 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
-import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:pnbfoods/common/navbar.dart';
-import 'package:pnbfoods/common/tombol.dart';
 import 'package:pnbfoods/common/warna.dart';
-// import 'package:pnbfoods/database/database.dart';
-import 'package:pnbfoods/main.dart';
-import 'package:pnbfoods/models/produk.dart';
 import 'package:pnbfoods/models/kantin.dart';
+import 'package:pnbfoods/models/pelanggan.dart';
 import 'package:pnbfoods/pembeli/list_kantin/widget/card_kantin.dart';
-import 'package:pnbfoods/pembeli/list_produk/widget/card_menu.dart';
-import 'package:pnbfoods/penjual/form_produk/form_produk.dart';
-import 'package:pnbfoods/penjual/form_kantin/form_kantin.dart';
-import 'package:pnbfoods/services/produk_service.dart';
+import 'package:pnbfoods/pembeli/list_produk/list_produk.dart';
+import 'package:pnbfoods/services/cart_service.dart';
 import 'package:pnbfoods/services/kantin_service.dart';
-import 'package:pnbfoods/pembeli/list_kantin/widget/banner_kantin.dart';
+import 'package:pnbfoods/services/pelanggan_service.dart';
+import 'package:pnbfoods/services/produk_service.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ListKantin extends StatefulWidget {
   @override
@@ -25,63 +17,62 @@ class ListKantin extends StatefulWidget {
 
 class _ListKantinState extends State<ListKantin> {
   late Future<List<Kantin>> futureKantin;
-  int _selectedNavbar = 0;
+  Future<Pelanggan>? pelanggan;
+  Pelanggan? pelangganData;
+
+  int? idPelanggan;
+  final _searchController = TextEditingController();
+  String _searchQuery = "";
+  Map<int, ({int min, int max})> _priceRanges = {};
+
+  void getIdPengguna() async {
+    final prefs = await SharedPreferences.getInstance();
+    final id = prefs.getInt('userId');
+    setState(() {
+      idPelanggan = id;
+    });
+    if (idPelanggan != null) {
+      pelanggan = fetchPelanggan(idPelanggan!);
+    }
+  }
 
   @override
   void initState() {
     super.initState();
+    getIdPengguna();    
     futureKantin = fetchSemuaKantin();
+    fetchSemuaProduk().then((produkList) {
+      for (final p in produkList) {
+        if (p.penjualId == null) continue;
+        final existing = _priceRanges[p.penjualId];
+        if (existing == null) {
+          _priceRanges[p.penjualId!] = (min: p.hargaProduk, max: p.hargaProduk);
+        } else {
+          _priceRanges[p.penjualId!] = (
+            min: p.hargaProduk < existing.min ? p.hargaProduk : existing.min,
+            max: p.hargaProduk > existing.max ? p.hargaProduk : existing.max,
+          );
+        }
+      }
+      setState(() {});
+    });
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  String _formatHarga(int harga) {
+    if (harga >= 1000) return '${harga ~/ 1000}rb';
+    return '$harga';
   }
 
   void refreshKantin() {
     setState(() {
       futureKantin = fetchSemuaKantin();
     });
-  }
-
-  void _changeSelectedNavbar(int index) {
-    setState(() {
-      _selectedNavbar = index;
-    });
-  }
-
-  Future<void> _hapusKantin(Kantin kantin) async {
-    final confirm = await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text("Hapus Kantin"),
-        content: Text("Apakah Anda yakin ingin menghapus ${kantin.namaKantin}?"),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: const Text("Batal"),
-          ),
-          TextButton(
-            onPressed: () => Navigator.pop(context, true),
-            style: TextButton.styleFrom(foregroundColor: Colors.red),
-            child: const Text("Hapus"),
-          ),
-        ],
-      ),
-    );
-
-    if (confirm == true) {
-      try {
-        await deleteKantin(kantin.id);
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text("${kantin.namaKantin} berhasil dihapus")),
-          );
-          refreshKantin();
-        }
-      } catch (e) {
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text("Gagal menghapus kantin: $e")),
-          );
-        }
-      }
-    }
   }
 
   @override
@@ -121,25 +112,77 @@ class _ListKantinState extends State<ListKantin> {
                               ),
                             ),
                             SizedBox(height: 5),
-                            Text(
-                              "Ngab Owi",
-                              style: TextStyle(
-                                fontWeight: FontWeight.w500,
-                                color: Colors.white,
-                                fontSize: 14,
-                              ),
-                            ),
+                            FutureBuilder(
+                              future: pelanggan, 
+                              builder: (context, snapshot) {
+                                if (snapshot.connectionState == ConnectionState.waiting) {
+                                  return Text('Loading...', style: TextStyle(color: Colors.white),);
+                                }
+                                if (snapshot.hasError) {
+                                  return Center(
+                                    child: Column(
+                                      spacing: 10,
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Text('Error: ${snapshot.error}'),
+                                      ],
+                                    ),
+                                  );
+                                }
+                                if (snapshot.hasData) {
+                                  pelangganData = snapshot.data;
+                                  return Text(snapshot.data!.namaPelanggan,
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w500,
+                                      color: Colors.white,
+                                      fontSize: 14,
+                                    ),
+                                  );
+                                }
+                                return Text('Loading...', style: TextStyle(color: Colors.white),);
+                              }
+                            )
                           ],
                         ),
 
                         Spacer(),
 
-                        CircleAvatar(
-                          radius: 20,
-                          backgroundImage: NetworkImage(
-                            'https://i.pravatar.cc/150',
-                          ),
-                        ),
+                        FutureBuilder(
+                          future: pelanggan, 
+                          builder: (context, snapshot) {
+                            if (snapshot.connectionState == ConnectionState.waiting) {
+                              return CircleAvatar(
+                                radius: 20,
+                                backgroundColor: Colors.white24,
+                                child: Icon(Icons.person, size: 32, color: Colors.white,),
+                              ); 
+                            }
+                            if (snapshot.hasError) {
+                              return Center(
+                                child: Column(
+                                  spacing: 10,
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Text('Error: ${snapshot.error}'),
+                                  ],
+                                ),
+                              );
+                            }
+                            if (snapshot.hasData && snapshot.data!.fotoUrl != null) {
+                              return CircleAvatar(
+                                radius: 20,
+                                backgroundImage: NetworkImage(
+                                  snapshot.data!.fotoUrl!,
+                                ),
+                              );
+                            } 
+                            return CircleAvatar(
+                              radius: 20,
+                              backgroundColor: Colors.white24,
+                              child: Icon(Icons.person, size: 32, color: Colors.white,),
+                            ); 
+                          }
+                        )
                       ],
                     ),
                   ),
@@ -159,15 +202,24 @@ class _ListKantinState extends State<ListKantin> {
                       children: [
                         Icon(Icons.search_outlined, color: Color(0xFFF9803B)),
                         SizedBox(width: 5),
-                        Text(
-                          "Kantin Ibu Gacor",
-                          style: TextStyle(fontSize: 12, color: Colors.black38),
+                        Expanded(
+                          child: TextField(
+                            controller: _searchController,
+                            onChanged: (value) => setState(() => _searchQuery = value),
+                            style: TextStyle(fontSize: 12, color: Colors.black),
+                            decoration: InputDecoration(
+                              hintText: "Cari kantin...",
+                              hintStyle: TextStyle(fontSize: 12, color: Colors.black38),
+                              border: InputBorder.none,
+                              isDense: true,
+                              contentPadding: EdgeInsets.zero,
+                            ),
+                          ),
                         ),
-                        Spacer(),
                         Icon(
-                          Icons.restaurant,
+                          Icons.store_mall_directory_rounded,
                           color: Warna.warnaAccent,
-                          size: 20,
+                          size: 24,
                         ),
                       ],
                     ),
@@ -220,7 +272,12 @@ class _ListKantinState extends State<ListKantin> {
               future: futureKantin,
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
-                  if (snapshot.data!.isEmpty) {
+                  final filterKantin = snapshot.data!.where((k) =>
+                    _searchQuery.isEmpty ||
+                    k.namaKantin.toLowerCase().contains(_searchQuery.toLowerCase())
+                  ).toList();
+
+                  if (filterKantin.isEmpty) {
                     return const Center(
                       child: Text(
                         "Belum ada kantin.",
@@ -229,28 +286,28 @@ class _ListKantinState extends State<ListKantin> {
                     );
                   }
                   return ListView.builder(
-                    itemCount: snapshot.data!.length,
+                    itemCount: filterKantin.length,
                     padding: const EdgeInsets.all(10),
                     itemBuilder: (context, index) {
-                      final kantin = snapshot.data![index];
+                      final kantin = filterKantin[index];
 
                       return CardKantin(
                         namaKantin: kantin.namaKantin,
                         kategori: kantin.kategori,
-                        infoHarga: "Lihat Menu",
+                        infoHarga: _priceRanges.containsKey(kantin.idPenjual)
+                          ? 'Rp. ${_formatHarga(_priceRanges[kantin.idPenjual]!.min)} - ${_formatHarga(_priceRanges[kantin.idPenjual]!.max)}'
+                          : "Lihat Menu",
                         imageUrl: kantin.fotoUrl ?? 'https://picsum.photos/200?id=${kantin.id}',
+                        cartItemCount: CartService().totalItems(kantinId: kantin.id),
                         onTap: () async {
-                          final result = await Navigator.push(
+                          await Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => FormKantin(kantin: kantin),
+                              builder: (context) => ListProduk(kantin: kantin),
                             ),
                           );
-                          if (result == true) {
-                            refreshKantin();
-                          }
+                          setState(() {});
                         },
-                        onLongPress: () => _hapusKantin(kantin),
                       );
                     },
                   );
@@ -272,21 +329,7 @@ class _ListKantinState extends State<ListKantin> {
           ),
         ],
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () async {
-          final result = await Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => const FormKantin(),
-            ),
-          );
-          if (result == true) {
-            refreshKantin();
-          }
-        },
-        backgroundColor: const Color(0xFFF9803B),
-        child: const Icon(Icons.add, color: Colors.white),
-      ),
+
     );
   }
 }

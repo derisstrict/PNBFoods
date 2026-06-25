@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pnbfoods/common/warna.dart';
 
 class Navbar extends StatelessWidget {
   final int index;
@@ -31,7 +32,7 @@ class Navbar extends StatelessWidget {
       ],
       currentIndex: index,
       backgroundColor: Colors.white,
-      selectedItemColor: Color(0xFFF9803B),
+      selectedItemColor: Warna.warnaAccent,
       unselectedItemColor: Colors.grey,
       selectedFontSize: 11.0,
       unselectedFontSize: 11.0,
