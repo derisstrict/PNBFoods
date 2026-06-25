@@ -1,20 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:pnbfoods/models/produk.dart';
 import 'package:pnbfoods/common/warna.dart';
-
-// Wrapper sementara untuk data tambahan yang belum ada di model Produk
-// (kantin, jumlah favorit). Sesuaikan/ganti kalau API favorit sudah jadi.
-class FavoritItem {
-  final Produk produk;
-  final String kantin;
-  final int jumlahFavorit;
-
-  FavoritItem({
-    required this.produk,
-    required this.kantin,
-    required this.jumlahFavorit,
-  });
-}
+import 'package:pnbfoods/services/favorit_service.dart';
 
 class FavoritPage extends StatefulWidget {
   const FavoritPage({super.key});
@@ -24,42 +10,23 @@ class FavoritPage extends StatefulWidget {
 }
 
 class _FavoritPageState extends State<FavoritPage> {
-  // Data dummy
-  final List<FavoritItem> _favoritList = [
-    FavoritItem(
-      produk: const Produk(
-        id: 1,
-        namaProduk: 'Nasi Goreng Spesial',
-        fotoProduk: null,
-        fotoUrl:
-            'https://images.unsplash.com/photo-1603133872878-684f208fb84b?w=200',
-        deskripsiProduk: null,
-        kategoriProduk: 'Makanan',
-        hargaProduk: 25000,
-        stok: 10,
-      ),
-      kantin: 'Kantin Bu Gacor',
-      jumlahFavorit: 250,
-    ),
-    FavoritItem(
-      produk: const Produk(
-        id: 2,
-        namaProduk: 'Tipat Cantok',
-        fotoProduk: null,
-        fotoUrl:
-            'https://images.unsplash.com/photo-1559314809-0d155014e29e?w=200',
-        deskripsiProduk: null,
-        kategoriProduk: 'Makanan',
-        hargaProduk: 18000,
-        stok: 10,
-      ),
-      kantin: 'Kantin Bu Gacor',
-      jumlahFavorit: 131,
-    ),
-  ];
+  late Future<List<Map<String, dynamic>>> _futureFavorit;
 
-  String _formatRupiah(int amount) {
-    final str = amount.toString();
+  @override
+  void initState() {
+    super.initState();
+    _futureFavorit = FavoritService.getFavorit();
+  }
+
+  void _refresh() {
+    setState(() {
+      _futureFavorit = FavoritService.getFavorit();
+    });
+  }
+
+  String _formatRupiah(dynamic amount) {
+    final int nilai = (double.tryParse(amount.toString()) ?? 0).toInt();
+    final str = nilai.toString();
     final buffer = StringBuffer();
     int count = 0;
     for (int i = str.length - 1; i >= 0; i--) {
@@ -70,10 +37,26 @@ class _FavoritPageState extends State<FavoritPage> {
     return 'Rp. ${buffer.toString().split('').reversed.join()}';
   }
 
-  void _hapusFavorit(int index) {
-    setState(() {
-      _favoritList.removeAt(index);
-    });
+  Future<void> _hapusFavorit(int favoritId) async {
+    try {
+      await FavoritService.hapusFavorit(favoritId);
+      _refresh();
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Dihapus dari favorit'),
+            backgroundColor: Colors.red,
+            duration: Duration(seconds: 2),
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Gagal menghapus: $e')),
+        );
+      }
+    }
   }
 
   @override
@@ -97,7 +80,7 @@ class _FavoritPageState extends State<FavoritPage> {
               child: const Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.favorite_border, color: Colors.white),
+                  Icon(Icons.favorite, color: Colors.white),
                   SizedBox(width: 8),
                   Text(
                     'Favorit',
@@ -114,124 +97,199 @@ class _FavoritPageState extends State<FavoritPage> {
 
             const SizedBox(height: 16),
 
-            // Jumlah item
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Align(
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  '${_favoritList.length} Item',
-                  style: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
-                  ),
-                ),
-              ),
-            ),
-
-            const SizedBox(height: 12),
-
-            // List favorit
+            // List dari API
             Expanded(
-              child: ListView.builder(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                itemCount: _favoritList.length,
-                itemBuilder: (context, index) {
-                  final item = _favoritList[index];
-                  final produk = item.produk;
-                  return Container(
-                    margin: const EdgeInsets.only(bottom: 12),
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(16),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.05),
-                          blurRadius: 6,
-                          offset: const Offset(0, 2),
+              child: FutureBuilder<List<Map<String, dynamic>>>(
+                future: _futureFavorit,
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+
+                  if (snapshot.hasError) {
+                    return Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Icon(Icons.error_outline,
+                              size: 48, color: Colors.red),
+                          const SizedBox(height: 8),
+                          Text(
+                            'Gagal memuat favorit\n${snapshot.error}',
+                            textAlign: TextAlign.center,
+                            style: const TextStyle(color: Colors.red),
+                          ),
+                          const SizedBox(height: 12),
+                          ElevatedButton(
+                            onPressed: _refresh,
+                            child: const Text('Coba Lagi'),
+                          ),
+                        ],
+                      ),
+                    );
+                  }
+
+                  final favoritList = snapshot.data ?? [];
+
+                  if (favoritList.isEmpty) {
+                    return Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Icons.favorite_border,
+                              size: 64, color: Colors.grey[400]),
+                          const SizedBox(height: 12),
+                          Text(
+                            'Belum ada favorit',
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: Colors.grey[500],
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  }
+
+                  return Column(
+                    children: [
+                      // Jumlah item
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        child: Align(
+                          alignment: Alignment.centerLeft,
+                          child: Text(
+                            '${favoritList.length} Item',
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                            ),
+                          ),
                         ),
-                      ],
-                    ),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(12),
-                          child: produk.fotoUrl != null
-                              ? Image.network(
-                                  produk.fotoUrl!,
-                                  width: 64,
-                                  height: 64,
-                                  fit: BoxFit.cover,
-                                  errorBuilder: (_, __, ___) => Container(
-                                    width: 64,
-                                    height: 64,
-                                    color: Colors.grey[300],
-                                    child:
-                                        const Icon(Icons.image_not_supported),
-                                  ),
-                                )
-                              : Container(
-                                  width: 64,
-                                  height: 64,
-                                  color: Colors.grey[300],
-                                  child: const Icon(Icons.fastfood),
-                                ),
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                children: [
-                                  Icon(Icons.storefront,
-                                      size: 14,
-                                      color: Warna.warnaTextGray),
-                                  const SizedBox(width: 4),
-                                  Text(
-                                    item.kantin,
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                      color: Warna.warnaTextGray,
-                                    ),
+                      ),
+                      const SizedBox(height: 12),
+
+                      Expanded(
+                        child: ListView.builder(
+                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                          itemCount: favoritList.length,
+                          itemBuilder: (context, index) {
+                            final item = favoritList[index];
+                            final produk = item['produk'] as Map<String, dynamic>;
+                            final kantin = produk['kantin'] as Map<String, dynamic>?;
+                            final favoritId = item['id'] as int;
+                            final jumlahFavorit = produk['jumlah_favorit'] ?? 0;
+                            final fotoUrl = produk['foto_url'] as String?;
+
+                            return Container(
+                              margin: const EdgeInsets.only(bottom: 12),
+                              padding: const EdgeInsets.all(12),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(16),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withOpacity(0.05),
+                                    blurRadius: 6,
+                                    offset: const Offset(0, 2),
                                   ),
                                 ],
                               ),
-                              const SizedBox(height: 4),
-                              Text(
-                                produk.namaProduk,
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 15,
-                                ),
+                              child: Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  // Foto produk
+                                  ClipRRect(
+                                    borderRadius: BorderRadius.circular(12),
+                                    child: fotoUrl != null
+                                        ? Image.network(
+                                            fotoUrl,
+                                            width: 64,
+                                            height: 64,
+                                            fit: BoxFit.cover,
+                                            errorBuilder: (_, __, ___) =>
+                                                _placeholderImage(),
+                                          )
+                                        : _placeholderImage(),
+                                  ),
+                                  const SizedBox(width: 12),
+
+                                  // Info produk
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        // Nama kantin
+                                        if (kantin != null)
+                                          Row(
+                                            children: [
+                                              Icon(Icons.storefront,
+                                                  size: 14,
+                                                  color: Warna.warnaTextGray),
+                                              const SizedBox(width: 4),
+                                              Expanded(
+                                                child: Text(
+                                                  kantin['nama_kantin'] ?? '',
+                                                  style: TextStyle(
+                                                    fontSize: 12,
+                                                    color: Warna.warnaTextGray,
+                                                  ),
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        const SizedBox(height: 4),
+
+                                        // Nama produk
+                                        Text(
+                                          produk['nama_produk'] ?? '',
+                                          style: const TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 15,
+                                          ),
+                                        ),
+                                        const SizedBox(height: 4),
+
+                                        // Harga
+                                        Text(
+                                          _formatRupiah(produk['harga_produk']),
+                                          style: const TextStyle(
+                                            fontSize: 14,
+                                            color: Colors.black87,
+                                          ),
+                                        ),
+                                        const SizedBox(height: 4),
+
+                                        // Jumlah favorit
+                                        Text(
+                                          '$jumlahFavorit favorit',
+                                          style: TextStyle(
+                                            fontSize: 12,
+                                            color: Warna.warnaAccent,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+
+                                  // Tombol hapus favorit
+                                  IconButton(
+                                    icon: const Icon(Icons.favorite,
+                                        color: Colors.red),
+                                    onPressed: () =>
+                                        _hapusFavorit(favoritId),
+                                    tooltip: 'Hapus dari favorit',
+                                  ),
+                                ],
                               ),
-                              const SizedBox(height: 4),
-                              Text(
-                                _formatRupiah(produk.hargaProduk),
-                                style: const TextStyle(
-                                  fontSize: 14,
-                                  color: Colors.black87,
-                                ),
-                              ),
-                              const SizedBox(height: 4),
-                              Text(
-                                '${item.jumlahFavorit} favorit',
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  color: Warna.warnaAccent,
-                                ),
-                              ),
-                            ],
-                          ),
+                            );
+                          },
                         ),
-                        IconButton(
-                          icon: const Icon(Icons.favorite, color: Colors.red),
-                          onPressed: () => _hapusFavorit(index),
-                        ),
-                      ],
-                    ),
+                      ),
+                    ],
                   );
                 },
               ),
@@ -287,6 +345,15 @@ class _FavoritPageState extends State<FavoritPage> {
           ),
         ],
       ),
+    );
+  }
+
+  Widget _placeholderImage() {
+    return Container(
+      width: 64,
+      height: 64,
+      color: Colors.grey[300],
+      child: const Icon(Icons.fastfood, color: Colors.grey),
     );
   }
 }
