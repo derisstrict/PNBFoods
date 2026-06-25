@@ -20,16 +20,14 @@ class SectionTanggal extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        //*Header tanggal + total harga
+        //?Header tanggal + total harga
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            //?tanggal di sebelah kiri
             Text(
               riwayat.tanggal,
               style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
             ),
-            //?total harga di sebelah kanan
             Text(
               formatRupiah(
                 riwayat.transaksi.fold(0, (sum, t) => sum + t.totalHarga),
@@ -40,27 +38,24 @@ class SectionTanggal extends StatelessWidget {
         ),
         const SizedBox(height: 10),
 
-        //*List transaksi di tanggal ini
+        //?List transaksi di tanggal ini
         ...riwayat.transaksi.map((transaksi) {
           return Padding(
             padding: const EdgeInsets.only(bottom: 16),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                //?jam dibawah header tanggal
                 Text(
                   transaksi.jam,
-                  style: const TextStyle(fontSize: 12, color: Colors.black),
+                  style: const TextStyle(fontSize: 12, color: Colors.black54),
                 ),
                 const SizedBox(height: 8),
-                //?memanggil card transaksi
                 CardTransaksi(
                   transaksi: transaksi,
                   formatRupiah: formatRupiah,
                   warnaOrange: warnaOrange,
                 ),
                 const SizedBox(height: 10),
-                //?memanggi detailbelanja
                 DetailBelanja(
                   items: transaksi.items,
                   formatRupiah: formatRupiah,

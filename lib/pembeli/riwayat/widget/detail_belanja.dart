@@ -22,7 +22,6 @@ class DetailBelanja extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          //?judul
           const Text(
             'Detail Belanja',
             style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
@@ -33,12 +32,10 @@ class DetailBelanja extends StatelessWidget {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    //?jumlah item dan namanya
                     Text(
                       '${item.jumlah}x ${item.nama}',
                       style: const TextStyle(fontSize: 13),
                     ),
-                    //?harga subtotal
                     Text(
                       formatRupiah(item.subtotal),
                       style: const TextStyle(fontSize: 13),
