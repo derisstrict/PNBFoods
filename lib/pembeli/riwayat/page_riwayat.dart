@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pnbfoods/common/top_bar.dart';
 import 'package:pnbfoods/models/item_riwayat.dart';
 import 'package:pnbfoods/services/riwayat_service.dart';
 import 'package:pnbfoods/pembeli/riwayat/widget/section_tanggal.dart';
@@ -38,32 +39,7 @@ class _RiwayatPageState extends State<RiwayatPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF5F5F5),
-      appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(kToolbarHeight),
-        child: ClipRRect(
-          borderRadius: const BorderRadius.only(
-            bottomLeft: Radius.circular(20),
-            bottomRight: Radius.circular(20),
-          ),
-          child: AppBar(
-            backgroundColor: warnaOrange,
-            foregroundColor: Colors.white,
-            centerTitle: true,
-            title: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: const [
-                Icon(Icons.history, size: 20),
-                SizedBox(width: 8),
-                Text(
-                  'Riwayat',
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
-                ),
-              ],
-            ),
-            automaticallyImplyLeading: false,
-          ),
-        ),
-      ),
+      appBar: TopBar(title: "Riwayat", icon: Icons.history,),
       body: FutureBuilder<List<TransaksiRiwayat>>(
         future: futureRiwayat,
         builder: (context, snapshot) {
