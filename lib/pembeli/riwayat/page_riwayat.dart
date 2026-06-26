@@ -60,10 +60,7 @@ class _RiwayatPageState extends State<RiwayatPage> {
                 ),
               ],
             ),
-            leading: IconButton(
-              icon: const Icon(Icons.arrow_back),
-              onPressed: () => Navigator.pop(context),
-            ),
+            automaticallyImplyLeading: false,
           ),
         ),
       ),
@@ -118,7 +115,7 @@ class _RiwayatPageState extends State<RiwayatPage> {
                   );
                 }),
 
-                // Tombol Kembali
+                //*Tombol Kembali
                 SizedBox(
                   width: double.infinity,
                   child: OutlinedButton(
@@ -141,26 +138,10 @@ class _RiwayatPageState extends State<RiwayatPage> {
                     ),
                   ),
                 ),
-                const SizedBox(height: 20),
               ],
             ),
           );
         },
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        type: BottomNavigationBarType.fixed,
-        currentIndex: 3,
-        selectedItemColor: warnaOrange,
-        unselectedItemColor: Colors.grey,
-        selectedFontSize: 11,
-        unselectedFontSize: 11,
-        showUnselectedLabels: true,
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home_outlined), label: 'Beranda'),
-          BottomNavigationBarItem(icon: Icon(Icons.assignment_outlined), label: 'Order'),
-          BottomNavigationBarItem(icon: Icon(Icons.favorite_border), label: 'Favorit'),
-          BottomNavigationBarItem(icon: Icon(Icons.person_outline), label: 'Akun'),
-        ],
       ),
     );
   }

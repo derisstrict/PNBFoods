@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:pnbfoods/models/item_riwayat.dart';
 import 'package:pnbfoods/services/base_url.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter/foundation.dart';
 
 final Dio _dio = Dio(
   BaseOptions(
@@ -13,6 +14,7 @@ final Dio _dio = Dio(
 Future<List<TransaksiRiwayat>> fetchRiwayat() async {
   final prefs = await SharedPreferences.getInstance();
   final token = prefs.getString('token');
+  debugPrint('TOKEN RIWAYAT: $token');
 
   try {
     final response = await _dio.get(
@@ -31,7 +33,7 @@ Future<List<TransaksiRiwayat>> fetchRiwayat() async {
       throw Exception('Gagal mengambil riwayat');
     }
   } on DioException catch (e) {
-    print('Error riwayat: ${e.response?.data ?? e.message}');
+    debugPrint('Error riwayat: ${e.response?.data ?? e.message}');
     throw Exception('Gagal mengambil riwayat');
   }
 }
