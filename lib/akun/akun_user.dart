@@ -5,11 +5,14 @@ import 'package:pnbfoods/auth/role_page.dart';
 import 'package:pnbfoods/common/warna.dart';
 import 'package:pnbfoods/akun/edit_user.dart';
 import 'package:pnbfoods/models/pelanggan.dart';
+import 'package:pnbfoods/pembeli/riwayat/page_riwayat.dart';
 import 'package:pnbfoods/services/cart_service.dart';
 import 'package:pnbfoods/services/pelanggan_service.dart';
 import 'package:pnbfoods/models/penjual.dart';
 import 'package:pnbfoods/services/penjual_service.dart';
+import 'package:pnbfoods/services/riwayat_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:pnbfoods/pembeli/riwayat/page_riwayat.dart';
 
 class ProfileUser extends StatefulWidget {
 
@@ -428,7 +431,16 @@ class _ProfilUserState extends State<ProfileUser> {
   }
 
   Future<void> _openRiwayat(BuildContext context) async {
-    //buka halaman riwayat pembelian
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const RiwayatPage()),
+    );
+    if (result == true) {
+      setState(() {
+       //*Refresh data profil jika diperlukan
+        _ambilDataUser();
+      });
+    }
   }
 
   Future<void> _openChangePasswordPelanggan(BuildContext context, Pelanggan pelanggan) async {
