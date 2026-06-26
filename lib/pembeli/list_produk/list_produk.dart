@@ -1,242 +1,346 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:pnbfoods/common/tombol.dart';
+import 'package:pnbfoods/common/top_bar.dart';
 import 'package:pnbfoods/common/warna.dart';
-// import 'package:pnbfoods/database/database.dart';
-import 'package:pnbfoods/main.dart';
+import 'package:pnbfoods/models/kantin.dart';
 import 'package:pnbfoods/models/produk.dart';
-import 'package:pnbfoods/pembeli/list_produk/widget/card_menu.dart';
-import 'package:pnbfoods/penjual/form_produk/form_produk.dart';
+import 'package:pnbfoods/pembeli/deskripsi_makanan/deskripsi_makanan.dart';
+import 'package:pnbfoods/pembeli/keranjang/page_keranjang.dart';
+import 'package:pnbfoods/pembeli/list_produk/widget/card_produk.dart';
+import 'package:pnbfoods/services/cart_service.dart';
 import 'package:pnbfoods/services/produk_service.dart';
 
 class ListProduk extends StatefulWidget {
-  @override 
-  _ListProdukState createState() => _ListProdukState();
+  final Kantin kantin;
+  final Produk? produkAwal; // ← tambah ini
+  const ListProduk({super.key, required this.kantin, this.produkAwal});
+  @override
+  State<ListProduk> createState() => _ListProdukState();
 }
 
 class _ListProdukState extends State<ListProduk> {
-  int _selectedNavbar = 0;
-
-  String? _appDirPath;
-
+  String _filterMakanan = "";
+  String _searchQuery = "";
+  String? _searchHint;
+  final _searchController = TextEditingController();
   late Future<List<Produk>> futureProduk;
 
-  void _changeSelectedNavbar(int index) {
-    setState(() {
-      _selectedNavbar = index;
-    });
+  String formatRupiah(int nilai) {
+    final formatted = nilai.toString().replaceAllMapped(
+      RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
+      (m) => '${m[1]}.',
+    );
+    return 'Rp. $formatted';
   }
 
-  Future<void> _initPath() async {
-    final Directory appDir = await getApplicationDocumentsDirectory();
-    setState(() {
-      _appDirPath = appDir.path;
-    });
-  }
-  
   @override
   void initState() {
     super.initState();
-    futureProduk = fetchSemuaProduk();
-    _initPath();
+    futureProduk = fetchProdukByPenjual(widget.kantin.idPenjual).then((list) {
+      if (list.isNotEmpty) {
+        final random =
+            list[DateTime.now().millisecondsSinceEpoch % list.length];
+        _searchHint = random.namaProduk;
+        if (mounted) setState(() {});
+      }
+      return list;
+    });
+
+    // ← tambah ini: buka DeskripsiMakanan otomatis kalau ada produkAwal
+    if (widget.produkAwal != null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        showModalBottomSheet(
+          context: context,
+          showDragHandle: true,
+          useSafeArea: true,
+          barrierColor: Colors.black45,
+          backgroundColor: Warna.warnaBackground,
+          isScrollControlled: true,
+          builder: (context) => DeskripsiMakanan(produk: widget.produkAwal!),
+        ).then((result) {
+          if (result != null && mounted) {
+            CartService().addOrUpdate(
+              widget.kantin.id,
+              widget.produkAwal!.id,
+              widget.produkAwal!.namaProduk,
+              widget.produkAwal!.hargaProduk,
+              widget.produkAwal!.fotoUrl ?? '',
+              result['quantity'] as int,
+              catatan: result['note'] as String?,
+            );
+            setState(() {});
+          }
+        });
+      });
+    }
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: TopBarless(),
       backgroundColor: Warna.warnaBackground,
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            Container(
-              width: 500,
-              height: 150,
-              decoration: BoxDecoration(
-                color: Color(0xFFF9803B),
-                borderRadius: BorderRadius.only(
-                  bottomLeft: Radius.circular(25),
-                  bottomRight: Radius.circular(25)
-                ),
-              ),
-              child: Container(
-                margin: EdgeInsets.all(20),
-                child: Column(
-                  children: [
-                    Row(
+      body: SafeArea(
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            double screenWidth = constraints.maxWidth;
+            double screenPadding = 40.0;
+            double finalWidth = (screenWidth - (screenPadding * 2)) / 2;
+            return Stack(
+              children: [
+                Positioned.fill(
+                  child: SingleChildScrollView(
+                    child: Column(
                       children: [
-                        ClipRRect(
-                          borderRadius: BorderRadiusGeometry.circular(15),
-                          child: FlutterLogo(),
+                        TopBarHeader(
+                          width: double.infinity,
+                          style: TopBarHeader.pembeli,
+                          text1: widget.kantin.namaKantin,
+                          text2: widget.kantin.kategori,
+                          searchController: _searchController,
+                          searchHint: _searchHint,
+                          onSearchChanged: (value) {
+                            setState(() => _searchQuery = value);
+                          },
+                          kantin: widget.kantin,
                         ),
-                        SizedBox(width: 10,),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text("Kantin Ibu Gacor",
-                              style: TextStyle(fontWeight: FontWeight.w500, color: Colors.white, fontSize: 16.0),
-                            ),
-                            SizedBox(height: 5,),
-                            Text("Makanan & Minuman",
-                              style: TextStyle(fontWeight: FontWeight.w200, color: Colors.white, fontSize: 12.0),
-                            ),
-                          ],
-                        )
+                        Container(
+                          margin: EdgeInsets.all(10),
+                          child: Column(
+                            children: [
+                              SizedBox(height: 10),
+                              Row(
+                                children: [
+                                  Text(
+                                    "Apa yang ingin kamu cari?",
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              SizedBox(height: 10),
+                              Row(
+                                children: [
+                                  TextButton(
+                                    onPressed: () {
+                                      setState(() {
+                                        _filterMakanan = "";
+                                      });
+                                    },
+                                    style: TextButton.styleFrom(
+                                      backgroundColor: _filterMakanan == ""
+                                          ? Warna.warnaAccent
+                                          : Colors.white,
+                                      foregroundColor: _filterMakanan == ""
+                                          ? Colors.white
+                                          : Colors.black,
+                                    ),
+                                    child: Text("Semua"),
+                                  ),
+                                  SizedBox(width: 10),
+                                  TextButton(
+                                    onPressed: () {
+                                      setState(() {
+                                        _filterMakanan = "Makanan";
+                                      });
+                                    },
+                                    style: TextButton.styleFrom(
+                                      backgroundColor:
+                                          _filterMakanan == "Makanan"
+                                          ? Warna.warnaAccent
+                                          : Colors.white,
+                                      foregroundColor:
+                                          _filterMakanan == "Makanan"
+                                          ? Colors.white
+                                          : Colors.black,
+                                    ),
+                                    child: Text("Makanan"),
+                                  ),
+                                  SizedBox(width: 10),
+                                  TextButton(
+                                    onPressed: () {
+                                      setState(() {
+                                        _filterMakanan = "Minuman";
+                                      });
+                                    },
+                                    style: TextButton.styleFrom(
+                                      backgroundColor:
+                                          _filterMakanan == "Minuman"
+                                          ? Warna.warnaAccent
+                                          : Colors.white,
+                                      foregroundColor:
+                                          _filterMakanan == "Minuman"
+                                          ? Colors.white
+                                          : Colors.black,
+                                    ),
+                                    child: Text("Minuman"),
+                                  ),
+                                ],
+                              ),
+                              SizedBox(height: 10),
+                              FutureBuilder<List<Produk>>(
+                                future: futureProduk,
+                                builder: (context, snapshot) {
+                                  if (snapshot.hasData) {
+                                    final items = snapshot.data!;
+
+                                    final filterItems = items.where((produk) {
+                                      if (_filterMakanan != "" &&
+                                          produk.kategoriProduk !=
+                                              _filterMakanan)
+                                        return false;
+                                      if (_searchQuery.isNotEmpty &&
+                                          !produk.namaProduk
+                                              .toLowerCase()
+                                              .contains(
+                                                _searchQuery.toLowerCase(),
+                                              ))
+                                        return false;
+                                      return true;
+                                    }).toList();
+
+                                    return MasonryGridView.builder(
+                                      shrinkWrap: true,
+                                      physics: NeverScrollableScrollPhysics(),
+                                      gridDelegate:
+                                          SliverSimpleGridDelegateWithFixedCrossAxisCount(
+                                            crossAxisCount: 2,
+                                          ),
+                                      itemCount: filterItems.length,
+                                      itemBuilder: (context, index) {
+                                        final produk = filterItems[index];
+                                        final qty = CartService().getQuantity(
+                                          widget.kantin.id,
+                                          produk.id,
+                                        );
+                                        return CardProduk(
+                                          produk: produk,
+                                          appDir: "",
+                                          width: finalWidth,
+                                          isAccent: qty > 0,
+                                          cartCount: qty,
+                                          onTap: () async {
+                                            final result =
+                                                await showModalBottomSheet(
+                                                  context: context,
+                                                  showDragHandle: true,
+                                                  useSafeArea: true,
+                                                  barrierColor: Colors.black45,
+                                                  backgroundColor:
+                                                      Warna.warnaBackground,
+                                                  isScrollControlled: true,
+                                                  builder: (context) =>
+                                                      DeskripsiMakanan(
+                                                        produk: produk,
+                                                      ),
+                                                );
+                                            if (result != null) {
+                                              CartService().addOrUpdate(
+                                                widget.kantin.id,
+                                                produk.id,
+                                                produk.namaProduk,
+                                                produk.hargaProduk,
+                                                produk.fotoUrl ?? '',
+                                                qty +
+                                                    (result['quantity'] as int),
+                                                catatan:
+                                                    result['note'] as String?,
+                                              );
+                                              setState(() {});
+                                            }
+                                          },
+                                        );
+                                      },
+                                    );
+                                  } else if (snapshot.hasError) {
+                                    return Text('${snapshot.error}');
+                                  }
+                                  return const CircularProgressIndicator();
+                                },
+                              ),
+                              SizedBox(height: 10),
+                              Wrap(
+                                spacing: 10.0,
+                                runSpacing: 10.0,
+                                direction: Axis.horizontal,
+                                alignment: WrapAlignment.start,
+                                runAlignment: WrapAlignment.start,
+                                crossAxisAlignment: WrapCrossAlignment.end,
+                                children: [],
+                              ),
+                            ],
+                          ),
+                        ),
                       ],
                     ),
-                    SizedBox(height: 10,),
-                    Container(
-                      padding: EdgeInsets.only(top: 5, left: 10, right: 10, bottom: 5),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(10)
-                      ),
-                      child: Row(
-                        children: [
-                          Icon(Icons.search_outlined, color: Color(0xFFF9803B),),
-                          SizedBox(width: 5,),
-                          Text("Nasi Goreng",
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: Colors.black38
-                          ),),
-                          Spacer(),
-                          Text("cari di kantin ini", 
-                            style: TextStyle(
-                              fontSize: 10,
-                              color: Color(0xFFF9803B)
-                            ),)
-                        ],
-                      ),
-                    )
-                  ],
+                  ),
                 ),
-              ),
-            ),
-            Container(
-              margin: EdgeInsets.all(10),
-              child: Column(
-                children: [
-                  SizedBox(height: 10,),
-                  Row(
-                    children: [
-                      Text("Apa yang ingin kamu cari?",
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold
-                      ),),
-                    ],
-                  ),
-                  SizedBox(height: 10,),
-                  Row(
-                    children: [
-                      TextButton(
-                        onPressed: () {},
-                        style: TextButton.styleFrom(
-                          backgroundColor: Color(0xFFF9803B),
-                          foregroundColor: Colors.white
+                if (!CartService().isEmpty(kantinId: widget.kantin.id))
+                  Positioned(
+                    bottom: 20,
+                    left: 15,
+                    right: 15,
+                    child: GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                KeranjangPage(kantin: widget.kantin),
+                          ),
+                        ).then((_) => setState(() {}));
+                      },
+                      child: Container(
+                        padding: EdgeInsets.all(15),
+                        decoration: BoxDecoration(
+                          color: Warna.warnaAccent,
+                          borderRadius: BorderRadius.circular(10),
                         ),
-                        child: Text("Semua",)
+                        child: Row(
+                          spacing: 10,
+                          children: [
+                            Icon(
+                              Icons.shopping_cart_outlined,
+                              color: Colors.white,
+                            ),
+                            Text(
+                              "${CartService().totalItems(kantinId: widget.kantin.id)} Item",
+                              style: TextStyle(color: Colors.white),
+                            ),
+                            Spacer(),
+                            Text(
+                              formatRupiah(
+                                CartService().totalHarga(
+                                  kantinId: widget.kantin.id,
+                                ),
+                              ),
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.w300,
+                              ),
+                            ),
+                            Icon(
+                              Icons.keyboard_arrow_up_rounded,
+                              size: 24,
+                              color: Colors.white,
+                            ),
+                          ],
+                        ),
                       ),
-                      SizedBox(width: 10,),
-                      TextButton(
-                        onPressed: () {}, 
-                        style: TextButton.styleFrom(
-                          backgroundColor: Colors.white,
-                          foregroundColor: Colors.black
-                        ), 
-                        child: Text("Makanan",)
-                      ),
-                      SizedBox(width: 10,),
-                      TextButton(
-                        onPressed: () {},
-                        style: TextButton.styleFrom(
-                          backgroundColor: Colors.white,
-                          foregroundColor: Colors.black
-                        ), 
-                        child: Text("Minuman")
-                      ),
-                    ],
+                    ),
                   ),
-                  FutureBuilder<List<Produk>>(
-                    future: futureProduk, 
-                    builder: (context, snapshot) {
-                      if (snapshot.hasData) {
-                        return MasonryGridView.builder(
-                          shrinkWrap: true,
-                          physics: NeverScrollableScrollPhysics(),
-                          gridDelegate: SliverSimpleGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
-                          itemCount: snapshot.data!.length,
-                          itemBuilder: (context, index) {
-                            return CardProduk(produk: snapshot.data![index], appDir: _appDirPath!,);
-                          }
-                        );
-                      } else if (snapshot.hasError) {
-                          return Text('${snapshot.error}');
-                        }
-                      return const CircularProgressIndicator();
-                    }
-                  ),
-                  Wrap(
-                    spacing: 10.0,
-                    runSpacing: 10.0,
-                    direction: Axis.horizontal,
-                    alignment: WrapAlignment.start,
-                    runAlignment: WrapAlignment.start,
-                    crossAxisAlignment: WrapCrossAlignment.end,
-                    children: [
-                      
-                    ],
-                  ),
-                  Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      TombolNavigasi(
-                        function: () {
-                          Navigator.push(context, MaterialPageRoute(builder: (context) => FormProduk()));
-                        }, 
-                        backgroundColor: Colors.white, 
-                        foregroundColor: Colors.black, 
-                        text: "Buat Produk"
-                      )
-                    ],
-                  )
-                ],
-              ),
-            ),
-          ],
-        )
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        type: BottomNavigationBarType.fixed,
-        items: <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home_outlined),
-            label: "Beranda"
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.assignment_outlined),
-            label: "Order"
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.favorite_border),
-            label: "Favorit"
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person_outline),
-            label: "Profil"
-          ),
-        ],
-        currentIndex: _selectedNavbar,
-        backgroundColor: Colors.white,
-        selectedItemColor: Color(0xFFF9803B),
-        unselectedItemColor: Colors.grey,
-        selectedFontSize: 11.0,
-        unselectedFontSize: 11.0,
-        showUnselectedLabels: true,
-        onTap: _changeSelectedNavbar,
+              ],
+            );
+          },
+        ),
       ),
     );
   }

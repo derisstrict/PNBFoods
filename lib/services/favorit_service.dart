@@ -8,11 +8,11 @@ const String _baseUrl = 'http://10.0.2.2:8000/api';
 class FavoritService {
   /// Ambil token dan pelanggan_id dari SharedPreferences
   static Future<Map<String, dynamic>> _getAuth() async {
-    final prefs = await SharedPreferences.getInstance();
-    final token = prefs.getString('token') ?? '';
-    final pelangganId = prefs.getInt('pelanggan_id') ?? 0;
-    return {'token': token, 'pelanggan_id': pelangganId};
-  }
+  final prefs = await SharedPreferences.getInstance();
+  final token = prefs.getString('token') ?? '';
+  final pelangganId = prefs.getInt('userId') ?? 0;
+  return {'token': token, 'pelanggan_id': pelangganId};
+}
 
   /// GET /api/favorit?pelanggan_id={id}
   /// Ambil semua favorit milik pelanggan yang sedang login
@@ -59,9 +59,7 @@ class FavoritService {
     if (response.statusCode == 200 || response.statusCode == 201) {
       final body = jsonDecode(response.body);
       if (body['success'] == true) {
-        return {
-          'is_favorit': body['is_favorit'] as bool,
-        };
+        return {'is_favorit': body['is_favorit'] as bool};
       }
     }
     throw Exception('Gagal mengubah status favorit');
@@ -92,7 +90,9 @@ class FavoritService {
     final pelangganId = auth['pelanggan_id'];
 
     final response = await http.get(
-      Uri.parse('$_baseUrl/favorit/cek?pelanggan_id=$pelangganId&produk_id=$produkId'),
+      Uri.parse(
+        '$_baseUrl/favorit/cek?pelanggan_id=$pelangganId&produk_id=$produkId',
+      ),
       headers: {
         'Accept': 'application/json',
         'Authorization': 'Bearer ${auth['token']}',
