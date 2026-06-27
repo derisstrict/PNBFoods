@@ -1,9 +1,11 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 
 class PengambilanKantin extends StatelessWidget {
   final String namaKantin;
+  final String? fotoUrl;
 
-  const PengambilanKantin({super.key, required this.namaKantin});
+  const PengambilanKantin({super.key, required this.namaKantin, this.fotoUrl});
 
   @override
   Widget build(BuildContext context) {
@@ -25,21 +27,33 @@ class PengambilanKantin extends StatelessWidget {
             children: [
               ClipRRect(
                 borderRadius: BorderRadius.circular(6),
-                child: Image.network(
-                  'https://picsum.photos/40?kantin=1',
+                child: Container(
                   width: 36,
                   height: 36,
-                  fit: BoxFit.cover,
-                  errorBuilder: (context, a, b) => Container(
-                    width: 36,
-                    height: 36,
-                    color: Colors.grey[200],
-                    child: const Icon(Icons.store, size: 20),
-                  ),
+                  color: Colors.grey[200],
+                  child: fotoUrl == null || fotoUrl!.isEmpty
+                      ? const Icon(Icons.store, size: 20)
+                      : (fotoUrl!.startsWith('http')
+                          ? Image.network(
+                              fotoUrl!,
+                              width: 36,
+                              height: 36,
+                              fit: BoxFit.cover,
+                              errorBuilder: (context, error, stackTrace) =>
+                                  const Icon(Icons.store, size: 20),
+                            )
+                          : Image.file(
+                              File(fotoUrl!),
+                              width: 36,
+                              height: 36,
+                              fit: BoxFit.cover,
+                              errorBuilder: (context, error, stackTrace) =>
+                                  const Icon(Icons.store, size: 20),
+                            )),
                 ),
               ),
               const SizedBox(width: 10),
-              Text(namaKantin, style: TextStyle(fontSize: 13)),
+              Text(namaKantin, style: const TextStyle(fontSize: 13)),
             ],
           ),
         ],
