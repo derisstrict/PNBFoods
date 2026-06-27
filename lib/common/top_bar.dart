@@ -111,14 +111,14 @@ class TopBarHeader extends StatelessWidget {
                     visible: style == pembeli,
                     child: Row(
                       children: [
-                        // IconButton(
-                        //   onPressed: () {
-                        //     Navigator.pop(context);
-                        //   },
-                        //   icon: Icon(Icons.arrow_back,
-                        //     color: Colors.white,
-                        //   )
-                        // ),
+                        IconButton(
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                          icon: Icon(Icons.arrow_back,
+                            color: Colors.white,
+                          )
+                        ),
                         ClipRRect(
                           borderRadius: BorderRadius.circular(10),
                           child: Container(
