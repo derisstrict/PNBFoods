@@ -2,10 +2,12 @@ import 'package:dio/dio.dart';
 import 'package:pnbfoods/models/orderan.dart';
 import 'package:pnbfoods/services/base_url.dart';
 
-final dio = Dio(BaseOptions(
-  baseUrl: BaseUrl.baseUrl,
-  headers: {'Accept': 'application/json'},
-));
+final dio = Dio(
+  BaseOptions(
+    baseUrl: BaseUrl.baseUrl,
+    headers: {'Accept': 'application/json'},
+  ),
+);
 
 Future<Orderan> fetchOrderan(int id) async {
   final response = await dio.get('orderan/$id');
@@ -37,12 +39,15 @@ Future<Orderan> postOrderan({
   required int pelangganId,
 }) async {
   try {
-    final response = await dio.post('orderan', data: {
-      'status_orderan': statusOrderan,
-      'total_harga': totalHarga,
-      'tanggal_orderan': tanggalOrderan.toIso8601String(),
-      'pelanggan_id': pelangganId,
-    });
+    final response = await dio.post(
+      'orderan',
+      data: {
+        'status_orderan': statusOrderan,
+        'total_harga': totalHarga,
+        'tanggal_orderan': tanggalOrderan.toIso8601String(),
+        'pelanggan_id': pelangganId,
+      },
+    );
 
     if (response.statusCode == 201) {
       return Orderan.fromJson(response.data['data']);
@@ -50,7 +55,9 @@ Future<Orderan> postOrderan({
       throw Exception('Gagal menambahkan orderan');
     }
   } on DioException catch (e) {
-    throw Exception('Gagal menambahkan orderan: ${e.response?.data ?? e.message}');
+    throw Exception(
+      'Gagal menambahkan orderan: ${e.response?.data ?? e.message}',
+    );
   }
 }
 
@@ -61,9 +68,7 @@ Future<Orderan> updateOrderan({
   DateTime? tanggalOrderan,
 }) async {
   try {
-    final Map<String, dynamic> data = {
-      '_method': 'PUT',
-    };
+    final Map<String, dynamic> data = {'_method': 'PUT'};
 
     if (statusOrderan != null) data['status_orderan'] = statusOrderan;
     if (totalHarga != null) data['total_harga'] = totalHarga;
@@ -80,7 +85,8 @@ Future<Orderan> updateOrderan({
     }
   } on DioException catch (e) {
     throw Exception(
-        'Gagal memperbarui orderan: ${e.response?.data ?? e.message}');
+      'Gagal memperbarui orderan: ${e.response?.data ?? e.message}',
+    );
   }
 }
 
@@ -92,6 +98,21 @@ Future<void> deleteOrderan(int id) async {
       throw Exception('Gagal menghapus orderan');
     }
   } on DioException catch (e) {
-    throw Exception('Gagal menghapus orderan: ${e.response?.data ?? e.message}');
+    throw Exception(
+      'Gagal menghapus orderan: ${e.response?.data ?? e.message}',
+    );
+  }
+}
+
+Future<List<Orderan>> fetchOrderanByPelanggan(int pelangganId) async {
+  final response = await dio.get('orderan/pelanggan/$pelangganId');
+
+  if (response.statusCode == 200) {
+    final List<dynamic> data = response.data['data'];
+    return data
+        .map((item) => Orderan.fromJson(item as Map<String, dynamic>))
+        .toList();
+  } else {
+    throw Exception('Gagal mengambil orderan pelanggan');
   }
 }
