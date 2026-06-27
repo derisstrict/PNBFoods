@@ -6,11 +6,13 @@ import 'package:path_provider/path_provider.dart';
 import 'package:pnbfoods/common/tombol.dart';
 import 'package:pnbfoods/common/top_bar.dart';
 import 'package:pnbfoods/common/warna.dart';
+import 'package:pnbfoods/models/penjual.dart';
 import 'package:pnbfoods/models/produk.dart';
 import 'package:pnbfoods/pembeli/list_produk/widget/card_produk.dart';
 import 'package:pnbfoods/penjual/dashboard/widgets/text_heading.dart';
 import 'package:pnbfoods/penjual/form_produk/form_produk.dart';
 import 'package:pnbfoods/penjual/form_kantin/form_kantin.dart';
+import 'package:pnbfoods/services/penjual_service.dart';
 import 'package:pnbfoods/services/produk_service.dart';
 import 'package:pnbfoods/models/kantin.dart';
 import 'package:pnbfoods/services/kantin_service.dart';
@@ -24,9 +26,8 @@ class Dashboard extends StatefulWidget {
 class _DashboardState extends State<Dashboard> {
   late Future<Kantin?> _futureKantin;
   late Future<List<Produk>> _futureProduk;
+  String penjual = "";
   String? _appDirPath;
-
-  bool TambahMenu = false;
 
   Future<void> _initPath() async {
     final Directory appDir = await getApplicationDocumentsDirectory();
@@ -46,11 +47,28 @@ class _DashboardState extends State<Dashboard> {
     }
   }
 
+  void _ambilNamaPenjual() async {
+    final prefs = await SharedPreferences.getInstance();
+    final userId = prefs.getInt('userId');
+    fetchPenjual(userId!).then((Penjual hasil) {
+      setState(() {
+        penjual = hasil.namaPenjual;
+      });
+    });
+  }
+
+  void _ambilProdukPenjual() async {
+    final prefs = await SharedPreferences.getInstance();
+    final userId = prefs.getInt('userId');
+    _futureProduk = fetchProdukByPenjual(userId!);
+  }
+
   @override
   void initState() {
     super.initState();
     _futureKantin = _loadKantin();
-    _futureProduk = fetchSemuaProduk();
+    _ambilProdukPenjual();
+    _ambilNamaPenjual();
     _initPath();
   }
 
@@ -126,7 +144,7 @@ class _DashboardState extends State<Dashboard> {
                     width: screenWidth,
                     style: TopBarHeader.penjual,
                     text1: "Halo,",
-                    text2: "Bu Wati",
+                    text2: penjual,
                   ),
                   Container(
                     margin: EdgeInsets.all(20),
@@ -458,7 +476,6 @@ class _DashboardState extends State<Dashboard> {
                                 );
                                 if (result == true) {
                                   setState(() {
-                                    TambahMenu = true;
                                     refreshProduk();
                                   });
                                 }
@@ -471,9 +488,7 @@ class _DashboardState extends State<Dashboard> {
                             FutureBuilder<List<Produk>>(
                               future: _futureProduk,
                               builder: (context, snapshot) {
-                                if (snapshot.hasData) {
-                                  final items = snapshot.data!;
-                                  if (!TambahMenu) {
+                                if (!snapshot.hasData) {
                                     return Container(
                                       padding: EdgeInsets.all(10),
                                       decoration: BoxDecoration(
@@ -493,6 +508,9 @@ class _DashboardState extends State<Dashboard> {
                                       ),
                                     );
                                   }
+                                if (snapshot.hasData) {
+                                  final items = snapshot.data!;
+                                  
                                   return MasonryGridView.builder(
                                     shrinkWrap: true,
                                     physics: NeverScrollableScrollPhysics(),
