@@ -143,6 +143,13 @@ class _ListProdukState extends State<ListProduk> {
                               FutureBuilder<List<Produk>>(
                                 future: futureProduk,
                                 builder: (context, snapshot) {
+                                  if (snapshot.connectionState == ConnectionState.waiting) {
+                                    return CircularProgressIndicator();
+                                  }
+                                  if (!snapshot.hasData) {
+                                    return Text("Belum terdapat produk pada kantin ini.");
+                                  }
+
                                   if (snapshot.hasData) {
                                     final items = snapshot.data!;
 
