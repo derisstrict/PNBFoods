@@ -82,7 +82,10 @@ class _KeranjangPageState extends State<KeranjangPage> {
             }),
 
             const SizedBox(height: 8),
-            PengambilanKantin(namaKantin: widget.kantin.namaKantin),
+            PengambilanKantin(
+              namaKantin: widget.kantin.namaKantin,
+              fotoUrl: widget.kantin.fotoUrl,
+            ),
             const SizedBox(height: 10),
             const MetodePembayaran(),
             const SizedBox(height: 10),

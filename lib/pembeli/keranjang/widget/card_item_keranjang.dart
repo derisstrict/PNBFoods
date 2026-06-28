@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:pnbfoods/common/warna.dart';
 import 'package:pnbfoods/models/item_keranjang.dart';
@@ -30,17 +31,29 @@ class CardItemKeranjang extends StatelessWidget {
           //*Foto produk
           ClipRRect(
             borderRadius: BorderRadius.circular(8),
-            child: Image.network(
-              item.imageUrl,
+            child: Container(
               width: 70,
               height: 70,
-              fit: BoxFit.cover,
-              errorBuilder: (context, a, b) => Container(
-                width: 70,
-                height: 70,
-                color: Colors.grey[200],
-                child: const Icon(Icons.image_not_supported),
-              ),
+              color: Colors.grey[200],
+              child: item.imageUrl.isEmpty
+                  ? const Icon(Icons.image_not_supported)
+                  : (item.imageUrl.startsWith('http')
+                        ? Image.network(
+                            item.imageUrl,
+                            width: 70,
+                            height: 70,
+                            fit: BoxFit.cover,
+                            errorBuilder: (context, error, stackTrace) =>
+                                const Icon(Icons.image_not_supported),
+                          )
+                        : Image.file(
+                            File(item.imageUrl),
+                            width: 70,
+                            height: 70,
+                            fit: BoxFit.cover,
+                            errorBuilder: (context, error, stackTrace) =>
+                                const Icon(Icons.image_not_supported),
+                          )),
             ),
           ),
           const SizedBox(width: 12),
