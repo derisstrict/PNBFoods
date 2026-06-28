@@ -6,8 +6,8 @@ class Orderan {
   final DateTime? createdAt;
   final DateTime? updatedAt;
   final int pelangganId;
-  final String statusPembayaran;
-  final Map<String, dynamic> kantin;
+  final String? statusPembayaran;
+  final Map<String, dynamic>? kantin;
   final List<dynamic> items;
 
   const Orderan({
@@ -18,8 +18,8 @@ class Orderan {
     required this.pelangganId,
     this.createdAt,
     this.updatedAt,
-    required this.statusPembayaran,
-    required this.kantin,
+    this.statusPembayaran,
+    this.kantin,
     required this.items,
   });
 
@@ -36,9 +36,19 @@ class Orderan {
       updatedAt: json['updated_at'] != null
           ? DateTime.parse(json['updated_at'] as String)
           : null,
-      statusPembayaran: json['status_pembayaran'] as String,
-      kantin: json['kantin'] as Map<String, dynamic>,
-      items: json['items'] as List<dynamic>,
+      statusPembayaran: json['pembayaran']?['status_pembayaran'] as String,
+      kantin: json['kantin'] as Map<String, dynamic>?,
+      items:
+          (json['detail_orderan'] as List<dynamic>?)
+              ?.map(
+                (e) => {
+                  'jumlah': e['jumlah'],
+                  'nama_produk': e['produk']?['nama_produk'] ?? '',
+                  'harga_subtotal': e['subtotal'] ?? 0,
+                },
+              )
+              .toList() ??
+          [],
     );
   }
 }

@@ -176,7 +176,7 @@ class _OrderPageState extends State<OrderPage> {
                               "Rp. ${NumberFormat('#.###').format(orderan.totalHarga)}",
                           status: orderan.statusOrderan,
                           items: detailBelanja,
-                          statusPembayaran: orderan.statusPembayaran,
+                          statusPembayaran: orderan.statusPembayaran ?? '',
                         ),
                       ],
                     );
@@ -188,6 +188,56 @@ class _OrderPageState extends State<OrderPage> {
         ),
       ),
     );
+  }
+
+  Widget _statusPembayaranWidget(String statusPembayaran) {
+    switch (statusPembayaran) {
+      case 'lunas':
+        return Text(
+          'Berhasil',
+          style: TextStyle(
+            fontSize: 13,
+            fontWeight: FontWeight.w600,
+            color: Colors.green,
+          ),
+        );
+      case 'gagal':
+        return Text(
+          'Gagal',
+          style: TextStyle(
+            fontSize: 13,
+            fontWeight: FontWeight.w600,
+            color: Colors.red,
+          ),
+        );
+      case 'menunggu_pembayaran':
+        return Text(
+          'Menunggu Pembayaran',
+          style: TextStyle(
+            fontSize: 13,
+            fontWeight: FontWeight.w600,
+            color: Colors.orange,
+          ),
+        );
+      case 'kadaluwarsa':
+        return Text(
+          'Kadaluwarsa',
+          style: TextStyle(
+            fontSize: 13,
+            fontWeight: FontWeight.w600,
+            color: Colors.grey,
+          ),
+        );
+      default:
+        return Text(
+          statusPembayaran,
+          style: TextStyle(
+            fontSize: 13,
+            fontWeight: FontWeight.w600,
+            color: Colors.grey,
+          ),
+        );
+    }
   }
 
   Widget _buildOrderCard({
@@ -366,17 +416,7 @@ class _OrderPageState extends State<OrderPage> {
                       ),
                     ),
                     Spacer(),
-
-                    Text(
-                      statusPembayaran,
-                      style: TextStyle(
-                        fontSize: 13,
-                        fontWeight: FontWeight.w600,
-                        color: statusPembayaran == 'Berhasil'
-                            ? Colors.green
-                            : Colors.red,
-                      ),
-                    ),
+                    _statusPembayaranWidget(statusPembayaran),
                   ],
                 ),
               ],
@@ -393,12 +433,12 @@ class _OrderPageState extends State<OrderPage> {
     String label;
 
     switch (status) {
-      case 'proses':
+      case 'diproses':
         bgColor = Colors.orange;
         icon = Icons.access_time;
         label = 'Sedang diproses';
         break;
-      case 'tunggu':
+      case 'menunggu':
         bgColor = Colors.deepPurple;
         icon = Icons.check;
         label = 'Menunggu pengambilan';
@@ -416,7 +456,7 @@ class _OrderPageState extends State<OrderPage> {
       default:
         bgColor = Colors.grey;
         icon = Icons.info_outline;
-        label = 'Status tidak diketahui';
+        label = 'Menunggu konfirmasi';
     }
 
     return Container(
