@@ -212,41 +212,26 @@ class _FormKantinState extends State<FormKantin> {
         if (penjualId == null) {
           throw Exception("ID Penjual tidak ditemukan. Silakan login kembali.");
         }
-        await postKantin(
+        final createdKantin = await postKantin(
           namaKantin: namaKantin.text,
           kategori: selectedKategori!,
           fotoKantin: _gambar!,
           penjualId: penjualId,
         );
-
-        final newKantin = Kantin(
-          id: penjualId,
-          namaKantin: namaKantin.text,
-          fotoKantin: _gambar!.path.split('/').last,
-          fotoUrl: null,
-          kategori: selectedKategori!,
-          idPenjual: penjualId,
-        );
-        Navigator.pop(context, newKantin);
+        if (!mounted) return;
+        Navigator.pop(context, createdKantin);
       } else {
-        await updateKantin(
+        final updatedKantin = await updateKantin(
           id: widget.kantin!.id,
           namaKantin: namaKantin.text,
           kategori: selectedKategori!,
           fotoKantin: _gambar,
         );
-
-        final updatedKantin = Kantin(
-          id: widget.kantin!.id,
-          namaKantin: namaKantin.text,
-          fotoKantin: _gambar != null ? _gambar!.path.split('/').last : widget.kantin!.fotoKantin,
-          fotoUrl: widget.kantin!.fotoUrl,
-          kategori: selectedKategori!,
-          idPenjual: widget.kantin!.idPenjual,
-        );
+        if (!mounted) return;
         Navigator.pop(context, updatedKantin);
       }
     } catch (e) {
+      if (!mounted) return;
       final snackbar = SnackBar(content: Text("Gagal menyimpan data: $e"));
       ScaffoldMessenger.of(context).showSnackBar(snackbar);
     }
@@ -255,7 +240,7 @@ class _FormKantinState extends State<FormKantin> {
   Future<void> pickImage() async {
     final ImagePicker picker = ImagePicker();
 
-    final XFile? gambar = await picker.pickImage(source: ImageSource.gallery);
+    final XFile? gambar = await picker.pickImage(source: ImageSource.gallery, imageQuality: 80);
 
     if (gambar != null) {
       setState(() {

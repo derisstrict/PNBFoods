@@ -4,5 +4,5 @@ class GetUrl {
 }
 
 class BaseUrl {
-  static final String baseUrl = GetUrl.emulator;
+  static final String baseUrl = GetUrl.localhost;
 }

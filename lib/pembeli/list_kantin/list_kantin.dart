@@ -116,28 +116,12 @@ class _ListKantinState extends State<ListKantin> {
                             FutureBuilder(
                               future: pelanggan,
                               builder: (context, snapshot) {
-                                if (snapshot.connectionState ==
-                                    ConnectionState.waiting) {
-                                  return Text(
-                                    'Loading...',
-                                    style: TextStyle(color: Colors.white),
-                                  );
+                                if (snapshot.connectionState == ConnectionState.waiting) {
+                                  return const Text('Loading...', style: TextStyle(color: Colors.white),);
                                 }
-                                if (snapshot.hasError) {
-                                  return Center(
-                                    child: Column(
-                                      spacing: 10,
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        Text('Error: ${snapshot.error}'),
-                                      ],
-                                    ),
-                                  );
-                                }
-                                if (snapshot.hasData) {
-                                  pelangganData = snapshot.data;
-                                  return Text(
-                                    snapshot.data!.namaPelanggan,
+                                if (snapshot.hasError || !snapshot.hasData) {
+                                  return const Text(
+                                    "Tamu",
                                     style: TextStyle(
                                       fontWeight: FontWeight.w500,
                                       color: Colors.white,
@@ -145,12 +129,16 @@ class _ListKantinState extends State<ListKantin> {
                                     ),
                                   );
                                 }
-                                return Text(
-                                  'Loading...',
-                                  style: TextStyle(color: Colors.white),
+                                pelangganData = snapshot.data;
+                                return Text(snapshot.data!.namaPelanggan,
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.w500,
+                                    color: Colors.white,
+                                    fontSize: 14,
+                                  ),
                                 );
-                              },
-                            ),
+                              }
+                            )
                           ],
                         ),
 
@@ -159,47 +147,35 @@ class _ListKantinState extends State<ListKantin> {
                         FutureBuilder(
                           future: pelanggan,
                           builder: (context, snapshot) {
-                            if (snapshot.connectionState ==
-                                ConnectionState.waiting) {
-                              return CircleAvatar(
+                            if (snapshot.connectionState == ConnectionState.waiting) {
+                              return const CircleAvatar(
                                 radius: 20,
                                 backgroundColor: Colors.white24,
-                                child: Icon(
-                                  Icons.person,
-                                  size: 32,
-                                  color: Colors.white,
-                                ),
+                                child: Icon(Icons.person, size: 24, color: Colors.white,),
+                              ); 
+                            }
+                            if (snapshot.hasError || !snapshot.hasData) {
+                              return const CircleAvatar(
+                                radius: 20,
+                                backgroundColor: Colors.white24,
+                                child: Icon(Icons.person, size: 24, color: Colors.white,),
                               );
                             }
-                            if (snapshot.hasError) {
-                              return Center(
-                                child: Column(
-                                  spacing: 10,
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [Text('Error: ${snapshot.error}')],
-                                ),
-                              );
-                            }
-                            if (snapshot.hasData &&
-                                snapshot.data!.fotoUrl != null) {
+                            if (snapshot.data!.fotoUrl != null) {
                               return CircleAvatar(
                                 radius: 20,
                                 backgroundImage: NetworkImage(
                                   snapshot.data!.fotoUrl!,
                                 ),
                               );
-                            }
-                            return CircleAvatar(
+                            } 
+                            return const CircleAvatar(
                               radius: 20,
                               backgroundColor: Colors.white24,
-                              child: Icon(
-                                Icons.person,
-                                size: 32,
-                                color: Colors.white,
-                              ),
-                            );
-                          },
-                        ),
+                              child: Icon(Icons.person, size: 24, color: Colors.white,),
+                            ); 
+                          }
+                        )
                       ],
                     ),
                   ),
