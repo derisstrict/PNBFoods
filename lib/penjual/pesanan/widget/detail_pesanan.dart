@@ -1,27 +1,76 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:pnbfoods/common/tombol.dart';
 import 'package:pnbfoods/common/warna.dart';
+import 'package:pnbfoods/models/orderan.dart';
+import 'package:pnbfoods/services/orderan_service.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-import '../pesanan.dart';
+class DetailPesanan extends StatefulWidget {
+  final Orderan orderan;
 
-class DetailPesanan extends StatelessWidget {
-  final Status status;
+  const DetailPesanan({super.key, required this.orderan});
 
-  const DetailPesanan({super.key, required this.status});
+  @override
+  State<DetailPesanan> createState() => _PesananState();
+}
+
+class _PesananState extends State<DetailPesanan> {
+  late String status;
+  bool _isLoading = false;
+
+  void _ubahStatus(String statusBaru) async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      await updateOrderan(id: widget.orderan.id, statusOrderan: statusBaru);
+
+      setState(() {
+        status = statusBaru;
+        _isLoading = false;
+      });
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("Status berhasil diperbarui menjadi $statusBaru"),
+        ),
+      );
+    } catch (e) {
+      setState(() {
+        _isLoading = false;
+      });
+
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(e.toString())));
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    status = widget.orderan.statusOrderan;
+  }
 
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
+    String waktu = DateFormat('HH.mm').format(widget.orderan.tanggalOrderan);
+
+    String menitYangLalu = _hitungWaktu(
+      widget.orderan.createdAt ?? widget.orderan.tanggalOrderan,
+    );
+
     return Column(
       spacing: 10,
       children: [
         Row(
           children: [
-            Text("12.38 PM - 2 menit yang lalu",
-              style: TextStyle(
-                fontWeight: FontWeight.w500,
-                fontSize: 14
-              ),
+            Text(
+              "$waktu - $menitYangLalu",
+              style: TextStyle(fontWeight: FontWeight.w300, fontSize: 12),
             ),
           ],
         ),
@@ -29,177 +78,247 @@ class DetailPesanan extends StatelessWidget {
           padding: EdgeInsets.all(10),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.all(Radius.circular(10)),
-            color: Colors.white
+            color: Colors.white,
           ),
           child: Row(
             spacing: 10.0,
             children: [
-              Icon(Icons.image_not_supported_outlined,
-                color: Warna.warnaTextGray,
+              CircleAvatar(
+                radius: 20,
+                backgroundColor: const Color.fromARGB(91, 158, 158, 158),
+                backgroundImage: widget.orderan.fotoProfile != null
+                    ? NetworkImage(widget.orderan.fotoUrl!)
+                    : null,
+
+                child: widget.orderan.fotoProfile == null
+                    ? Icon(Icons.person, size: 20, color: Colors.white)
+                    : null,
               ),
-              Text("John Doe",
-                style: TextStyle(
-                  fontWeight: FontWeight.w600
-                ),
+              Text(
+                widget.orderan.namaPelanggan ?? '-',
+                style: TextStyle(fontWeight: FontWeight.w700, fontSize: 14),
               ),
               Spacer(),
-              Text("2415354001",
-                style: TextStyle(
-                  fontSize: 12.0,
-                  fontWeight: FontWeight.w500
-                ),
-              )
+              Text(
+                widget.orderan.nim ?? '-',
+                style: TextStyle(fontSize: 14.0, fontWeight: FontWeight.w500),
+              ),
+              SizedBox(width: 3),
             ],
           ),
         ),
-        Container(
-          padding: EdgeInsets.all(10),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.all(Radius.circular(20)),
-            color: switch (status) {
-              Status.diproses => Warna.warnaWarning,
-              Status.selesai => Warna.warnaSuccess,
-              Status.menunggu => Colors.purple
-            }
-          ),
-          child: Center(
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              spacing: 5,
-              children: [
-                Icon(
-                  switch (status) {
-                    Status.diproses => Icons.timelapse,
-                    Status.selesai => Icons.done,
-                    Status.menunggu => Icons.lock_clock
-                  },
-                  color: Colors.white,
-                ),
-                Text(
-                  switch (status) {
-                    Status.diproses => "Sedang diproses",
-                    Status.selesai => "Selesai",
-                    Status.menunggu => "Menunggu pesanan diambil"
-                  },
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.w200
-                  ),
-                )
-              ],
-            )
-          ),
-        ),
+        _buildStatusBar(status),
         Container(
           padding: EdgeInsets.all(10),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.all(Radius.circular(10)),
-            color: Colors.white
+            color: Colors.white,
           ),
           child: Column(
             spacing: 5.0,
             children: [
               Row(
                 children: [
-                  Text("Detail Belanja", 
-                    style: TextStyle(
-                      fontSize: 14.0,
-                      fontWeight: FontWeight.w700
-                    ),),
-                  Spacer(),
-                  Text("Rp. 68.000", 
+                  Text(
+                    "Detail Belanja",
                     style: TextStyle(
                       fontSize: 12.0,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  Spacer(),
+                  Text(
+                    "Rp. ${widget.orderan.totalHarga.toStringAsFixed(0)}",
+                    style: TextStyle(
+                      fontWeight: FontWeight.w600,
+                      fontSize: 12,
                       color: Warna.warnaAccent,
-                      fontWeight: FontWeight.w600
                     ),
-                  )
+                  ),
                 ],
               ),
-              Row(
-                children: [
-                  Text("2x Nasi Goreng Spesial", 
-                    style: TextStyle(
-                      fontSize: 12.0,
-                      fontWeight: FontWeight.w500
-                    ),),
-                  Spacer(),
-                  Text("Rp. 50.000", 
-                    style: TextStyle(
-                      fontSize: 12.0,
-                      fontWeight: FontWeight.w500
+              ...widget.orderan.items.map(
+                (item) => Row(
+                  children: [
+                    Text(
+                      "${item['jumlah']}x ${item['nama_produk']}",
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w500,
+                      ),
                     ),
-                  )
-                ],
-              ),
-              Row(
-                children: [
-                  Text("1x Tipat Cantok", 
-                    style: TextStyle(
-                      fontSize: 12.0,
-                      fontWeight: FontWeight.w500
-                    ),),
-                  Spacer(),
-                  Text("Rp. 18.000", 
-                    style: TextStyle(
-                      fontSize: 12.0,
-                      fontWeight: FontWeight.w500
+                    Spacer(),
+                    Text(
+                      "Rp. ${item['harga_subtotal']}",
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w500,
+                      ),
                     ),
-                  )
-                ],
+                  ],
+                ),
               ),
             ],
           ),
         ),
         Visibility(
-          visible: status != Status.selesai,
+          visible: status != 'selesai' && status != 'batal',
           child: Container(
             padding: EdgeInsets.all(15),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.all(Radius.circular(10)),
-              color: Colors.white
+              color: Colors.white,
             ),
             child: Column(
               spacing: 10,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text("Aksi",
-                style: TextStyle(
-                  fontWeight: FontWeight.w700
-                ),
+                Text(
+                  "Konfirmasi Pesanan",
+                  style: TextStyle(fontWeight: FontWeight.w700, fontSize: 12),
                 ),
                 Row(
                   children: [
                     TombolNavigasi(
-                      function: () {}, 
-                      backgroundColor: Warna.warnaAccent, 
-                      foregroundColor: Colors.white, 
+                      function: () {
+                        if (status == 'diproses') {
+                          _konfirmasiUbahStatus('menunggu');
+                        } else if (status == 'menunggu') {
+                          _konfirmasiUbahStatus('selesai');
+                        }
+                      },
+                      backgroundColor: Warna.warnaAccent,
+                      foregroundColor: Colors.white,
                       text: switch (status) {
-                        Status.diproses => "Pesanan selesai",
-                        Status.selesai => "",
-                        Status.menunggu => "Ambil pesanan"
+                        'diproses' => 'Menunggu Pengambilan',
+                        'menunggu' => 'Pesanan Selesai',
+                        _ => '',
                       },
                       icon: Icons.done,
                     ),
                     Spacer(),
                     TombolNavigasi(
-                      function: () {}, 
-                      backgroundColor: Colors.red[50]!, 
-                      foregroundColor: Colors.red, 
+                      function: () {
+                        _konfirmasiUbahStatus('batal');
+                      },
+                      backgroundColor: Colors.red[50]!,
+                      foregroundColor: Colors.red,
                       text: switch (status) {
-                      Status.diproses => "Batalkan",
-                      Status.selesai => "",
-                      Status.menunggu => "Tolak"
-                    },
+                        'diproses' => 'Batalkan',
+                        'menunggu' => 'Batalkan',
+                        _ => '',
+                      },
                       icon: Icons.close,
                     ),
                   ],
-                )
+                ),
               ],
-            )
+            ),
           ),
-        )
+        ),
       ],
     );
+  }
+
+  String _hitungWaktu(DateTime tanggal) {
+    final sekarang = DateTime.now();
+    final selisih = sekarang.difference(tanggal);
+
+    if (selisih.inMinutes < 1) {
+      return "baru saja";
+    } else if (selisih.inMinutes < 60) {
+      return "${selisih.inMinutes} menit yang lalu";
+    } else if (selisih.inHours < 24) {
+      return "${selisih.inHours} jam yang lalu";
+    } else {
+      return "${selisih.inDays} hari yang lalu";
+    }
+  }
+
+  Widget _buildStatusBar(String status) {
+    Color bgColor;
+    IconData icon;
+    String label;
+
+    switch (status) {
+      case 'diproses':
+        bgColor = Colors.orange;
+        icon = Icons.access_time;
+        label = 'Sedang diproses';
+        break;
+      case 'menunggu':
+        bgColor = Colors.deepPurple;
+        icon = Icons.check;
+        label = 'Menunggu pengambilan';
+        break;
+      case 'selesai':
+        bgColor = Colors.green;
+        icon = Icons.check_circle_outline;
+        label = 'Pesanan selesai';
+        break;
+      case 'batal':
+        bgColor = Colors.red;
+        icon = Icons.cancel_outlined;
+        label = 'Pesanan dibatalkan';
+        break;
+      default:
+        bgColor = Colors.grey;
+        icon = Icons.info_outline;
+        label = 'Menunggu konfirmasi';
+    }
+
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 10),
+      decoration: BoxDecoration(
+        color: bgColor,
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(icon, color: Colors.white, size: 15),
+          const SizedBox(width: 5),
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w400,
+              color: Colors.white,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _konfirmasiUbahStatus(String statusBaru) async {
+    final bool? konfirmasi = await showDialog<bool>(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text("Konfirmasi"),
+          content: Text(
+            "Apakah Anda yakin ingin mengubah status menjadi \"$statusBaru\"?",
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context, false);
+              },
+              child: const Text("Batal"),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pop(context, true);
+              },
+              child: const Text("Ya"),
+            ),
+          ],
+        );
+      },
+    );
+    if (konfirmasi == true) {
+      _ubahStatus(statusBaru);
+    }
   }
 }

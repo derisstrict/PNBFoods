@@ -3,10 +3,51 @@ import 'package:pnbfoods/common/tombol.dart';
 import 'package:pnbfoods/common/top_bar.dart';
 import 'package:pnbfoods/common/warna.dart';
 import 'package:pnbfoods/penjual/pesanan/widget/detail_pesanan.dart';
+import 'package:pnbfoods/models/orderan.dart';
+import 'package:pnbfoods/services/orderan_service.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-enum Status { selesai, diproses, menunggu }
+class Pesanan extends StatefulWidget {
+  @override
+  State<Pesanan> createState() => _PesananState();
+}
 
-class Pesanan extends StatelessWidget {
+class _PesananState extends State<Pesanan> {
+  Future<List<Orderan>> _futureOrderan = Future.value([]);
+  String _statusFilter = 'semua';
+
+  Widget _tombolFilter(String label, String status) {
+    final isActive = _statusFilter == status;
+    return TextButton(
+      onPressed: () => setState(() => _statusFilter = status),
+      style: TextButton.styleFrom(
+        backgroundColor: isActive ? Warna.warnaAccent : Colors.white,
+        foregroundColor: isActive ? Colors.white : Colors.black,
+      ),
+      child: Text(label),
+    );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _ambilPesanan();
+  }
+
+  void _ambilPesanan() async {
+    final prefs = await SharedPreferences.getInstance();
+    final kantinId = prefs.getInt('kantinId');
+    if (kantinId != null) {
+      setState(() {
+        _futureOrderan = fetchOrderanByKantin(kantinId);
+      });
+    }
+  }
+
+  List<Orderan> _filterPesanan(List<Orderan> semua) {
+    if (_statusFilter == 'semua') return semua;
+    return semua.where((o) => o.statusOrderan == _statusFilter).toList();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -25,51 +66,55 @@ class Pesanan extends StatelessWidget {
                 Wrap(
                   runSpacing: 10,
                   children: [
-                    TextButton(
-                      onPressed: () {},
-                      style: TextButton.styleFrom(
-                        backgroundColor: Warna.warnaAccent,
-                        foregroundColor: Colors.white
-                      ),
-                      child: Text("Semua",)
-                    ),
-                    SizedBox(width: 10,),
-                    TextButton(
-                      onPressed: () {}, 
-                      style: TextButton.styleFrom(
-                        backgroundColor: Colors.white,
-                        foregroundColor: Colors.black
-                      ), 
-                      child: Text("Menunggu",)
-                    ),
-                    SizedBox(width: 10,),
-                    TextButton(
-                      onPressed: () {},
-                      style: TextButton.styleFrom(
-                        backgroundColor: Colors.white,
-                        foregroundColor: Colors.black
-                      ), 
-                      child: Text("Diproses")
-                    ),
-                    SizedBox(width: 10,),
-                    TextButton(
-                      onPressed: () {},
-                      style: TextButton.styleFrom(
-                        backgroundColor: Colors.white,
-                        foregroundColor: Colors.black
-                      ), 
-                      child: Text("Selesai")
-                    ),
+                    _tombolFilter('Semua', 'semua'),
+                    SizedBox(width: 10),
+                    _tombolFilter('Menunggu', 'menunggu'),
+                    SizedBox(width: 10),
+                    _tombolFilter('Diproses', 'diproses'),
+                    SizedBox(width: 10),
+                    _tombolFilter('Selesai', 'selesai'),
                   ],
                 ),
-                DetailPesanan(status: Status.menunggu,),
-                DetailPesanan(status: Status.diproses,),
-                DetailPesanan(status: Status.selesai,),
+                FutureBuilder<List<Orderan>>(
+                  future: _futureOrderan,
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return Center(child: CircularProgressIndicator());
+                    }
+
+                    final pesanan = _filterPesanan(snapshot.data ?? []);
+
+                    if (pesanan.isEmpty) {
+                      return Container(
+                        padding: EdgeInsets.all(10),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
+                          color: Colors.white,
+                        ),
+                        child: Center(
+                          child: Text(
+                            "Tidak ada pesanan",
+                            style: TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ),
+                      );
+                    }
+                    return Column(
+                      spacing: 10,
+                      children: pesanan
+                          .map((orderan) => DetailPesanan(orderan: orderan))
+                          .toList(),
+                    );
+                  },
+                ),
               ],
             ),
-          )
-        ) 
+          ),
+        ),
       ),
     );
   }
-} 
+}

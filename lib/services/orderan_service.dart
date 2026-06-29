@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:pnbfoods/models/orderan.dart';
 import 'package:pnbfoods/services/base_url.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 final dio = Dio(
   BaseOptions(
@@ -68,6 +69,8 @@ Future<Orderan> updateOrderan({
   DateTime? tanggalOrderan,
 }) async {
   try {
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('token');
     final Map<String, dynamic> data = {'_method': 'PUT'};
 
     if (statusOrderan != null) data['status_orderan'] = statusOrderan;
@@ -76,7 +79,18 @@ Future<Orderan> updateOrderan({
       data['tanggal_orderan'] = tanggalOrderan.toIso8601String();
     }
 
-    final response = await dio.post('orderan/$id', data: data);
+    final response = await dio.post(
+      'orderan/$id',
+      data: data,
+      options: Options(
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Accept': 'application/json',
+        },
+      ),
+    );
+
+    print(response.data);
 
     if (response.statusCode == 200) {
       return Orderan.fromJson(response.data['data']);
@@ -114,5 +128,18 @@ Future<List<Orderan>> fetchOrderanByPelanggan(int pelangganId) async {
         .toList();
   } else {
     throw Exception('Gagal mengambil orderan pelanggan');
+  }
+}
+
+Future<List<Orderan>> fetchOrderanByKantin(int kantinId) async {
+  final response = await dio.get('orderan/kantin/$kantinId');
+
+  if (response.statusCode == 200) {
+    final List<dynamic> data = response.data['data'];
+    return data
+        .map((item) => Orderan.fromJson(item as Map<String, dynamic>))
+        .toList();
+  } else {
+    throw Exception('Gagal mengambil data pesanan');
   }
 }
