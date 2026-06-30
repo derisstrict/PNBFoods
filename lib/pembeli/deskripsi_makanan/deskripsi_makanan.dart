@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:pnbfoods/common/warna.dart';
 import 'package:pnbfoods/models/produk.dart';
 import 'package:timeago/timeago.dart';
+import 'package:pnbfoods/pembeli/favorit/tombol_favorite.dart';
 
 class DeskripsiMakanan extends StatefulWidget {
   final Produk produk;
@@ -49,15 +50,25 @@ class _DeskripsiMakananState extends State<DeskripsiMakanan> {
                 borderRadius: BorderRadius.circular(20),
               ),
               child: ClipRRect(
-                      borderRadius: BorderRadiusGeometry.circular(10),
-                      child: Container(
-                        child: widget.produk.fotoProduk == "" || widget.produk.fotoProduk == null 
-                        ? 
-                        Icon(Icons.image_rounded, size: 160, color: Colors.white,) 
-                        : 
-                        Image.network(widget.produk.fotoUrl!, fit: BoxFit.cover, width: double.infinity, height: 220, cacheHeight: 400,),
-                      ) 
-                    ),
+                borderRadius: BorderRadiusGeometry.circular(10),
+                child: Container(
+                  child:
+                      widget.produk.fotoProduk == "" ||
+                          widget.produk.fotoProduk == null
+                      ? Icon(
+                          Icons.image_rounded,
+                          size: 160,
+                          color: Colors.white,
+                        )
+                      : Image.network(
+                          widget.produk.fotoUrl!,
+                          fit: BoxFit.cover,
+                          width: double.infinity,
+                          height: 220,
+                          cacheHeight: 400,
+                        ),
+                ),
+              ),
             ),
 
             SizedBox(height: 15),
@@ -65,7 +76,7 @@ class _DeskripsiMakananState extends State<DeskripsiMakanan> {
               padding: EdgeInsets.all(20),
               decoration: BoxDecoration(
                 color: Colors.white,
-                borderRadius: BorderRadius.circular(15)
+                borderRadius: BorderRadius.circular(15),
               ),
               child: Column(
                 children: [
@@ -97,7 +108,8 @@ class _DeskripsiMakananState extends State<DeskripsiMakanan> {
                     mainAxisSize: MainAxisSize.min,
                     spacing: 3,
                     children: [
-                      Icon(Icons.shopping_bag_outlined,
+                      Icon(
+                        Icons.shopping_bag_outlined,
                         size: 16,
                         color: Colors.black,
                       ),
@@ -110,14 +122,7 @@ class _DeskripsiMakananState extends State<DeskripsiMakanan> {
                         ),
                       ),
                       Spacer(),
-                      GestureDetector(
-                        onTap: () {},
-                        child: Icon(
-                          Icons.favorite_border,
-                          size: 22,
-                          color: Colors.grey,
-                        ),
-                      ),
+                      TombolFavorit(produkId: widget.produk.id),
                     ],
                   ),
 
@@ -130,34 +135,40 @@ class _DeskripsiMakananState extends State<DeskripsiMakanan> {
                         children: [
                           Text(
                             "Deskripsi",
-                            style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14,),
+                            style: TextStyle(
+                              fontWeight: FontWeight.w600,
+                              fontSize: 14,
+                            ),
                           ),
 
-                          SizedBox(height: 4,),
+                          SizedBox(height: 4),
 
                           Text(
-                            widget.produk.deskripsiProduk!,
-                            style: TextStyle(fontWeight: FontWeight.w500, fontSize: 12),
+                            widget.produk.deskripsiProduk ?? '-',
+                            style: TextStyle(
+                              fontWeight: FontWeight.w500,
+                              fontSize: 12,
+                            ),
                           ),
                         ],
-                      )
+                      ),
                     ],
                   ),
-                  
+
                   SizedBox(height: 15),
 
                   Row(
                     children: [
-                      Icon(
-                        Icons.edit_note
-                      ),
+                      Icon(Icons.edit_note),
                       Text(
                         "Tambah catatan untuk pembelian",
-                        style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
-                      )
+                        style: TextStyle(
+                          fontWeight: FontWeight.w600,
+                          fontSize: 14,
+                        ),
+                      ),
                     ],
-                  )
-                  ,
+                  ),
 
                   SizedBox(height: 8),
 
@@ -169,9 +180,7 @@ class _DeskripsiMakananState extends State<DeskripsiMakanan> {
                       hintText: "Contoh: Ekstra pedas ya cabe 9",
                       hintStyle: TextStyle(color: Colors.grey, fontSize: 10),
                       border: OutlineInputBorder(
-                        borderSide: BorderSide(
-                          color: Colors.black12
-                        ),
+                        borderSide: BorderSide(color: Colors.black12),
                         borderRadius: BorderRadius.circular(12),
                       ),
                       enabledBorder: OutlineInputBorder(
@@ -214,7 +223,7 @@ class _DeskripsiMakananState extends State<DeskripsiMakanan> {
               padding: EdgeInsets.all(5),
               decoration: BoxDecoration(
                 color: Colors.white,
-                borderRadius: BorderRadius.circular(15)
+                borderRadius: BorderRadius.circular(15),
               ),
               child: Column(
                 children: [
@@ -230,7 +239,7 @@ class _DeskripsiMakananState extends State<DeskripsiMakanan> {
                         icon: Icon(Icons.remove, color: Colors.black),
                       ),
 
-                      SizedBox(width: 25,),
+                      SizedBox(width: 25),
 
                       Container(
                         width: 30,
@@ -250,7 +259,7 @@ class _DeskripsiMakananState extends State<DeskripsiMakanan> {
                         ),
                       ),
 
-                      SizedBox(width: 25,),
+                      SizedBox(width: 25),
 
                       IconButton(
                         onPressed: () {
@@ -260,48 +269,45 @@ class _DeskripsiMakananState extends State<DeskripsiMakanan> {
                       ),
                     ],
                   ),
-                  
                 ],
               ),
             ),
             SizedBox(height: 15),
-                  SizedBox(
-                    width: double.infinity,
-                    height: 50,
-                    child: ElevatedButton(
-                      onPressed: () {
-                        Navigator.pop(context, {
-                          'quantity': _count,
-                          'note': _noteController.text,
-                        });
-                      },
-                      style: TextButton.styleFrom(
-                        backgroundColor: Warna.warnaAccent,
-                        elevation: 0,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(15),
-                        ),
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        spacing: 5,
-                        children: [
-                          Icon(Icons.add_shopping_cart,
-                            color: Colors.white,
-                          ),
-                          Text(
-                            "Tambah ke Keranjang",
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 14,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                        ],
-                      ) 
-                    ),
+            SizedBox(
+              width: double.infinity,
+              height: 50,
+              child: ElevatedButton(
+                onPressed: () {
+                  Navigator.pop(context, {
+                    'quantity': _count,
+                    'note': _noteController.text,
+                  });
+                },
+                style: TextButton.styleFrom(
+                  backgroundColor: Warna.warnaAccent,
+                  elevation: 0,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(15),
                   ),
-                  SizedBox(height: 25,)
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  spacing: 5,
+                  children: [
+                    Icon(Icons.add_shopping_cart, color: Colors.white),
+                    Text(
+                      "Tambah ke Keranjang",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            SizedBox(height: 25),
           ],
         ),
       ),

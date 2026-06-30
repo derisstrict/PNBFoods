@@ -4,6 +4,7 @@ import 'package:pnbfoods/common/navbar.dart';
 import 'package:pnbfoods/common/warna.dart';
 import 'package:pnbfoods/pembeli/list_kantin/list_kantin.dart';
 import 'package:pnbfoods/pembeli/order/page_order.dart';
+import 'package:pnbfoods/pembeli/favorit/favorit_page.dart';
 
 class HomePengguna extends StatefulWidget {
   @override
@@ -11,14 +12,12 @@ class HomePengguna extends StatefulWidget {
 }
 
 class _HomeState extends State<HomePengguna> {
-
-
   int _selectedNavbar = 0;
   List<Widget> halaman = [
     ListKantin(),
     OrderPage(),
-    const Center(child: Text("Favorit", style: TextStyle(fontSize: 16))),
-    ProfileUser()
+    FavoritPage(),
+    ProfileUser(),
     // PilihRole()
   ];
 
@@ -38,10 +37,11 @@ class _HomeState extends State<HomePengguna> {
     // TODO: implement build
     return Scaffold(
       backgroundColor: Warna.warnaBackground,
-      body: SafeArea(
-        child: halaman[_selectedNavbar] 
+      body: SafeArea(child: halaman[_selectedNavbar]),
+      bottomNavigationBar: Navbar(
+        index: _selectedNavbar,
+        onTap: _updateSelectedNavbar,
       ),
-      bottomNavigationBar: Navbar(index: _selectedNavbar, onTap: _updateSelectedNavbar),
     );
   }
 }
