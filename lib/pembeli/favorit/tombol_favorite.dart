@@ -69,11 +69,10 @@ class _TombolFavoritState extends State<TombolFavorit> {
   @override
   Widget build(BuildContext context) {
     if (_isLoading) {
-      return const SizedBox(
-        width: 24,
-        height: 24,
-        child: CircularProgressIndicator(strokeWidth: 2),
-      );
+      return IconButton(
+          onPressed: null, 
+          icon: const Icon(Icons.favorite, size: 28, color: Colors.black12,)
+        );
     }
 
     return IconButton(
