@@ -30,7 +30,8 @@ class TombolNavigasi extends StatelessWidget {
                 Icon(icon,
                   color: foregroundColor,
                 ),
-                SizedBox(width: 5,)
+                if (text != '')
+                  SizedBox(width: 5,)
               ],
             ) 
           ),
