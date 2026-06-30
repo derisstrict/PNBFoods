@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:pnbfoods/common/warna.dart';
 import 'package:pnbfoods/models/produk.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:timeago/timeago.dart';
 import 'package:pnbfoods/pembeli/favorit/tombol_favorite.dart';
 
@@ -16,6 +17,7 @@ class DeskripsiMakanan extends StatefulWidget {
 class _DeskripsiMakananState extends State<DeskripsiMakanan> {
   int _count = 1;
   final _noteController = TextEditingController();
+  int? idPengguna;
 
   String formatRupiah(int nilai) {
     final formatted = nilai.toString().replaceAllMapped(
@@ -25,10 +27,24 @@ class _DeskripsiMakananState extends State<DeskripsiMakanan> {
     return 'Rp. $formatted';
   }
 
+  void _cekTamu() async {
+    final prefs = await SharedPreferences.getInstance();
+    final id = prefs.getInt('userId');
+    setState(() {
+      idPengguna = id;
+    });
+  }
+
   @override
   void dispose() {
     _noteController.dispose();
     super.dispose();
+  }
+
+  @override
+  initState() {
+    super.initState();
+    _cekTamu();
   }
 
   @override
@@ -278,10 +294,21 @@ class _DeskripsiMakananState extends State<DeskripsiMakanan> {
               height: 50,
               child: ElevatedButton(
                 onPressed: () {
-                  Navigator.pop(context, {
-                    'quantity': _count,
-                    'note': _noteController.text,
-                  });
+                  if (idPengguna == null) {
+                    Navigator.pop(context);
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Silahkan login terlebih dahulu agar dapat menambahkan produk ke keranjang'),
+                        backgroundColor: Colors.red,
+                        duration: Duration(seconds: 2),
+                      ),
+                    );
+                  } else {
+                    Navigator.pop(context, {
+                      'quantity': _count,
+                      'note': _noteController.text,
+                    });
+                  }
                 },
                 style: TextButton.styleFrom(
                   backgroundColor: Warna.warnaAccent,

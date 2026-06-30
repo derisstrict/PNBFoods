@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pnbfoods/services/favorit_service.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class TombolFavorit extends StatefulWidget {
   final int produkId;
@@ -14,10 +15,21 @@ class _TombolFavoritState extends State<TombolFavorit> {
   bool _isFavorit = false;
   bool _isLoading = true;
 
+  int? idPengguna;
+
+  void _cekTamu() async {
+    final prefs = await SharedPreferences.getInstance();
+    final id = prefs.getInt('userId');
+    setState(() {
+      idPengguna = id;
+    });
+  }
+
   @override
   void initState() {
     super.initState();
     _cekStatus();
+    _cekTamu();
   }
 
   Future<void> _cekStatus() async {
@@ -35,33 +47,44 @@ class _TombolFavoritState extends State<TombolFavorit> {
   }
 
   Future<void> _toggle() async {
-    setState(() => _isLoading = true);
-    try {
-      final result = await toggleFavorit(widget.produkId);
-      if (mounted) {
-        setState(() {
-          _isFavorit = result['is_favorit'] as bool;
-          _isLoading = false;
-        });
+    if (idPengguna == null) {
+      Navigator.pop(context);
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Silahkan login terlebih dahulu agar dapat menambahkan produk ini sebagai produk favorit'),
+          backgroundColor: Colors.red,
+          duration: Duration(seconds: 2),
+        ),
+      );
+    } else {
+      setState(() => _isLoading = true);
+      try {
+        final result = await toggleFavorit(widget.produkId);
+        if (mounted) {
+          setState(() {
+            _isFavorit = result['is_favorit'] as bool;
+            _isLoading = false;
+          });
 
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              _isFavorit
-                  ? 'Ditambahkan ke favorit ❤️'
-                  : 'Dihapus dari favorit',
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                _isFavorit
+                    ? 'Ditambahkan ke favorit ❤️'
+                    : 'Dihapus dari favorit',
+              ),
+              backgroundColor: _isFavorit ? Colors.red : Colors.grey[700],
+              duration: const Duration(seconds: 2),
             ),
-            backgroundColor: _isFavorit ? Colors.red : Colors.grey[700],
-            duration: const Duration(seconds: 2),
-          ),
-        );
-      }
-    } catch (e) {
-      if (mounted) {
-        setState(() => _isLoading = false);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Gagal: $e')),
-        );
+          );
+        }
+      } catch (e) {
+        if (mounted) {
+          setState(() => _isLoading = false);
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Gagal: $e')),
+          );
+        }
       }
     }
   }

@@ -30,7 +30,7 @@ class Autentikasi extends StatelessWidget {
             return Dashboard();
           }
         } else {
-          return PilihRole();
+          return LoginPage(role: 'pelanggan');
         }
       },
     );
