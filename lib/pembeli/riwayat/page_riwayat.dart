@@ -66,7 +66,7 @@ class _RiwayatPageState extends State<RiwayatPage> {
           if (semuaTransaksi.isEmpty) {
             return const Center(
               child: Text(
-                'Belum ada riwayat transaksi.',
+                'Belum terdapat pesanan yang selesai.',
                 style: TextStyle(color: Colors.grey),
               ),
             );
