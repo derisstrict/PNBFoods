@@ -22,7 +22,7 @@ class _TombolFavoritState extends State<TombolFavorit> {
 
   Future<void> _cekStatus() async {
     try {
-      final result = await FavoritService.cekFavorit(widget.produkId);
+      final result = await cekFavorit(widget.produkId);
       if (mounted) {
         setState(() {
           _isFavorit = result['is_favorit'] as bool;
@@ -37,7 +37,7 @@ class _TombolFavoritState extends State<TombolFavorit> {
   Future<void> _toggle() async {
     setState(() => _isLoading = true);
     try {
-      final result = await FavoritService.toggleFavorit(widget.produkId);
+      final result = await toggleFavorit(widget.produkId);
       if (mounted) {
         setState(() {
           _isFavorit = result['is_favorit'] as bool;

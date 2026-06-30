@@ -18,12 +18,12 @@ class _FavoritPageState extends State<FavoritPage> {
   @override
   void initState() {
     super.initState();
-    _futureFavorit = FavoritService.getFavorit();
+    _futureFavorit = getFavorit();
   }
 
   void _refresh() {
     setState(() {
-      _futureFavorit = FavoritService.getFavorit();
+      _futureFavorit = getFavorit();
     });
   }
 
@@ -42,7 +42,7 @@ class _FavoritPageState extends State<FavoritPage> {
 
   Future<void> _hapusFavorit(int favoritId) async {
     try {
-      await FavoritService.hapusFavorit(favoritId);
+      await hapusFavorit(favoritId);
       _refresh();
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
