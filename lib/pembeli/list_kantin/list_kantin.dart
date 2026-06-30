@@ -28,9 +28,10 @@ class _ListKantinState extends State<ListKantin> {
   void getIdPengguna() async {
     final prefs = await SharedPreferences.getInstance();
     final id = prefs.getInt('userId');
-    setState(() {
-      idPelanggan = id;
-    });
+    if (mounted)
+      setState(() {
+        idPelanggan = id;
+      });
     if (idPelanggan != null) {
       pelanggan = fetchPelanggan(idPelanggan!);
     }
@@ -39,7 +40,7 @@ class _ListKantinState extends State<ListKantin> {
   @override
   void initState() {
     super.initState();
-    getIdPengguna();    
+    getIdPengguna();
     futureKantin = fetchSemuaKantin();
     fetchSemuaProduk().then((produkList) {
       for (final p in produkList) {
@@ -54,7 +55,7 @@ class _ListKantinState extends State<ListKantin> {
           );
         }
       }
-      setState(() {});
+      if (mounted) setState(() {}); // ← tambah mounted check
     });
   }
 
@@ -113,7 +114,7 @@ class _ListKantinState extends State<ListKantin> {
                             ),
                             SizedBox(height: 5),
                             FutureBuilder(
-                              future: pelanggan, 
+                              future: pelanggan,
                               builder: (context, snapshot) {
                                 if (snapshot.connectionState == ConnectionState.waiting) {
                                   return const Text('Loading...', style: TextStyle(color: Colors.white),);
@@ -144,7 +145,7 @@ class _ListKantinState extends State<ListKantin> {
                         Spacer(),
 
                         FutureBuilder(
-                          future: pelanggan, 
+                          future: pelanggan,
                           builder: (context, snapshot) {
                             if (snapshot.connectionState == ConnectionState.waiting) {
                               return const CircleAvatar(
@@ -197,11 +198,15 @@ class _ListKantinState extends State<ListKantin> {
                         Expanded(
                           child: TextField(
                             controller: _searchController,
-                            onChanged: (value) => setState(() => _searchQuery = value),
+                            onChanged: (value) =>
+                                setState(() => _searchQuery = value),
                             style: TextStyle(fontSize: 12, color: Colors.black),
                             decoration: InputDecoration(
                               hintText: "Cari kantin...",
-                              hintStyle: TextStyle(fontSize: 12, color: Colors.black38),
+                              hintStyle: TextStyle(
+                                fontSize: 12,
+                                color: Colors.black38,
+                              ),
                               border: InputBorder.none,
                               isDense: true,
                               contentPadding: EdgeInsets.zero,
@@ -264,10 +269,15 @@ class _ListKantinState extends State<ListKantin> {
               future: futureKantin,
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
-                  final filterKantin = snapshot.data!.where((k) =>
-                    _searchQuery.isEmpty ||
-                    k.namaKantin.toLowerCase().contains(_searchQuery.toLowerCase())
-                  ).toList();
+                  final filterKantin = snapshot.data!
+                      .where(
+                        (k) =>
+                            _searchQuery.isEmpty ||
+                            k.namaKantin.toLowerCase().contains(
+                              _searchQuery.toLowerCase(),
+                            ),
+                      )
+                      .toList();
 
                   if (filterKantin.isEmpty) {
                     return const Center(
@@ -287,10 +297,14 @@ class _ListKantinState extends State<ListKantin> {
                         namaKantin: kantin.namaKantin,
                         kategori: kantin.kategori,
                         infoHarga: _priceRanges.containsKey(kantin.idPenjual)
-                          ? 'Rp. ${_formatHarga(_priceRanges[kantin.idPenjual]!.min)} - ${_formatHarga(_priceRanges[kantin.idPenjual]!.max)}'
-                          : "Lihat Menu",
-                        imageUrl: kantin.fotoUrl ?? 'https://picsum.photos/200?id=${kantin.id}',
-                        cartItemCount: CartService().totalItems(kantinId: kantin.id),
+                            ? 'Rp. ${_formatHarga(_priceRanges[kantin.idPenjual]!.min)} - ${_formatHarga(_priceRanges[kantin.idPenjual]!.max)}'
+                            : "Lihat Menu",
+                        imageUrl:
+                            kantin.fotoUrl ??
+                            'https://picsum.photos/200?id=${kantin.id}',
+                        cartItemCount: CartService().totalItems(
+                          kantinId: kantin.id,
+                        ),
                         onTap: () async {
                           await Navigator.push(
                             context,
@@ -313,7 +327,9 @@ class _ListKantinState extends State<ListKantin> {
                 }
                 return const Center(
                   child: CircularProgressIndicator(
-                    valueColor: AlwaysStoppedAnimation<Color>(Color(0xFFF9803B)),
+                    valueColor: AlwaysStoppedAnimation<Color>(
+                      Color(0xFFF9803B),
+                    ),
                   ),
                 );
               },
@@ -321,7 +337,6 @@ class _ListKantinState extends State<ListKantin> {
           ),
         ],
       ),
-
     );
   }
 }

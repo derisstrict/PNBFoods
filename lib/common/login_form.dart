@@ -92,15 +92,15 @@ class _LoginFormState extends State<LoginForm> {
         ),
         const SizedBox(height: 15),
         // Lupa Password
-        Center(
-          child: TextButton(
-            onPressed: widget.onLupaPassword,
-            child: Text(
-              "Lupa Password?",
-              style: TextStyle(color: Warna.warnaAccent),
-            ),
-          ),
-        ),
+        // Center(
+        //   child: TextButton(
+        //     onPressed: widget.onLupaPassword,
+        //     child: Text(
+        //       "Lupa Password?",
+        //       style: TextStyle(color: Warna.warnaAccent),
+        //     ),
+        //   ),
+        // ),
         const SizedBox(height: 15),
 
         // Tombol Masuk
