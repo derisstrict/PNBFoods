@@ -57,10 +57,45 @@ class Orderan {
                   'jumlah': e['jumlah'],
                   'nama_produk': e['produk']?['nama_produk'] ?? '',
                   'harga_subtotal': e['subtotal'] ?? 0,
+                  'catatan': e['catatan'] ?? '',
                 },
               )
               .toList() ??
           [],
+    );
+  }
+
+  Orderan copyWith({
+    int? id,
+    String? statusOrderan,
+    double? totalHarga,
+    DateTime? tanggalOrderan,
+    DateTime? createdAt,
+    DateTime? updatedAt,
+    int? pelangganId,
+    String? namaPelanggan,
+    String? nim,
+    String? fotoProfile,
+    String? fotoUrl,
+    String? statusPembayaran,
+    Map<String, dynamic>? kantin,
+    List<dynamic>? items,
+  }) {
+    return Orderan(
+      id: id ?? this.id,
+      statusOrderan: statusOrderan ?? this.statusOrderan,
+      totalHarga: totalHarga ?? this.totalHarga,
+      tanggalOrderan: tanggalOrderan ?? this.tanggalOrderan,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      pelangganId: pelangganId ?? this.pelangganId,
+      namaPelanggan: namaPelanggan ?? this.namaPelanggan,
+      nim: nim ?? this.nim,
+      fotoProfile: fotoProfile ?? this.fotoProfile,
+      fotoUrl: fotoUrl ?? this.fotoUrl,
+      statusPembayaran: statusPembayaran ?? this.statusPembayaran,
+      kantin: kantin ?? this.kantin,
+      items: items ?? this.items,
     );
   }
 }

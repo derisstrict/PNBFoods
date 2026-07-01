@@ -13,7 +13,8 @@ class Pesanan extends StatefulWidget {
 }
 
 class _PesananState extends State<Pesanan> {
-  Future<List<Orderan>> _futureOrderan = Future.value([]);
+  List<Orderan> _semuaPesanan = [];
+  bool _isLoading = true;
   String _statusFilter = 'semua';
 
   Widget _tombolFilter(String label, String status) {
@@ -38,9 +39,13 @@ class _PesananState extends State<Pesanan> {
     final prefs = await SharedPreferences.getInstance();
     final kantinId = prefs.getInt('kantinId');
     if (kantinId != null) {
+      final data = await fetchOrderanByKantin(kantinId);
       setState(() {
-        _futureOrderan = fetchOrderanByKantin(kantinId);
+        _semuaPesanan = _urutkanPesanan(data);
+        _isLoading = false;
       });
+    } else {
+      setState(() => _isLoading = false);
     }
   }
 
@@ -49,8 +54,55 @@ class _PesananState extends State<Pesanan> {
     return semua.where((o) => o.statusOrderan == _statusFilter).toList();
   }
 
+  int _prioritasStatus(String status) {
+    switch (status) {
+      case 'lunas':
+        return 0;
+      case 'diproses':
+        return 1;
+      case 'menunggu':
+        return 2;
+      case 'selesai':
+        return 3;
+      case 'batal':
+        return 4;
+      default:
+        return 5;
+    }
+  }
+
+  List<Orderan> _urutkanPesanan(List<Orderan> list) {
+    final hasil = List<Orderan>.from(list);
+    hasil.sort((a, b) {
+      final prioritasA = _prioritasStatus(a.statusOrderan);
+      final prioritasB = _prioritasStatus(b.statusOrderan);
+      if (prioritasA != prioritasB) {
+        return prioritasA.compareTo(prioritasB);
+      }
+
+      final tanggalA = a.createdAt ?? a.tanggalOrderan;
+      final tanggalB = b.createdAt ?? b.tanggalOrderan;
+      return tanggalB.compareTo(tanggalA);
+    });
+    return hasil;
+  }
+
+  void _handleStatusUpdated(int orderanId, String statusBaru) {
+    setState(() {
+      final idx = _semuaPesanan.indexWhere((o) => o.id == orderanId);
+      if (idx != -1) {
+        _semuaPesanan[idx] = _semuaPesanan[idx].copyWith(
+          statusOrderan: statusBaru,
+        );
+        _semuaPesanan = _urutkanPesanan(_semuaPesanan);
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
+    final pesanan = _filterPesanan(_semuaPesanan);
+
     // TODO: implement build
     return Scaffold(
       backgroundColor: Warna.warnaBackground,
@@ -75,41 +127,39 @@ class _PesananState extends State<Pesanan> {
                     _tombolFilter('Selesai', 'selesai'),
                   ],
                 ),
-                FutureBuilder<List<Orderan>>(
-                  future: _futureOrderan,
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return Center(child: CircularProgressIndicator());
-                    }
-
-                    final pesanan = _filterPesanan(snapshot.data ?? []);
-
-                    if (pesanan.isEmpty) {
-                      return Container(
-                        padding: EdgeInsets.all(10),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(10),
-                          color: Colors.white,
+                if (_isLoading)
+                  Center(child: CircularProgressIndicator())
+                else if (pesanan.isEmpty)
+                  Container(
+                    padding: EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+                      color: Colors.white,
+                    ),
+                    child: Center(
+                      child: Text(
+                        "Tidak ada pesanan",
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w500,
                         ),
-                        child: Center(
-                          child: Text(
-                            "Tidak ada pesanan",
-                            style: TextStyle(
-                              fontSize: 12,
-                              fontWeight: FontWeight.w500,
-                            ),
+                      ),
+                    ),
+                  )
+                else
+                  Column(
+                    spacing: 10,
+                    children: pesanan
+                        .map(
+                          (orderan) => DetailPesanan(
+                            key: ValueKey(orderan.id),
+                            orderan: orderan,
+                            onStatusUpdated: (statusBaru) =>
+                                _handleStatusUpdated(orderan.id, statusBaru),
                           ),
-                        ),
-                      );
-                    }
-                    return Column(
-                      spacing: 10,
-                      children: pesanan
-                          .map((orderan) => DetailPesanan(orderan: orderan))
-                          .toList(),
-                    );
-                  },
-                ),
+                        )
+                        .toList(),
+                  ),
               ],
             ),
           ),

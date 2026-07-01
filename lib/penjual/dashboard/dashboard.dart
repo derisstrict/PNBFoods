@@ -179,6 +179,11 @@ class _DashboardState extends State<Dashboard> {
           'Menunggu Pengambilan',
           style: TextStyle(color: Colors.deepPurple, fontSize: 11),
         );
+      case 'lunas':
+        return Text(
+          'Menunggu Konfirmasi',
+          style: TextStyle(color: Colors.grey, fontSize: 11),
+        );
       default:
         return Text(
           'Menunggu Konfirmasi',
@@ -588,13 +593,14 @@ class _DashboardState extends State<Dashboard> {
                                             ),
                                           ),
                                       GestureDetector(
-                                        onTap: () {
-                                          Navigator.push(
+                                        onTap: () async {
+                                          await Navigator.push(
                                             context,
                                             MaterialPageRoute(
                                               builder: (context) => Pesanan(),
                                             ),
                                           );
+                                          _ambilPesananKantin();
                                         },
                                         child: Container(
                                           padding: EdgeInsets.all(10),

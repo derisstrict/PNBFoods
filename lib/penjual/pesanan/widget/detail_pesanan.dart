@@ -8,14 +8,15 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class DetailPesanan extends StatefulWidget {
   final Orderan orderan;
+  final Function(String statusBaru)? onStatusUpdated;
 
-  const DetailPesanan({super.key, required this.orderan});
+  const DetailPesanan({super.key, required this.orderan, this.onStatusUpdated});
 
   @override
-  State<DetailPesanan> createState() => _PesananState();
+  State<DetailPesanan> createState() => _DetailPesananState();
 }
 
-class _PesananState extends State<DetailPesanan> {
+class _DetailPesananState extends State<DetailPesanan> {
   late String status;
   bool _isLoading = false;
 
@@ -31,6 +32,8 @@ class _PesananState extends State<DetailPesanan> {
         status = statusBaru;
         _isLoading = false;
       });
+
+      widget.onStatusUpdated?.call(statusBaru);
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -138,24 +141,55 @@ class _PesananState extends State<DetailPesanan> {
                 ],
               ),
               ...widget.orderan.items.map(
-                (item) => Row(
-                  children: [
-                    Text(
-                      "${item['jumlah']}x ${item['nama_produk']}",
-                      style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w500,
+                (item) => Padding(
+                  padding: const EdgeInsets.only(top: 8.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Expanded(
+                            child: Text(
+                              "${item['jumlah']}x ${item['nama_produk']}",
+                              style: const TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ),
+                          Text(
+                            "Rp. ${item['harga_subtotal']}",
+                            style: const TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ],
                       ),
-                    ),
-                    Spacer(),
-                    Text(
-                      "Rp. ${item['harga_subtotal']}",
-                      style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ],
+
+                      if (item['catatan'] != null &&
+                          item['catatan'].toString().trim().isNotEmpty)
+                        Padding(
+                          padding: const EdgeInsets.only(top: 2),
+                          child: RichText(
+                            text: TextSpan(
+                              style: const TextStyle(
+                                fontSize: 11,
+                                color: Colors.black,
+                              ),
+                              children: [
+                                const TextSpan(
+                                  text: "Catatan: ",
+                                  style: TextStyle(fontWeight: FontWeight.bold),
+                                ),
+                                TextSpan(text: item['catatan']),
+                              ],
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
                 ),
               ),
             ],
@@ -181,7 +215,9 @@ class _PesananState extends State<DetailPesanan> {
                   children: [
                     TombolNavigasi(
                       function: () {
-                        if (status == 'diproses') {
+                        if (status == 'lunas') {
+                          _konfirmasiUbahStatus('diproses');
+                        } else if (status == 'diproses') {
                           _konfirmasiUbahStatus('menunggu');
                         } else if (status == 'menunggu') {
                           _konfirmasiUbahStatus('selesai');
@@ -190,6 +226,7 @@ class _PesananState extends State<DetailPesanan> {
                       backgroundColor: Warna.warnaAccent,
                       foregroundColor: Colors.white,
                       text: switch (status) {
+                        'lunas' => 'Proses Pesanan',
                         'diproses' => 'Menunggu Pengambilan',
                         'menunggu' => 'Pesanan Selesai',
                         _ => '',
@@ -204,6 +241,7 @@ class _PesananState extends State<DetailPesanan> {
                       backgroundColor: Colors.red[50]!,
                       foregroundColor: Colors.red,
                       text: switch (status) {
+                        'lunas' => 'Tolak Pesanan',
                         'diproses' => 'Batalkan',
                         'menunggu' => 'Batalkan',
                         _ => '',
@@ -260,6 +298,11 @@ class _PesananState extends State<DetailPesanan> {
         bgColor = Colors.red;
         icon = Icons.cancel_outlined;
         label = 'Pesanan dibatalkan';
+        break;
+      case 'lunas':
+        bgColor = Colors.grey;
+        icon = Icons.info_outline;
+        label = 'Menunggu konfirmasi';
         break;
       default:
         bgColor = Colors.grey;
