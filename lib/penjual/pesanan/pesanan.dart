@@ -115,17 +115,21 @@ class _PesananState extends State<Pesanan> {
               crossAxisAlignment: CrossAxisAlignment.start,
               spacing: 15,
               children: [
-                Wrap(
-                  runSpacing: 10,
-                  children: [
-                    _tombolFilter('Semua', 'semua'),
-                    SizedBox(width: 10),
-                    _tombolFilter('Menunggu', 'menunggu'),
-                    SizedBox(width: 10),
-                    _tombolFilter('Diproses', 'diproses'),
-                    SizedBox(width: 10),
-                    _tombolFilter('Selesai', 'selesai'),
-                  ],
+                Container(
+                  child: SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    physics: const BouncingScrollPhysics(),
+                    child: Row(
+                      spacing: 8,
+                      children: [
+                        _tombolFilter('Semua', 'semua'),
+                        _tombolFilter('Baru masuk', 'lunas'),
+                        _tombolFilter('Proses', 'diproses'),
+                        _tombolFilter('Menunggu', 'menunggu'),
+                        _tombolFilter('Selesai', 'selesai'),
+                      ],
+                    ),
+                  ),
                 ),
                 if (_isLoading)
                   Center(child: CircularProgressIndicator())
