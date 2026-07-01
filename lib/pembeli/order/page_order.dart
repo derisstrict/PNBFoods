@@ -23,7 +23,7 @@ class _OrderPageState extends State<OrderPage> {
 
   Future<List<Orderan>> _loadOrderan() async {
     final prefs = await SharedPreferences.getInstance();
-    final pelangganId = await prefs.getInt('userId');
+    final pelangganId = prefs.getInt('userId');
 
     if (pelangganId == null) throw Exception('User belum login');
     return fetchOrderanByPelanggan(pelangganId);
@@ -40,36 +40,31 @@ class _OrderPageState extends State<OrderPage> {
         backgroundColor: Warna.warnaAccent,
         foregroundColor: Colors.white,
         centerTitle: true,
-        shape: RoundedRectangleBorder(
+        shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.only(
             bottomLeft: Radius.circular(25),
             bottomRight: Radius.circular(25),
           ),
         ),
-        title: Stack(
-          alignment: Alignment.center,
+        title: const Row(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(Icons.article_outlined, color: Colors.white, size: 20),
-                SizedBox(width: 5),
-                Text(
-                  'Order',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ],
+            Icon(Icons.article_outlined, color: Colors.white, size: 20),
+            SizedBox(width: 5),
+            Text(
+              'Order',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+              ),
             ),
           ],
         ),
       ),
       backgroundColor: Warna.warnaBackground,
       body: SafeArea(
-        child: FutureBuilder(
+        child: FutureBuilder<List<Orderan>>(
           future: _futureOrderan,
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
@@ -84,106 +79,121 @@ class _OrderPageState extends State<OrderPage> {
               return const Center(child: Text('Belum ada riwayat orderan.'));
             }
 
-            final listOrderan = snapshot.data!;
-            final totalSemua = _TotalHarian(listOrderan);
+            final listOrderanMentah = snapshot.data!;
 
-            return ListView(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(top: 18, right: 18, left: 18),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        listOrderan.isNotEmpty
-                            ? DateFormat(
-                                'dd MMMM yyyy',
-                              ).format(listOrderan.first.tanggalOrderan)
-                            : '-',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w700,
-                        ),
+            final Map<String, List<Orderan>> groupedOrderan =
+                Orderan.orderanPertanggal(listOrderanMentah);
+            final List<String> listTanggal = groupedOrderan.keys.toList();
+
+            return ListView.builder(
+              itemCount: listTanggal.length,
+              itemBuilder: (context, indexTanggal) {
+                final tanggalRaw = listTanggal[indexTanggal];
+                final orderanPerHari = groupedOrderan[tanggalRaw]!;
+                final totalHarian = _TotalHarian(orderanPerHari);
+                final formatRupiah = NumberFormat.decimalPattern('id');
+
+                String tanggalFormatted = tanggalRaw;
+                try {
+                  DateTime parsedDate = DateTime.parse(tanggalRaw);
+                  tanggalFormatted = DateFormat(
+                    'dd MMMM yyyy',
+                  ).format(parsedDate);
+                } catch (_) {}
+
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(
+                        top: 18,
+                        right: 18,
+                        left: 18,
+                        bottom: 8,
                       ),
-                      Text(
-                        'Rp. ${NumberFormat('#.###').format(totalSemua)}',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-
-                ListView.builder(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  itemCount: listOrderan.length,
-                  itemBuilder: (context, index) {
-                    final orderan = listOrderan[index];
-
-                    final namaKantin =
-                        orderan.kantin?['nama_kantin'] ??
-                        'Kantin Tidak Diketahui';
-
-                    final kategoriKantin =
-                        orderan.kantin?['kategori'] ?? 'Umum';
-
-                    final fotoKantin = orderan.kantin?['foto_kantin'];
-
-                    final List<Map<String, String>>
-                    detailBelanja = orderan.items.map<Map<String, String>>((
-                      item,
-                    ) {
-                      return {
-                        'jumlah': "${item['jumlah']}",
-                        'nama': item['nama_produk'].toString(),
-                        'harga':
-                            "Rp. ${NumberFormat('#.###').format(item['harga_subtotal'])}",
-                        'catatan': item['catatan']?.toString() ?? '',
-                      };
-                    }).toList();
-
-                    String waktu = DateFormat(
-                      'HH.mm',
-                    ).format(orderan.tanggalOrderan);
-
-                    final jumlahItem = orderan.items.fold<int>(
-                      0,
-                      (sum, item) =>
-                          sum + (int.tryParse(item['jumlah'].toString()) ?? 0),
-                    );
-
-                    return Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.fromLTRB(18, 10, 18, 10),
-                          child: Text(
-                            '$waktu',
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            tanggalFormatted,
                             style: const TextStyle(
-                              fontSize: 12,
-                              color: Colors.grey,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w700,
                             ),
                           ),
-                        ),
-                        _buildOrderCard(
-                          gambarkantin: fotoKantin,
-                          namaKantin: namaKantin,
-                          kategori: kategoriKantin,
-                          itemCount: '$jumlahItem item',
-                          totalHarga:
-                              "Rp. ${NumberFormat('#.###').format(orderan.totalHarga)}",
-                          status: orderan.statusOrderan,
-                          items: detailBelanja,
-                          statusPembayaran: orderan.statusPembayaran ?? '',
-                        ),
-                      ],
-                    );
-                  },
-                ),
-              ],
+                          Text(
+                            'Rp. ${formatRupiah.format(totalHarian)}',
+                            style: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+
+                    ...orderanPerHari.map((orderan) {
+                      final namaKantin =
+                          orderan.kantin?['nama_kantin'] ??
+                          'Kantin Tidak Diketahui';
+                      final kategoriKantin =
+                          orderan.kantin?['kategori'] ?? 'Umum';
+                      final fotoKantin = orderan.kantin?['foto_kantin'];
+
+                      final List<Map<String, String>>
+                      detailBelanja = orderan.items.map<Map<String, String>>((
+                        item,
+                      ) {
+                        return {
+                          'jumlah': "${item['jumlah']}",
+                          'nama': item['nama_produk'].toString(),
+                          'harga':
+                              'Rp. ${formatRupiah.format(item['harga_subtotal'])}',
+                          'catatan': item['catatan']?.toString() ?? '',
+                        };
+                      }).toList();
+
+                      String waktu = DateFormat(
+                        'HH.mm',
+                      ).format(orderan.tanggalOrderan);
+
+                      final jumlahItem = orderan.items.fold<int>(
+                        0,
+                        (sum, item) =>
+                            sum +
+                            (int.tryParse(item['jumlah'].toString()) ?? 0),
+                      );
+
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.fromLTRB(18, 4, 18, 6),
+                            child: Text(
+                              waktu,
+                              style: const TextStyle(
+                                fontSize: 12,
+                                color: Colors.grey,
+                              ),
+                            ),
+                          ),
+                          _buildOrderCard(
+                            gambarkantin: fotoKantin,
+                            namaKantin: namaKantin,
+                            kategori: kategoriKantin,
+                            itemCount: '$jumlahItem item',
+                            totalHarga:
+                                'Rp. ${formatRupiah.format(orderan.totalHarga)}',
+                            status: orderan.statusOrderan,
+                            items: detailBelanja,
+                            statusPembayaran: orderan.statusPembayaran ?? '',
+                          ),
+                        ],
+                      );
+                    }),
+                  ],
+                );
+              },
             );
           },
         ),

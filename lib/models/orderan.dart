@@ -1,3 +1,5 @@
+import 'package:intl/intl.dart';
+
 class Orderan {
   final int id;
   final String statusOrderan;
@@ -97,5 +99,19 @@ class Orderan {
       kantin: kantin ?? this.kantin,
       items: items ?? this.items,
     );
+  }
+
+  static Map<String, List<Orderan>> orderanPertanggal(List<Orderan> list) {
+    final Map<String, List<Orderan>> dataTerkelompok = {};
+    for (var orderan in list) {
+      String keyTanggal = DateFormat(
+        'yyyy-MM-dd',
+      ).format(orderan.tanggalOrderan);
+      if (!dataTerkelompok.containsKey(keyTanggal)) {
+        dataTerkelompok[keyTanggal] = [];
+      }
+      dataTerkelompok[keyTanggal]!.add(orderan);
+    }
+    return dataTerkelompok;
   }
 }

@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:pnbfoods/common/tombol.dart';
@@ -255,7 +256,6 @@ class _DashboardState extends State<Dashboard> {
                           );
                         }
 
-                        // UI "Dashboard Penjual Tanpa Menu"
                         return Column(
                           spacing: 12.0,
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -581,7 +581,7 @@ class _DashboardState extends State<Dashboard> {
                                                     ),
                                                   ),
                                                   Text(
-                                                    "Rp. ${orderan.totalHarga.toStringAsFixed(0)}",
+                                                    "Rp. ${NumberFormat.decimalPattern('id').format(orderan.totalHarga)}",
                                                     style: TextStyle(
                                                       fontWeight:
                                                           FontWeight.w600,

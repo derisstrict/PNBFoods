@@ -122,12 +122,13 @@ Future<List<Orderan>> fetchOrderanByPelanggan(int pelangganId) async {
   final response = await dio.get('orderan/pelanggan/$pelangganId');
 
   if (response.statusCode == 200) {
-    final List<dynamic> data = response.data['data'];
-    return data
+    final List<dynamic> listData = response.data['data'];
+
+    return listData
         .map((item) => Orderan.fromJson(item as Map<String, dynamic>))
         .toList();
   } else {
-    throw Exception('Gagal mengambil orderan pelanggan');
+    throw Exception('Gagal memuat data orderan');
   }
 }
 

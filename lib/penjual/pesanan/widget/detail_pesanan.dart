@@ -66,6 +66,8 @@ class _DetailPesananState extends State<DetailPesanan> {
       widget.orderan.createdAt ?? widget.orderan.tanggalOrderan,
     );
 
+    final rupiah = NumberFormat.decimalPattern('id');
+
     return Column(
       spacing: 10,
       children: [
@@ -131,7 +133,7 @@ class _DetailPesananState extends State<DetailPesanan> {
                   ),
                   Spacer(),
                   Text(
-                    "Rp. ${widget.orderan.totalHarga.toStringAsFixed(0)}",
+                    "Rp. ${NumberFormat.decimalPattern('id').format(widget.orderan.totalHarga)}",
                     style: TextStyle(
                       fontWeight: FontWeight.w600,
                       fontSize: 12,
@@ -159,7 +161,7 @@ class _DetailPesananState extends State<DetailPesanan> {
                             ),
                           ),
                           Text(
-                            "Rp. ${item['harga_subtotal']}",
+                            'Rp. ${rupiah.format(item['harga_subtotal'])}',
                             style: const TextStyle(
                               fontSize: 12,
                               fontWeight: FontWeight.w500,
@@ -226,9 +228,9 @@ class _DetailPesananState extends State<DetailPesanan> {
                       backgroundColor: Warna.warnaAccent,
                       foregroundColor: Colors.white,
                       text: switch (status) {
-                        'lunas' => 'Proses Pesanan',
-                        'diproses' => 'Menunggu Pengambilan',
-                        'menunggu' => 'Pesanan Selesai',
+                        'lunas' => 'Proses',
+                        'diproses' => 'Pengambilan',
+                        'menunggu' => 'Selesai',
                         _ => '',
                       },
                       icon: Icons.done,
@@ -241,7 +243,7 @@ class _DetailPesananState extends State<DetailPesanan> {
                       backgroundColor: Colors.red[50]!,
                       foregroundColor: Colors.red,
                       text: switch (status) {
-                        'lunas' => 'Tolak Pesanan',
+                        'lunas' => 'Tolak',
                         'diproses' => 'Batalkan',
                         'menunggu' => 'Batalkan',
                         _ => '',
