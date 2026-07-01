@@ -141,6 +141,7 @@ class _OrderPageState extends State<OrderPage> {
                         'nama': item['nama_produk'].toString(),
                         'harga':
                             "Rp. ${NumberFormat('#.###').format(item['harga_subtotal'])}",
+                        'catatan': item['catatan']?.toString() ?? '',
                       };
                     }).toList();
 
@@ -371,20 +372,49 @@ class _OrderPageState extends State<OrderPage> {
                 ...items.map(
                   (item) => Padding(
                     padding: const EdgeInsets.only(bottom: 5),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          "${item['jumlah']}x ${item['nama']}",
-                          style: const TextStyle(
-                            fontSize: 13,
-                            color: Colors.grey,
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              "${item['jumlah']}x ${item['nama']}",
+                              style: const TextStyle(
+                                fontSize: 13,
+                                color: Colors.grey,
+                              ),
+                            ),
+                            Text(
+                              item['harga']!,
+                              style: const TextStyle(fontSize: 13),
+                            ),
+                          ],
+                        ),
+
+                        if (item['catatan'] != null &&
+                            item['catatan'].toString().trim().isNotEmpty)
+                          Padding(
+                            padding: const EdgeInsets.only(top: 2),
+                            child: RichText(
+                              text: TextSpan(
+                                style: const TextStyle(
+                                  fontSize: 11,
+                                  color: Colors.grey,
+                                ),
+                                children: [
+                                  const TextSpan(
+                                    text: "Catatan: ",
+                                    style: TextStyle(
+                                      color: Colors.grey,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  TextSpan(text: item['catatan']),
+                                ],
+                              ),
+                            ),
                           ),
-                        ),
-                        Text(
-                          item['harga']!,
-                          style: const TextStyle(fontSize: 13),
-                        ),
                       ],
                     ),
                   ),
@@ -452,6 +482,11 @@ class _OrderPageState extends State<OrderPage> {
         bgColor = Colors.red;
         icon = Icons.cancel_outlined;
         label = 'Pesanan dibatalkan';
+        break;
+      case 'lunas':
+        bgColor = Colors.grey;
+        icon = Icons.info_outline;
+        label = 'Menunggu konfirmasi';
         break;
       default:
         bgColor = Colors.grey;
