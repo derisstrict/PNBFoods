@@ -114,14 +114,6 @@ class TopBarHeader extends StatelessWidget {
                     visible: style == pembeli,
                     child: Row(
                       children: [
-                        IconButton(
-                          onPressed: () {
-                            Navigator.pop(context);
-                          },
-                          icon: Icon(Icons.arrow_back,
-                            color: Colors.white,
-                          )
-                        ),
                         ClipRRect(
                           borderRadius: BorderRadius.circular(10),
                           child: Container(
@@ -230,6 +222,27 @@ class TopBarHeader extends StatelessWidget {
                         ),
                       ),
                   ],
+                ),
+                Spacer(),
+                TextButton.icon(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  style: TextButton.styleFrom(
+                    backgroundColor: Colors.white10,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(10))
+                    )
+                  ),
+                  label: Text("Daftar kantin", 
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w300
+                    ),
+                  ),
+                  icon: Icon(Icons.store_mall_directory_outlined,
+                    color: Colors.white,
+                  )
                 ),
               ],
             ),
