@@ -16,12 +16,14 @@ class PembayaranPage extends StatefulWidget {
   final int totalHarga;
   final List<ItemKeranjang> items;
   final int kantinId;
+  final int? orderanId;
 
   const PembayaranPage({
     super.key,
     required this.totalHarga,
     required this.items,
     required this.kantinId,
+    this.orderanId,
   });
 
   @override
@@ -63,6 +65,7 @@ class _PembayaranPageState extends State<PembayaranPage> {
         totalHarga: widget.totalHarga,
         kantinId: widget.kantinId,
         items: widget.items,
+        orderanId: widget.orderanId,
       );
 
       final data = result['pembayaran'];
@@ -124,9 +127,7 @@ class _PembayaranPageState extends State<PembayaranPage> {
           TombolNavigasi(
             function: () {
               Navigator.of(ctx).pop();
-              if (success) {
-                Navigator.of(context).popUntil((route) => route.isFirst);
-              }
+              Navigator.of(context).pop(success);
             },
             text: "Kembali",
             backgroundColor: Warna.warnaAccent,

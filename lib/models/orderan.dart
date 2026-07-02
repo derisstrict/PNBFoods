@@ -56,6 +56,7 @@ class Orderan {
           (json['detail_orderan'] as List<dynamic>?)
               ?.map(
                 (e) => {
+                  'id_produk': e['produk']?['id'],
                   'jumlah': e['jumlah'],
                   'nama_produk': e['produk']?['nama_produk'] ?? '',
                   'harga_subtotal': e['subtotal'] ?? 0,

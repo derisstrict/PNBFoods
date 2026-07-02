@@ -3,7 +3,9 @@ import 'package:intl/intl.dart';
 import 'package:pnbfoods/common/top_bar.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:pnbfoods/common/warna.dart';
+import 'package:pnbfoods/models/item_keranjang.dart';
 import 'package:pnbfoods/models/orderan.dart';
+import 'package:pnbfoods/pembeli/pembayaran/page_pembayaran.dart';
 import 'package:pnbfoods/services/orderan_service.dart';
 
 class OrderPage extends StatefulWidget {
@@ -154,6 +156,7 @@ class _OrderPageState extends State<OrderPage> {
                             ),
                           ),
                           _buildOrderCard(
+                            orderan: orderan,
                             gambarkantin: fotoKantin,
                             namaKantin: namaKantin,
                             kategori: kategoriKantin,
@@ -228,6 +231,7 @@ class _OrderPageState extends State<OrderPage> {
   }
 
   Widget _buildOrderCard({
+    required Orderan orderan,
     required String? gambarkantin,
     required String namaKantin,
     required String kategori,
@@ -425,6 +429,57 @@ class _OrderPageState extends State<OrderPage> {
             ),
           ),
         ),
+        if (status == "menunggu_pembayaran")
+          GestureDetector(
+            onTap: () async {
+              final resumeItems = orderan.items.map<ItemKeranjang>((item) {
+                final jumlah = item['jumlah'] as int;
+                final subtotal = item['harga_subtotal'] as int;
+                return ItemKeranjang(
+                  produkId: item['id_produk'] as int?,
+                  nama: item['nama_produk'] as String,
+                  harga: jumlah > 0 ? subtotal ~/ jumlah : 0,
+                  jumlah: jumlah,
+                  catatan: item['catatan'] as String?,
+                  imageUrl: '',
+                );
+              }).toList();
+
+              final result = await Navigator.push<bool>(context, MaterialPageRoute(
+                builder: (context) => PembayaranPage(
+                  totalHarga: orderan.totalHarga.toInt(),
+                  items: resumeItems,
+                  kantinId: orderan.kantin?['id'] as int,
+                  orderanId: orderan.id,
+                ),
+              ));
+              if (result == true) {
+                setState(() {
+                  _futureOrderan = _loadOrderan();
+                });
+              }
+            },
+            child: Container(
+              margin: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Warna.warnaAccent,
+                borderRadius: BorderRadius.circular(10)
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                spacing: 5,
+                children: [
+                  Icon(Icons.qr_code_scanner, color: Colors.white,),
+                  Text("Lanjutkan pembayaran",
+                    style: TextStyle(
+                      color: Colors.white
+                    ),
+                  )
+                ],
+              ),
+            ),
+          )
       ],
     );
   }
@@ -455,10 +510,20 @@ class _OrderPageState extends State<OrderPage> {
         icon = Icons.cancel_outlined;
         label = 'Pesanan dibatalkan';
         break;
+      case 'kadaluwarsa':
+        bgColor = Colors.red;
+        icon = Icons.cancel_outlined;
+        label = 'Pembayaran gagal';
+        break;
+      case 'menunggu_pembayaran':
+        bgColor = Colors.blue;
+        icon = Icons.timer_outlined;
+        label = 'Menunggu pembayaran';
+        break;
       case 'lunas':
         bgColor = Colors.grey;
         icon = Icons.info_outline;
-        label = 'Menunggu konfirmasi';
+        label = 'Menunggu konfirmasi penjual';
         break;
       default:
         bgColor = Colors.grey;

@@ -101,8 +101,8 @@ class _KeranjangPageState extends State<KeranjangPage> {
             SizedBox(
               width: double.infinity,
               child: TextButton(
-                onPressed: () {
-                  Navigator.push(
+                onPressed: () async {
+                  final result = await Navigator.push<bool>(
                     context,
                     MaterialPageRoute(
                       builder: (context) => PembayaranPage(
@@ -112,6 +112,9 @@ class _KeranjangPageState extends State<KeranjangPage> {
                       ),
                     ),
                   );
+                  if (result == true && context.mounted) {
+                    Navigator.of(context).popUntil((route) => route.isFirst);
+                  }
                 },
                 style: TextButton.styleFrom(
                   backgroundColor: Warna.warnaAccent,

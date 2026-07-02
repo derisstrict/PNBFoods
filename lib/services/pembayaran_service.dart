@@ -89,9 +89,10 @@ Future<Map<String, dynamic>> createSnapTransaction({
   required int totalHarga,
   required int kantinId,
   required List<ItemKeranjang> items,
+  int? orderanId,
 }) async {
   try {
-    final response = await dio.post('pembayaran/snap', data: {
+    final data = <String, dynamic>{
       'pelanggan_id': pelangganId,
       'total_harga': totalHarga,
       'kantin_id': kantinId,
@@ -104,7 +105,10 @@ Future<Map<String, dynamic>> createSnapTransaction({
                 if (item.catatan != null) 'catatan': item.catatan,
               })
           .toList(),
-    });
+    };
+    if (orderanId != null) data['orderan_id'] = orderanId;
+
+    final response = await dio.post('pembayaran/snap', data: data);
 
     if (response.statusCode == 201 || response.statusCode == 200) {
       return response.data['data'] as Map<String, dynamic>;
