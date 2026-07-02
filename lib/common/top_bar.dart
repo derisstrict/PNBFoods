@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:pnbfoods/akun/akun_user.dart';
 import 'package:pnbfoods/common/warna.dart';
 import 'package:pnbfoods/models/kantin.dart';
+import 'package:pnbfoods/models/penjual.dart';
 
 class TopBar extends StatelessWidget implements PreferredSizeWidget {
   final String title;
@@ -274,6 +275,105 @@ class TopBarHeader extends StatelessWidget {
                   ),
                 ],
               ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class TopBarHeaderPenjual extends StatelessWidget {
+  final Penjual penjual;
+
+  const TopBarHeaderPenjual({
+    super.key,
+    required this.penjual,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      height: 70,
+      decoration: BoxDecoration(
+        color: Warna.warnaAccent,
+        borderRadius: BorderRadius.only(
+          bottomLeft: Radius.circular(25),
+          bottomRight: Radius.circular(25),
+        ),
+      ),
+      child: Container(
+        padding: EdgeInsets.all(15),
+        child: Column(
+          children: [
+            Row(
+              children: [
+                    Text("Dashboard",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w400,
+                        fontSize: 18
+                      ),
+                    ),
+                    SizedBox(width: 5,),
+                    Text("PNBFoods",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w600,
+                        fontSize: 18
+                      ),
+                    ),
+                    Spacer(),
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => ProfileUser(),
+                          ),
+                        );
+                      },
+                      child: Container(
+                        padding: EdgeInsets.fromLTRB(2, 8, 12, 8),
+                        decoration: BoxDecoration(
+                          color: Colors.white10,
+                          borderRadius: BorderRadius.circular(25),
+                        ),
+                        child: Row(
+                          children: [
+                            SizedBox(width: 5),
+                            CircleAvatar(
+                                  radius: 12,
+                                  backgroundColor:Color(0xFFD8BED0),
+                                  backgroundImage: penjual.fotoProfile != null
+                                    ? NetworkImage(penjual.fotoUrl!)
+                                    : null,
+                                
+                                  child: penjual.fotoProfile == null
+                                    ? Icon( Icons.person, size: 12, color: Colors.white)
+                                    : null
+                                ),
+                            SizedBox(width: 5,),
+                            Text(
+                              penjual.namaPenjual,
+                              style: TextStyle(
+                                fontWeight: FontWeight.w300,
+                                color: Colors.white,
+                                fontSize: 16.0,
+                              ),
+                            ),
+                            SizedBox(width: 8,),
+                            Icon(
+                              Icons.keyboard_arrow_right_outlined,
+                              color: Colors.white,
+                              size: 16,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+              ],
             ),
           ],
         ),

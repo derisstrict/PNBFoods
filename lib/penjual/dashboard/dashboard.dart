@@ -30,8 +30,12 @@ class Dashboard extends StatefulWidget {
 class _DashboardState extends State<Dashboard> {
   late Future<Kantin?> _futureKantin;
   late Future<List<Produk>> _futureProduk;
+  Penjual? penjual;
   Future<List<Orderan>> _futureOrderan = Future.value([]);
-  String penjual = "";
+  int _todayIncome = 0;
+  int _totalIncome = 0;
+  int _todayProductsSold = 0;
+  int _totalProductsSold = 0;
   String? _appDirPath;
 
   Future<void> _initPath() async {
@@ -58,12 +62,12 @@ class _DashboardState extends State<Dashboard> {
     }
   }
 
-  void _ambilNamaPenjual() async {
+  void _ambilDataPenjual() async {
     final prefs = await SharedPreferences.getInstance();
     final userId = prefs.getInt('userId');
     fetchPenjual(userId!).then((Penjual hasil) {
       setState(() {
-        penjual = hasil.namaPenjual;
+        penjual = hasil;
       });
     });
   }
@@ -78,18 +82,48 @@ class _DashboardState extends State<Dashboard> {
     final prefs = await SharedPreferences.getInstance();
     final kantinId = prefs.getInt('kantinId');
 
-    if (kantinId != null) {
-      setState(() {
-        _futureOrderan = fetchOrderanByKantin(kantinId);
-      });
+    if (kantinId == null) return;
+
+    final orderans = await fetchOrderanByKantin(kantinId);
+    final today = DateTime.now();
+
+    int todayIncome = 0;
+    int totalIncome = 0;
+    int todayProductsSold = 0;
+    int totalProductsSold = 0;
+
+    for (final o in orderans) {
+      if (o.statusOrderan == 'batal' || o.statusOrderan == 'kadaluwarsa') continue;
+
+      final isToday = o.tanggalOrderan.year == today.year &&
+          o.tanggalOrderan.month == today.month &&
+          o.tanggalOrderan.day == today.day;
+      final amount = o.totalHarga.toInt();
+
+      totalIncome += amount;
+      if (isToday) todayIncome += amount;
+
+      for (final item in o.items) {
+        final jumlah = item['jumlah'] as int;
+        totalProductsSold += jumlah;
+        if (isToday) todayProductsSold += jumlah;
+      }
     }
+
+    setState(() {
+      _futureOrderan = Future.value(orderans);
+      _todayIncome = todayIncome;
+      _totalIncome = totalIncome;
+      _todayProductsSold = todayProductsSold;
+      _totalProductsSold = totalProductsSold;
+    });
   }
 
   @override
   void initState() {
     super.initState();
     _ambilProdukPenjual();
-    _ambilNamaPenjual();
+    _ambilDataPenjual();
     _futureKantin = _loadKantin().then((kantin) {
       if (kantin != null) {
         _ambilPesananKantin();
@@ -119,13 +153,13 @@ class _DashboardState extends State<Dashboard> {
     if (kantinData.fotoUrl != null && kantinData.fotoUrl!.isNotEmpty) {
       return Image.network(
         kantinData.fotoUrl!,
-        width: 90,
-        height: 90,
+        width: 60,
+        height: 60,
         fit: BoxFit.cover,
         errorBuilder: (context, error, stackTrace) {
           return Icon(
             Icons.image_not_supported_outlined,
-            size: 90,
+            size: 60,
             color: Warna.warnaTextGray,
           );
         },
@@ -137,7 +171,7 @@ class _DashboardState extends State<Dashboard> {
         _appDirPath == null) {
       return Icon(
         Icons.image_not_supported_outlined,
-        size: 90,
+        size: 60,
         color: Warna.warnaTextGray,
       );
     }
@@ -206,12 +240,10 @@ class _DashboardState extends State<Dashboard> {
             return SingleChildScrollView(
               child: Column(
                 children: [
-                  TopBarHeader(
-                    width: screenWidth,
-                    style: TopBarHeader.penjual,
-                    text1: "Halo,",
-                    text2: penjual,
-                  ),
+                  if (penjual != null)
+                    TopBarHeaderPenjual(
+                      penjual: penjual!,
+                    ),
                   Container(
                     margin: EdgeInsets.all(20),
                     child: FutureBuilder<Kantin?>(
@@ -279,6 +311,7 @@ class _DashboardState extends State<Dashboard> {
                                     Expanded(
                                       child: Column(
                                         spacing: 4.0,
+                                        mainAxisAlignment: MainAxisAlignment.center,
                                         crossAxisAlignment:
                                             CrossAxisAlignment.start,
                                         children: [
@@ -294,26 +327,6 @@ class _DashboardState extends State<Dashboard> {
                                             style: TextStyle(
                                               fontWeight: FontWeight.w500,
                                               fontSize: 12,
-                                            ),
-                                          ),
-                                          Container(
-                                            padding: EdgeInsets.fromLTRB(
-                                              12,
-                                              3,
-                                              12,
-                                              3,
-                                            ),
-                                            decoration: BoxDecoration(
-                                              color: Warna.warnaBackground,
-                                              borderRadius:
-                                                  BorderRadius.circular(25),
-                                            ),
-                                            child: Text(
-                                              "Rp. 5rb-35rb",
-                                              style: TextStyle(
-                                                fontWeight: FontWeight.w500,
-                                                fontSize: 11,
-                                              ),
                                             ),
                                           ),
                                         ],
@@ -413,7 +426,7 @@ class _DashboardState extends State<Dashboard> {
                                                     ),
                                                     SizedBox(width: 4.0),
                                                     Text(
-                                                      "0",
+                                                      NumberFormat.decimalPattern('id').format(_todayIncome),
                                                       style: TextStyle(
                                                         fontSize: 20.0,
                                                         fontWeight:
@@ -439,7 +452,7 @@ class _DashboardState extends State<Dashboard> {
                                                     ),
                                                     SizedBox(width: 4.0),
                                                     Text(
-                                                      "0",
+                                                      NumberFormat.decimalPattern('id').format(_totalIncome),
                                                       style: TextStyle(
                                                         fontSize: 14.0,
                                                         fontWeight:
@@ -471,7 +484,7 @@ class _DashboardState extends State<Dashboard> {
                                   child: Row(
                                     children: [
                                       Text(
-                                        "0 produk terjual hari ini",
+                                        "$_todayProductsSold produk terjual hari ini",
                                         style: TextStyle(
                                           fontSize: 11.0,
                                           fontWeight: FontWeight.w200,
@@ -480,7 +493,7 @@ class _DashboardState extends State<Dashboard> {
                                       ),
                                       Spacer(),
                                       Text(
-                                        "0 produk total terjual",
+                                        "$_totalProductsSold produk total terjual",
                                         style: TextStyle(
                                           fontSize: 11.0,
                                           fontWeight: FontWeight.w200,
