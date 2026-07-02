@@ -17,12 +17,11 @@ class PalangTamu extends StatelessWidget {
           color: Colors.white,
           borderRadius: BorderRadius.circular(15)
         ),
-        padding: EdgeInsets.all(10),
+        padding: EdgeInsets.all(20),
         child: Column(
           spacing: 10,
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.block, size: 48, color: Colors.red,),
             Text("Belum Login",
               style: TextStyle(
                 fontWeight: FontWeight.w600,
