@@ -322,18 +322,18 @@ class TopBarHeaderPenjual extends StatelessWidget {
           children: [
             Row(
               children: [
-                    Text("Dashboard",
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.w400,
-                        fontSize: 18
-                      ),
-                    ),
-                    SizedBox(width: 5,),
                     Text("PNBFoods",
                       style: TextStyle(
                         color: Colors.white,
                         fontWeight: FontWeight.w600,
+                        fontSize: 18
+                      ),
+                    ),
+                    SizedBox(width: 5,),
+                    Text("Dashboard",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w400,
                         fontSize: 18
                       ),
                     ),
