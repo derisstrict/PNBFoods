@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:pnbfoods/common/tombol.dart';
@@ -12,11 +13,14 @@ import 'package:pnbfoods/pembeli/list_produk/widget/card_produk.dart';
 import 'package:pnbfoods/penjual/dashboard/widgets/text_heading.dart';
 import 'package:pnbfoods/penjual/form_produk/form_produk.dart';
 import 'package:pnbfoods/penjual/form_kantin/form_kantin.dart';
+import 'package:pnbfoods/penjual/pesanan/pesanan.dart';
 import 'package:pnbfoods/services/penjual_service.dart';
 import 'package:pnbfoods/services/produk_service.dart';
 import 'package:pnbfoods/models/kantin.dart';
 import 'package:pnbfoods/services/kantin_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:pnbfoods/services/orderan_service.dart';
+import 'package:pnbfoods/models/orderan.dart';
 
 class Dashboard extends StatefulWidget {
   @override
@@ -26,6 +30,7 @@ class Dashboard extends StatefulWidget {
 class _DashboardState extends State<Dashboard> {
   late Future<Kantin?> _futureKantin;
   late Future<List<Produk>> _futureProduk;
+  Future<List<Orderan>> _futureOrderan = Future.value([]);
   String penjual = "";
   String? _appDirPath;
 
@@ -41,7 +46,13 @@ class _DashboardState extends State<Dashboard> {
     final userId = prefs.getInt('userId');
     if (userId == null) return null;
     try {
-      return await fetchKantinByPenjual(userId);
+      final kantin = await fetchKantinByPenjual(userId);
+
+      if (kantin != null) {
+        await prefs.setInt('kantinId', kantin.id);
+      }
+
+      return kantin;
     } catch (e) {
       return null;
     }
@@ -63,12 +74,28 @@ class _DashboardState extends State<Dashboard> {
     _futureProduk = fetchProdukByPenjual(userId!);
   }
 
+  void _ambilPesananKantin() async {
+    final prefs = await SharedPreferences.getInstance();
+    final kantinId = prefs.getInt('kantinId');
+
+    if (kantinId != null) {
+      setState(() {
+        _futureOrderan = fetchOrderanByKantin(kantinId);
+      });
+    }
+  }
+
   @override
   void initState() {
     super.initState();
-    _futureKantin = _loadKantin();
     _ambilProdukPenjual();
     _ambilNamaPenjual();
+    _futureKantin = _loadKantin().then((kantin) {
+      if (kantin != null) {
+        _ambilPesananKantin();
+      }
+      return kantin;
+    });
     _initPath();
   }
 
@@ -78,10 +105,14 @@ class _DashboardState extends State<Dashboard> {
     });
   }
 
-  void refreshProduk() {
-    setState(() {
-      _futureProduk = fetchSemuaProduk();
-    });
+  void refreshProduk() async {
+    final prefs = await SharedPreferences.getInstance();
+    final userId = prefs.getInt('userId');
+    if (userId != null) {
+      setState(() {
+        _futureProduk = fetchProdukByPenjual(userId);
+      });
+    }
   }
 
   Widget _buildKantinImage(Kantin kantinData) {
@@ -125,6 +156,41 @@ class _DashboardState extends State<Dashboard> {
         );
       },
     );
+  }
+
+  Widget _statusOrderan(String statusOrderan) {
+    switch (statusOrderan) {
+      case 'diproses':
+        return Text(
+          'Sedang diproses',
+          style: TextStyle(color: Warna.warnaAccent, fontSize: 11),
+        );
+      case 'selesai':
+        return Text(
+          'Pesanan selesai',
+          style: TextStyle(color: Colors.green, fontSize: 11),
+        );
+      case 'dibatalkan':
+        return Text(
+          'Pesanan dibatalkan',
+          style: TextStyle(color: Colors.red, fontSize: 11),
+        );
+      case 'menunggu':
+        return Text(
+          'Menunggu Pengambilan',
+          style: TextStyle(color: Colors.deepPurple, fontSize: 11),
+        );
+      case 'lunas':
+        return Text(
+          'Menunggu Konfirmasi',
+          style: TextStyle(color: Colors.grey, fontSize: 11),
+        );
+      default:
+        return Text(
+          'Menunggu Konfirmasi',
+          style: TextStyle(color: Colors.grey, fontSize: 11),
+        );
+    }
   }
 
   @override
@@ -190,7 +256,6 @@ class _DashboardState extends State<Dashboard> {
                           );
                         }
 
-                        // UI "Dashboard Penjual Tanpa Menu"
                         return Column(
                           spacing: 12.0,
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -427,43 +492,139 @@ class _DashboardState extends State<Dashboard> {
                                 ),
                               ],
                             ),
-                            Row(
-                              children: [
-                                TextHeading(title: "Pesanan"),
-                                Spacer(),
-                                Text(
-                                  "0 pesanan",
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                    color: Warna.warnaAccent,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            Container(
-                              child: Column(
-                                spacing: 10.0,
-                                children: [
-                                  Container(
-                                    padding: EdgeInsets.all(10),
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.all(
-                                        Radius.circular(10),
-                                      ),
-                                      color: Colors.white,
+                            //pesanan
+                            FutureBuilder(
+                              future: _futureOrderan,
+                              builder: (context, snapshot) {
+                                final pesanan = snapshot.data ?? [];
+                                return Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  spacing: 12.0,
+                                  children: [
+                                    //judul
+                                    Row(
+                                      children: [
+                                        TextHeading(title: "Pesanan"),
+                                        Spacer(),
+                                        Text(
+                                          "${pesanan.length} pesanan",
+                                          style: TextStyle(
+                                            fontSize: 12,
+                                            color: Warna.warnaAccent,
+                                          ),
+                                        ),
+                                      ],
                                     ),
-                                    child: Center(
-                                      child: Text(
-                                        "Saat ini belum ada pesanan untuk ditampilkan",
-                                        style: TextStyle(
-                                          fontSize: 12.0,
-                                          fontWeight: FontWeight.w500,
+                                    if (snapshot.connectionState ==
+                                        ConnectionState.waiting)
+                                      const Center(
+                                        child: CircularProgressIndicator(),
+                                      )
+                                    else if (pesanan.isEmpty)
+                                      Container(
+                                        padding: EdgeInsets.all(10),
+                                        decoration: BoxDecoration(
+                                          borderRadius: BorderRadius.all(
+                                            Radius.circular(10),
+                                          ),
+                                          color: Colors.white,
+                                        ),
+                                        child: Center(
+                                          child: Text(
+                                            "Saat ini belum ada pesanan untuk ditampilkan",
+                                            style: TextStyle(
+                                              fontSize: 12.0,
+                                              fontWeight: FontWeight.w500,
+                                            ),
+                                          ),
+                                        ),
+                                      )
+                                    else ...[
+                                      ...pesanan
+                                          .take(3)
+                                          .map(
+                                            (orderan) => Container(
+                                              padding: EdgeInsets.all(10),
+                                              decoration: BoxDecoration(
+                                                borderRadius:
+                                                    BorderRadius.circular(10),
+                                                color: Colors.white,
+                                              ),
+                                              child: Row(
+                                                children: [
+                                                  Expanded(
+                                                    child: Column(
+                                                      crossAxisAlignment:
+                                                          CrossAxisAlignment
+                                                              .start,
+                                                      children: [
+                                                        Text(
+                                                          "Pesanan #${orderan.id}",
+                                                          style: TextStyle(
+                                                            fontWeight:
+                                                                FontWeight.w600,
+                                                            fontSize: 13,
+                                                          ),
+                                                        ),
+                                                        _statusOrderan(
+                                                          orderan.statusOrderan,
+                                                        ),
+                                                        ...orderan.items.map(
+                                                          (item) => Text(
+                                                            "${item['jumlah']}x ${item['nama_produk']}",
+                                                            style: TextStyle(
+                                                              fontSize: 11,
+                                                            ),
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                  Text(
+                                                    "Rp. ${NumberFormat.decimalPattern('id').format(orderan.totalHarga)}",
+                                                    style: TextStyle(
+                                                      fontWeight:
+                                                          FontWeight.w600,
+                                                      fontSize: 12,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ),
+                                      GestureDetector(
+                                        onTap: () async {
+                                          await Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) => Pesanan(),
+                                            ),
+                                          );
+                                          _ambilPesananKantin();
+                                        },
+                                        child: Container(
+                                          padding: EdgeInsets.all(10),
+                                          decoration: BoxDecoration(
+                                            borderRadius: BorderRadius.all(
+                                              Radius.circular(10),
+                                            ),
+                                            color: Colors.white,
+                                          ),
+                                          child: Center(
+                                            child: Text(
+                                              "Lihat Selengkapnya",
+                                              style: TextStyle(
+                                                fontSize: 12.0,
+                                                fontWeight: FontWeight.w500,
+                                              ),
+                                            ),
+                                          ),
                                         ),
                                       ),
-                                    ),
-                                  ),
-                                ],
-                              ),
+                                    ],
+                                  ],
+                                );
+                              },
                             ),
                             TextHeading(title: "Menu"),
                             TombolLebar(
@@ -475,9 +636,7 @@ class _DashboardState extends State<Dashboard> {
                                   ),
                                 );
                                 if (result == true) {
-                                  setState(() {
-                                    refreshProduk();
-                                  });
+                                  refreshProduk();
                                 }
                               },
                               backgroundColor: Warna.warnaAccent,
@@ -489,28 +648,28 @@ class _DashboardState extends State<Dashboard> {
                               future: _futureProduk,
                               builder: (context, snapshot) {
                                 if (!snapshot.hasData) {
-                                    return Container(
-                                      padding: EdgeInsets.all(10),
-                                      decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.all(
-                                          Radius.circular(10),
-                                        ),
-                                        color: Colors.white,
+                                  return Container(
+                                    padding: EdgeInsets.all(10),
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.all(
+                                        Radius.circular(10),
                                       ),
-                                      child: Center(
-                                        child: Text(
-                                          "Belum ada Menu yang ditambahkan",
-                                          style: TextStyle(
-                                            fontSize: 12.0,
-                                            fontWeight: FontWeight.w500,
-                                          ),
+                                      color: Colors.white,
+                                    ),
+                                    child: Center(
+                                      child: Text(
+                                        "Belum ada Menu yang ditambahkan",
+                                        style: TextStyle(
+                                          fontSize: 12.0,
+                                          fontWeight: FontWeight.w500,
                                         ),
                                       ),
-                                    );
-                                  }
+                                    ),
+                                  );
+                                }
                                 if (snapshot.hasData) {
                                   final items = snapshot.data!;
-                                  
+
                                   return MasonryGridView.builder(
                                     shrinkWrap: true,
                                     physics: NeverScrollableScrollPhysics(),

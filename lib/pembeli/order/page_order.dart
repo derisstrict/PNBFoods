@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:pnbfoods/common/warna.dart';
+import 'package:pnbfoods/models/orderan.dart';
+import 'package:pnbfoods/services/orderan_service.dart';
 
 class OrderPage extends StatefulWidget {
   const OrderPage({super.key});
@@ -9,138 +13,242 @@ class OrderPage extends StatefulWidget {
 }
 
 class _OrderPageState extends State<OrderPage> {
+  late Future<List<Orderan>> _futureOrderan;
+
+  @override
+  void initState() {
+    super.initState();
+    _futureOrderan = _loadOrderan();
+  }
+
+  Future<List<Orderan>> _loadOrderan() async {
+    final prefs = await SharedPreferences.getInstance();
+    final pelangganId = prefs.getInt('userId');
+
+    if (pelangganId == null) throw Exception('User belum login');
+    return fetchOrderanByPelanggan(pelangganId);
+  }
+
+  double _TotalHarian(List<Orderan> list) {
+    return list.fold(0, (sum, item) => sum + item.totalHarga);
+  }
+
   @override
   Widget build(BuildContext context) {
-    final List<Map<String, dynamic>> pesananList = [
-      {
-        'waktu': '12.38 PM',
-        'gambarkantin': 'assets/img/logo.png',
-        'namaKantin': 'Kantin Ibu Gacor',
-        'kategori': 'Makanan & Minuman',
-        'itemCount': '3 item',
-        'totalHarga': '68.000',
-        'status': 'selesai',
-        'items': [
-          {'nama': 'Nasi Goreng Spesial', 'jumlah': '2','harga': '50.000'},
-          {'nama': 'Tipat Cantok', 'jumlah': '1', 'harga': '18.000'},
-        ],
-        'statusPembayaran': 'Berhasil',
-      },
-      {
-        'waktu': '12.32 PM',
-        'gambarkantin': null,
-        'namaKantin': 'Kantin Ibu Gacor',
-        'kategori': 'Makanan & Minuman',
-        'itemCount': '1 item',
-        'totalHarga': '18.000',
-        'status': 'proses',
-        'items': [
-          {'nama': 'Nasi Pecel', 'jumlah': '1', 'harga': '18.000'},
-        ],
-        'statusPembayaran': 'Berhasil',
-      },
-      {
-        'waktu': '12.32 PM',
-        'gambarkantin': null,
-        'namaKantin': 'Kantin Ibu Gacor',
-        'kategori': 'Makanan & Minuman',
-        'itemCount': '1 item',
-        'totalHarga': '18.000',
-        'status': 'tunggu',
-        'items': [
-          {'nama': 'Nasi Pecel', 'jumlah': '1', 'harga': '18.000'},
-        ],
-        'statusPembayaran': 'Berhasil',
-      },
-      {
-        'waktu': '12.32 PM',
-        'gambarkantin': null, 
-        'namaKantin': 'Kantin Ibu Gacor',
-        'kategori': 'Makanan & Minuman',
-        'itemCount': '1 item',
-        'totalHarga': '18.000',
-        'status': 'batal',
-        'items': [
-          {'nama': 'Nasi Pecel', 'jumlah': '1', 'harga': '18.000'},
-        ],
-        'statusPembayaran': 'Gagal',
-      },
-    ];
-
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Warna.warnaAccent,
         foregroundColor: Colors.white,
         centerTitle: true,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.only(bottomLeft: Radius.circular(25), bottomRight: Radius.circular(25))
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.only(
+            bottomLeft: Radius.circular(25),
+            bottomRight: Radius.circular(25),
+          ),
         ),
-        title: Stack(
-          alignment: Alignment.center,
+        title: const Row(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(Icons.article_outlined, color: Colors.white, size: 20),
-                SizedBox(width: 5),
-                Text('Order', style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600))
-              ],
-            )
+            Icon(Icons.article_outlined, color: Colors.white, size: 20),
+            SizedBox(width: 5),
+            Text(
+              'Order',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
           ],
-        )
+        ),
       ),
       backgroundColor: Warna.warnaBackground,
       body: SafeArea(
-        child: ListView(
-          children: [
-            Padding(
-              padding: const EdgeInsets.only(top: 18, right: 18, left: 18),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text('30 Juni 2021',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
-                  ),
-                  Text('Rp. 89.000',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
-                  ),
-                ],
-              ),
-            ),
+        child: FutureBuilder<List<Orderan>>(
+          future: _futureOrderan,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(child: CircularProgressIndicator());
+            }
 
-            ListView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: pesananList.length,
-              itemBuilder: (context, index) {
-                final pesanan = pesananList[index];
+            if (snapshot.hasError) {
+              return Center(child: Text('Error: ${snapshot.error}'));
+            }
+
+            if (!snapshot.hasData || snapshot.data!.isEmpty) {
+              return const Center(child: Text('Belum ada riwayat orderan.'));
+            }
+
+            final listOrderanMentah = snapshot.data!;
+
+            final Map<String, List<Orderan>> groupedOrderan =
+                Orderan.orderanPertanggal(listOrderanMentah);
+            final List<String> listTanggal = groupedOrderan.keys.toList();
+
+            return ListView.builder(
+              itemCount: listTanggal.length,
+              itemBuilder: (context, indexTanggal) {
+                final tanggalRaw = listTanggal[indexTanggal];
+                final orderanPerHari = groupedOrderan[tanggalRaw]!;
+                final totalHarian = _TotalHarian(orderanPerHari);
+                final formatRupiah = NumberFormat.decimalPattern('id');
+
+                String tanggalFormatted = tanggalRaw;
+                try {
+                  DateTime parsedDate = DateTime.parse(tanggalRaw);
+                  tanggalFormatted = DateFormat(
+                    'dd MMMM yyyy',
+                  ).format(parsedDate);
+                } catch (_) {}
+
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                     Padding(
-                        padding: const EdgeInsets.fromLTRB(18, 10, 18, 10),
-                        child: Text(pesanan['waktu'],
-                          style: const TextStyle(fontSize: 12, color: Colors.grey),
-                        ),
+                    Padding(
+                      padding: const EdgeInsets.only(
+                        top: 18,
+                        right: 18,
+                        left: 18,
+                        bottom: 8,
                       ),
-                    _buildOrderCard(
-                      gambarkantin: pesanan['gambarkantin'],
-                      namaKantin: pesanan['namaKantin'],
-                      kategori: pesanan['kategori'],
-                      itemCount: pesanan['itemCount'],
-                      totalHarga: pesanan['totalHarga'],
-                      status: pesanan['status'],
-                      items: List<Map<String, String>>.from(pesanan['items']),
-                      statusPembayaran: pesanan['statusPembayaran'],
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            tanggalFormatted,
+                            style: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                          Text(
+                            'Rp. ${formatRupiah.format(totalHarian)}',
+                            style: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
+
+                    ...orderanPerHari.map((orderan) {
+                      final namaKantin =
+                          orderan.kantin?['nama_kantin'] ??
+                          'Kantin Tidak Diketahui';
+                      final kategoriKantin =
+                          orderan.kantin?['kategori'] ?? 'Umum';
+                      final fotoKantin = orderan.kantin?['foto_kantin'];
+
+                      final List<Map<String, String>>
+                      detailBelanja = orderan.items.map<Map<String, String>>((
+                        item,
+                      ) {
+                        return {
+                          'jumlah': "${item['jumlah']}",
+                          'nama': item['nama_produk'].toString(),
+                          'harga':
+                              'Rp. ${formatRupiah.format(item['harga_subtotal'])}',
+                          'catatan': item['catatan']?.toString() ?? '',
+                        };
+                      }).toList();
+
+                      String waktu = DateFormat(
+                        'HH.mm',
+                      ).format(orderan.tanggalOrderan);
+
+                      final jumlahItem = orderan.items.fold<int>(
+                        0,
+                        (sum, item) =>
+                            sum +
+                            (int.tryParse(item['jumlah'].toString()) ?? 0),
+                      );
+
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.fromLTRB(18, 4, 18, 6),
+                            child: Text(
+                              waktu,
+                              style: const TextStyle(
+                                fontSize: 12,
+                                color: Colors.grey,
+                              ),
+                            ),
+                          ),
+                          _buildOrderCard(
+                            gambarkantin: fotoKantin,
+                            namaKantin: namaKantin,
+                            kategori: kategoriKantin,
+                            itemCount: '$jumlahItem item',
+                            totalHarga:
+                                'Rp. ${formatRupiah.format(orderan.totalHarga)}',
+                            status: orderan.statusOrderan,
+                            items: detailBelanja,
+                            statusPembayaran: orderan.statusPembayaran ?? '',
+                          ),
+                        ],
+                      );
+                    }),
                   ],
                 );
               },
-            ),
-          ],
+            );
+          },
         ),
       ),
     );
+  }
+
+  Widget _statusPembayaranWidget(String statusPembayaran) {
+    switch (statusPembayaran) {
+      case 'lunas':
+        return Text(
+          'Berhasil',
+          style: TextStyle(
+            fontSize: 13,
+            fontWeight: FontWeight.w600,
+            color: Colors.green,
+          ),
+        );
+      case 'gagal':
+        return Text(
+          'Gagal',
+          style: TextStyle(
+            fontSize: 13,
+            fontWeight: FontWeight.w600,
+            color: Colors.red,
+          ),
+        );
+      case 'menunggu_pembayaran':
+        return Text(
+          'Menunggu Pembayaran',
+          style: TextStyle(
+            fontSize: 13,
+            fontWeight: FontWeight.w600,
+            color: Colors.orange,
+          ),
+        );
+      case 'kadaluwarsa':
+        return Text(
+          'Kadaluwarsa',
+          style: TextStyle(
+            fontSize: 13,
+            fontWeight: FontWeight.w600,
+            color: Colors.grey,
+          ),
+        );
+      default:
+        return Text(
+          statusPembayaran,
+          style: TextStyle(
+            fontSize: 13,
+            fontWeight: FontWeight.w600,
+            color: Colors.grey,
+          ),
+        );
+    }
   }
 
   Widget _buildOrderCard({
@@ -160,13 +268,6 @@ class _OrderPageState extends State<OrderPage> {
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(16),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.07),
-                blurRadius: 12,
-                offset: const Offset(0, 2),
-              ),
-            ],
           ),
           child: Column(
             children: [
@@ -177,40 +278,63 @@ class _OrderPageState extends State<OrderPage> {
                     ClipRRect(
                       borderRadius: BorderRadius.circular(10),
                       child: (gambarkantin != null)
-                        ? Container(
-                           width: 60,
-                            height: 60  ,
-                            color: Colors.grey.shade200,
-                            child: Image.asset(gambarkantin, fit: BoxFit.cover),
-                          )
-                        : Container(
-                          width: 60,
-                          height: 60  ,
-                          color: Colors.grey.shade200,
-                          child: const Icon(Icons.store, color: Colors.grey),
-                        ),
+                          ? Container(
+                              width: 60,
+                              height: 60,
+                              color: Colors.grey.shade200,
+                              child: Image.network(
+                                gambarkantin,
+                                fit: BoxFit.cover,
+                                errorBuilder: (context, error, stackTrace) =>
+                                    const Icon(Icons.store, color: Colors.grey),
+                              ),
+                            )
+                          : Container(
+                              width: 60,
+                              height: 60,
+                              color: Colors.grey.shade200,
+                              child: const Icon(
+                                Icons.store,
+                                color: Colors.grey,
+                              ),
+                            ),
                     ),
                     const SizedBox(width: 12),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(namaKantin,
-                            style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                          Text(
+                            namaKantin,
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w700,
+                            ),
                           ),
-                          Text(kategori,
-                            style: TextStyle(fontSize: 12, color: Warna.warnaTextGray),
+                          Text(
+                            kategori,
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: Warna.warnaTextGray,
+                            ),
                           ),
                           const SizedBox(height: 6),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Text(itemCount,
-                                style: TextStyle(fontSize: 12, color: Warna.warnaTextGray),
-                              ),
-                              Text('Rp. $totalHarga',
+                              Text(
+                                itemCount,
                                 style: TextStyle(
-                                  fontSize: 15, fontWeight: FontWeight.w600, color: Warna.warnaAccent,
+                                  fontSize: 12,
+                                  color: Warna.warnaTextGray,
+                                ),
+                              ),
+                              Text(
+                                '$totalHarga',
+                                style: TextStyle(
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.w600,
+                                  color: Warna.warnaAccent,
                                 ),
                               ),
                             ],
@@ -230,39 +354,70 @@ class _OrderPageState extends State<OrderPage> {
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(16),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.07),
-                blurRadius: 12,
-                offset: const Offset(0, 2),
-              ),
-            ],
           ),
           child: Padding(
             padding: const EdgeInsets.all(16),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text("Detail Belanja",
+                const Text(
+                  "Detail Belanja",
                   style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700),
                 ),
                 const SizedBox(height: 8),
-                ...items.map((item) => Padding(
-                  padding: const EdgeInsets.only(bottom: 5),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text("${item['jumlah']}x ${item['nama']}",
-                        style: const TextStyle(fontSize: 13, color: Colors.grey),
-                      ),
-                      Text(item['harga']!,
-                        style: const TextStyle(fontSize: 13),
-                      ),
-                    ],
+                ...items.map(
+                  (item) => Padding(
+                    padding: const EdgeInsets.only(bottom: 5),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              "${item['jumlah']}x ${item['nama']}",
+                              style: const TextStyle(
+                                fontSize: 13,
+                                color: Colors.grey,
+                              ),
+                            ),
+                            Text(
+                              item['harga']!,
+                              style: const TextStyle(fontSize: 13),
+                            ),
+                          ],
+                        ),
+
+                        if (item['catatan'] != null &&
+                            item['catatan'].toString().trim().isNotEmpty)
+                          Padding(
+                            padding: const EdgeInsets.only(top: 2),
+                            child: RichText(
+                              text: TextSpan(
+                                style: const TextStyle(
+                                  fontSize: 11,
+                                  color: Colors.grey,
+                                ),
+                                children: [
+                                  const TextSpan(
+                                    text: "Catatan: ",
+                                    style: TextStyle(
+                                      color: Colors.grey,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  TextSpan(text: item['catatan']),
+                                ],
+                              ),
+                            ),
+                          ),
+                      ],
+                    ),
                   ),
-                )),
+                ),
                 const Divider(),
-                const Text("Metode Pembayaran",
+                const Text(
+                  "Metode Pembayaran",
                   style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700),
                 ),
                 const SizedBox(height: 8),
@@ -272,30 +427,29 @@ class _OrderPageState extends State<OrderPage> {
                     Container(
                       width: 25,
                       height: 25,
-                      child: Image.asset('assets/img/qris.png',  
-                      fit: BoxFit.cover),
-                    ),
-                    SizedBox(width: 3),
-                    Text("QRIS",
-                      style: TextStyle(color: Colors.black, fontSize: 12, fontWeight: FontWeight.w400),
-                    ),
-                    Spacer(),
-                    
-                    Text(statusPembayaran,
-                      style: TextStyle(
-                        fontSize: 13, fontWeight: FontWeight.w600,
-                        color: statusPembayaran == 'Berhasil' 
-                          ? Colors.green
-                          : Colors.red,
+                      child: Image.asset(
+                        'assets/img/qris.png',
+                        fit: BoxFit.cover,
                       ),
                     ),
+                    SizedBox(width: 3),
+                    Text(
+                      "QRIS",
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w400,
+                      ),
+                    ),
+                    Spacer(),
+                    _statusPembayaranWidget(statusPembayaran),
                   ],
                 ),
               ],
             ),
           ),
-        )
-      ], 
+        ),
+      ],
     );
   }
 
@@ -305,30 +459,35 @@ class _OrderPageState extends State<OrderPage> {
     String label;
 
     switch (status) {
-      case 'proses':
+      case 'diproses':
         bgColor = Colors.orange;
         icon = Icons.access_time;
         label = 'Sedang diproses';
         break;
-      case 'tunggu':
+      case 'menunggu':
         bgColor = Colors.deepPurple;
         icon = Icons.check;
         label = 'Menunggu pengambilan';
         break;
       case 'selesai':
-        bgColor =Colors.green;
+        bgColor = Colors.green;
         icon = Icons.check_circle_outline;
         label = 'Pesanan selesai';
         break;
-      case 'batal':       
+      case 'batal':
         bgColor = Colors.red;
         icon = Icons.cancel_outlined;
         label = 'Pesanan dibatalkan';
         break;
+      case 'lunas':
+        bgColor = Colors.grey;
+        icon = Icons.info_outline;
+        label = 'Menunggu konfirmasi';
+        break;
       default:
         bgColor = Colors.grey;
         icon = Icons.info_outline;
-        label = 'Status tidak diketahui';
+        label = 'Menunggu konfirmasi';
     }
 
     return Container(
@@ -343,8 +502,13 @@ class _OrderPageState extends State<OrderPage> {
         children: [
           Icon(icon, color: Colors.white, size: 15),
           const SizedBox(width: 5),
-          Text(label,
-            style: TextStyle(fontSize: 12, fontWeight: FontWeight.w400, color: Colors.white),
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w400,
+              color: Colors.white,
+            ),
           ),
         ],
       ),
