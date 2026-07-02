@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pnbfoods/common/palang_tamu.dart';
+import 'package:pnbfoods/common/top_bar.dart';
 import 'package:pnbfoods/common/warna.dart';
 import 'package:pnbfoods/models/kantin.dart';
 import 'package:pnbfoods/models/produk.dart';
@@ -118,38 +119,11 @@ class _FavoritPageState extends State<FavoritPage> {
         }
         if (snapshot.hasData) {
           return Scaffold(
+            appBar: TopBar(title: "Favorit", icon: Icons.favorite,),
             backgroundColor: Warna.warnaBackground,
             body: SafeArea(
               child: Column(
                 children: [
-                  // Header oranye
-                  Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.symmetric(vertical: 18),
-                    decoration: BoxDecoration(
-                      color: Warna.warnaAccent,
-                      borderRadius: const BorderRadius.only(
-                        bottomLeft: Radius.circular(20),
-                        bottomRight: Radius.circular(20),
-                      ),
-                    ),
-                    child: const Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(Icons.favorite, color: Colors.white),
-                        SizedBox(width: 8),
-                        Text(
-                          'Favorit',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            fontFamily: 'Poppins',
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
 
                   const SizedBox(height: 16),
 

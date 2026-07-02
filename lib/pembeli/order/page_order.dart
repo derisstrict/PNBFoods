@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:pnbfoods/common/top_bar.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:pnbfoods/common/warna.dart';
 import 'package:pnbfoods/models/orderan.dart';
@@ -36,32 +37,7 @@ class _OrderPageState extends State<OrderPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Warna.warnaAccent,
-        foregroundColor: Colors.white,
-        centerTitle: true,
-        shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.only(
-            bottomLeft: Radius.circular(25),
-            bottomRight: Radius.circular(25),
-          ),
-        ),
-        title: const Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.article_outlined, color: Colors.white, size: 20),
-            SizedBox(width: 5),
-            Text(
-              'Order',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ],
-        ),
-      ),
+      appBar: TopBar(title: "Order", icon: Icons.article_outlined,),
       backgroundColor: Warna.warnaBackground,
       body: SafeArea(
         child: FutureBuilder<List<Orderan>>(

@@ -12,20 +12,22 @@ class TopBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
+    final pop = Navigator.canPop(context);
+
     return AppBar(
       backgroundColor: Warna.warnaAccent,
       foregroundColor: Colors.white,
       centerTitle: true,
-      leading: IconButton(
+      leading: pop ? IconButton(
         onPressed: () {
           if (title != "Pembayaran") {
-            Navigator.pop(context);
+            Navigator.maybePop(context);
           } else {
             Navigator.of(context).popUntil((route) => route.isFirst);
           }
         },
         icon: Icon(Icons.arrow_back),
-      ),
+      ) : null,
       title: Row(
         mainAxisSize: MainAxisSize.min,
         children: [

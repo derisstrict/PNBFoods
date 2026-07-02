@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pnbfoods/common/tombol.dart';
+import 'package:pnbfoods/common/top_bar.dart';
 import 'package:pnbfoods/common/warna.dart';
 import 'package:pnbfoods/common/forms.dart';
 import 'package:pnbfoods/models/pelanggan.dart';
@@ -55,36 +56,11 @@ class _EditProfileState extends State<EditProfile> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: TopBar(title: "Edit Profil", icon: Icons.person_outline,),
       backgroundColor: Warna.warnaBackground,
       body: SafeArea(
         child: Column(
           children: [
-            Container(                            
-              height: 50,
-              decoration: BoxDecoration(
-                color: Color(0xFFF9803B),
-                borderRadius: BorderRadius.only(
-                  bottomLeft: Radius.circular(25),
-                  bottomRight: Radius.circular(25)
-                ),
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Icon(
-                    Icons.person_outlined,
-                    color: Colors.white,
-                    size: 20,
-                  ),
-                  SizedBox(width: 2),
-                  Text(
-                    "Edit Profile",
-                    style: TextStyle(fontWeight: FontWeight.w600, color: Colors.white, fontSize: 14.0),
-                  ),
-                ],
-              ),
-            ),
             SizedBox(height: 35),
             Container(
               padding: EdgeInsets.symmetric(horizontal: 20),

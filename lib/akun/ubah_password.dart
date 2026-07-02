@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/services.dart';
 import 'package:pnbfoods/common/tombol.dart';
+import 'package:pnbfoods/common/top_bar.dart';
 import 'package:pnbfoods/common/warna.dart';
 import 'package:pnbfoods/models/pelanggan.dart';
 import 'package:pnbfoods/models/penjual.dart';
@@ -37,24 +38,7 @@ class _UbahPasswordState extends State<UbahPassword> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Warna.warnaBackground,
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        backgroundColor: Warna.warnaAccent,
-        foregroundColor: Colors.white,
-        centerTitle: true,
-        title: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(Icons.lock_outline, size: 18),
-            SizedBox(width: 2),
-            Text('Ubah Password', style: TextStyle(fontWeight: FontWeight.w600, color: Colors.white, fontSize: 14),
-            ),
-          ],
-        ), 
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadiusGeometry.only(bottomLeft: Radius.circular(25), bottomRight: Radius.circular(25))
-        ),
-      ),
+      appBar: TopBar(title: "Ubah Password", icon: Icons.lock_outline,),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 20),
@@ -62,7 +46,7 @@ class _UbahPasswordState extends State<UbahPassword> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Logo
-              Center(child: Image.asset('assets/img/Logo.png', height: 100)),
+              Center(child: Image.asset('assets/img/logo.png', height: 100)),
               const SizedBox(height: 30),
               // Judul
               const Text(
