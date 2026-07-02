@@ -94,22 +94,24 @@ class _RiwayatPageState extends State<RiwayatPage> {
                 //*Tombol Kembali
                 SizedBox(
                   width: double.infinity,
-                  child: OutlinedButton(
+                  height: 40,
+                  child: TextButton(
                     onPressed: () => Navigator.pop(context),
-                    style: OutlinedButton.styleFrom(
+                    style: TextButton.styleFrom(
                       backgroundColor: Colors.white,
+                      surfaceTintColor: Colors.red,
+                      foregroundColor: Colors.black12,
                       padding: const EdgeInsets.symmetric(vertical: 14),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
-                      side: BorderSide(color: Colors.grey[300]!),
                     ),
                     child: const Text(
                       'Kembali',
                       style: TextStyle(
                         color: Colors.black,
                         fontSize: 15,
-                        fontWeight: FontWeight.bold,
+                        fontWeight: FontWeight.w500,
                       ),
                     ),
                   ),

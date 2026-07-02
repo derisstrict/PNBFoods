@@ -290,7 +290,9 @@ class _ProfilUserState extends State<ProfileUser> {
                                   ),
                                 ),
                               ),
-                              SizedBox(height: 250),
+                              SizedBox(height: 10),
+                              Divider(),
+                              SizedBox(height: 10),
                               GestureDetector(
                                 onTap: () {
                                   _showLogoutConfirmationDialog(context);
@@ -478,7 +480,9 @@ class _ProfilUserState extends State<ProfileUser> {
                               ),
                             ],
                           ),
-                        SizedBox(height: 250),
+                        SizedBox(height: 10),
+                        Divider(),
+                        SizedBox(height: 10),
                         GestureDetector(
                           onTap: () {
                             _showLogoutConfirmationDialog(context);
@@ -580,6 +584,7 @@ class _ProfilUserState extends State<ProfileUser> {
       barrierDismissible: false,
       builder: (BuildContext context) {
         return AlertDialog(
+          backgroundColor: Colors.white,
           title: Text('Konfirmasi Logout', style: TextStyle(fontWeight: FontWeight.w600, color: Colors.black87, fontSize: 16.0)),
           content: SingleChildScrollView(
             child: ListBody(
@@ -588,6 +593,7 @@ class _ProfilUserState extends State<ProfileUser> {
               ],
             ),
           ),
+          actionsAlignment: MainAxisAlignment.spaceBetween,
           actions: <Widget>[
             TextButton(
               child: Text('Batal', style: TextStyle(color: Colors.black87)),

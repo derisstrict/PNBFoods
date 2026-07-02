@@ -84,7 +84,8 @@ class _ListKantinState extends State<ListKantin> {
         children: [
           Container(
             width: double.infinity,
-            height: 150,
+            height: 135,
+            padding: EdgeInsets.all(20),
             decoration: BoxDecoration(
               color: Color(0xFFF9803B),
               borderRadius: BorderRadius.only(
@@ -92,9 +93,7 @@ class _ListKantinState extends State<ListKantin> {
                 bottomRight: Radius.circular(25),
               ),
             ),
-            child: Container(
-              margin: EdgeInsets.all(20),
-              child: Column(
+            child: Column(
                 children: [
                   Container(
                     width: double.infinity,
@@ -179,7 +178,7 @@ class _ListKantinState extends State<ListKantin> {
                       ],
                     ),
                   ),
-                  SizedBox(height: 30),
+                  SizedBox(height: 15),
                   Container(
                     padding: EdgeInsets.only(
                       top: 5,
@@ -224,7 +223,6 @@ class _ListKantinState extends State<ListKantin> {
                 ],
               ),
             ),
-          ),
           Container(
             margin: EdgeInsets.all(10),
             child: Column(
@@ -232,38 +230,18 @@ class _ListKantinState extends State<ListKantin> {
                 SizedBox(height: 5),
                 Row(
                   children: [
-                    TextButton(
-                      onPressed: () {},
-                      style: TextButton.styleFrom(
-                        backgroundColor: Color(0xFFF9803B),
-                        foregroundColor: Colors.white,
+                    Text(
+                      "Pilih kantin yang kamu inginkan",
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
                       ),
-                      child: Text("Semua"),
-                    ),
-                    SizedBox(width: 10),
-                    TextButton(
-                      onPressed: () {},
-                      style: TextButton.styleFrom(
-                        backgroundColor: Colors.white,
-                        foregroundColor: Colors.black,
-                      ),
-                      child: Text("Terlaris"),
-                    ),
-                    SizedBox(width: 10),
-                    TextButton(
-                      onPressed: () {},
-                      style: TextButton.styleFrom(
-                        backgroundColor: Colors.white,
-                        foregroundColor: Colors.black,
-                      ),
-                      child: Text("Termurah"),
                     ),
                   ],
                 ),
               ],
             ),
           ),
-          SizedBox(height: 5),
           Expanded(
             child: FutureBuilder<List<Kantin>>(
               future: futureKantin,
