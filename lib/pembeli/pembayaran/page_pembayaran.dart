@@ -232,14 +232,14 @@ class _PembayaranPageState extends State<PembayaranPage> {
           TombolPembayaran(
             onKembali: () => Navigator.of(context).popUntil((route) => route.isFirst),
           ),
-          if (_pembayaran != null)
-            Padding(
-              padding: const EdgeInsets.only(top: 8),
-              child: Text(
-                'Status: ${_pembayaran!.statusPembayaran}',
-                style: const TextStyle(color: Colors.grey, fontSize: 12),
-              ),
-            ),
+          // if (_pembayaran != null)
+          //   Padding(
+          //     padding: const EdgeInsets.only(top: 8),
+          //     child: Text(
+          //       'Status: ${_pembayaran!.statusPembayaran}',
+          //       style: const TextStyle(color: Colors.grey, fontSize: 12),
+          //     ),
+          //   ),
         ],
       ),
     );
