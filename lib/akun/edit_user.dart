@@ -168,22 +168,28 @@ class _EditProfileState extends State<EditProfile> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
+          backgroundColor: Colors.white,
           title: Text('Konfirmasi Simpan', style: TextStyle(fontWeight: FontWeight.w600, color: Colors.black87, fontSize: 16.0)),
           content: Text('Apakah Anda yakin ingin menyimpan perubahan identitas pengguna?', style: TextStyle(fontSize: 14, color: Colors.black87)),
           actions: <Widget>[
-            TextButton(
-              child: Text('Batal', style: TextStyle(color: Colors.black87)),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-            TextButton(
-              child: Text('Simpan', style: TextStyle(color: Colors.green)),
-              onPressed: () {   
-                Navigator.of(context).pop();            
-                _saveProfile();
-              },
-            ),  
+            Row(
+              children: [
+                TextButton(
+                  child: Text('Batal', style: TextStyle(color: Colors.black87)),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
+                Spacer(),
+                TextButton(
+                  child: Text('Simpan', style: TextStyle(color: Colors.green)),
+                  onPressed: () {   
+                    Navigator.of(context).pop();            
+                    _saveProfile();
+                  },
+                ),  
+              ],
+            )
           ],
         );
       },
