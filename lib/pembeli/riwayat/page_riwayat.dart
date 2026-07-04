@@ -94,7 +94,7 @@ class _RiwayatPageState extends State<RiwayatPage> {
                 //*Tombol Kembali
                 SizedBox(
                   width: double.infinity,
-                  height: 40,
+                  height: 52,
                   child: TextButton(
                     onPressed: () => Navigator.pop(context),
                     style: TextButton.styleFrom(
