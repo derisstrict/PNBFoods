@@ -196,16 +196,13 @@ class _PendapatanState extends State<Pendapatan> {
                     ),
                     child: Column(
                       spacing: 12,
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Row(
-                          children: [
-                            Text("Metode penarikan",
-                              style: TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w600
-                              ),
-                            ),
-                          ],
+                        Text("Metode penarikan",
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600
+                          ),
                         ),
                         Container(
                           decoration: BoxDecoration(
@@ -267,19 +264,17 @@ class _PendapatanState extends State<Pendapatan> {
                             ],
                           ),
                         ),
-                        Row(
-                          children: [
-                            Text("Jumlah",
-                              style: TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w600
-                              ),
-                            ),
-                          ],
+
+                        Text("Jumlah",
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600
+                          ),
                         ),
+
                         TextFormFieldCustom(
                           controller: _amountController, 
-                          labelText: "20000", 
+                          labelText: "Nominal", 
                           prefixIcon: Padding(
                             padding: EdgeInsetsGeometry.only(top: 13, left: 10, bottom: 12),
                             child: Text("Rp.",
@@ -291,6 +286,59 @@ class _PendapatanState extends State<Pendapatan> {
                           ),
                           numberOnly: true,
                           backgroundColor: Warna.warnaBackground,
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: [
+                            TextButton(
+                              onPressed: () {
+                                setState(() {
+                                  _amountController.text = _saldo.toString();
+                                });
+                              },
+                              style: TextButton.styleFrom(
+                                backgroundColor: Warna.warnaBackground,
+                                foregroundColor: Colors.black12
+                              ), 
+                              child: Text("Tarik semua",
+                                style: TextStyle(
+                                  color: Warna.warnaAccent
+                                ),
+                              )
+                            ),
+                            TextButton(
+                              onPressed: () {
+                                setState(() {
+                                  _amountController.text = "${_amountController.text}00";
+                                });
+                              },
+                              style: TextButton.styleFrom(
+                                backgroundColor: Warna.warnaBackground,
+                                foregroundColor: Colors.black12
+                              ), 
+                              child: Text("00",
+                                style: TextStyle(
+                                  color: Warna.warnaAccent
+                                ),
+                              )
+                            ),
+                            TextButton(
+                              onPressed: () {
+                                setState(() {
+                                  _amountController.text = "${_amountController.text}000";
+                                });
+                              },
+                              style: TextButton.styleFrom(
+                                backgroundColor: Warna.warnaBackground,
+                                foregroundColor: Colors.black12
+                              ), 
+                              child: Text("000",
+                                style: TextStyle(
+                                  color: Warna.warnaAccent
+                                ),
+                              )
+                            ),
+                          ],
                         ),
                         SizedBox(height: 10,),
                         Row(
