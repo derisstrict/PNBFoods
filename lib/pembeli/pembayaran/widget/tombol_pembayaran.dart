@@ -20,7 +20,7 @@ class TombolPembayaran extends StatelessWidget {
         const SizedBox(height: 16),
         SizedBox(
           width: double.infinity,
-          height: 40,
+          height: 46,
           child: TextButton(
             onPressed: onKembali,
             style: TextButton.styleFrom(
