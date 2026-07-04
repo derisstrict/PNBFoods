@@ -5,6 +5,7 @@ class Penjual {
   final String? fotoProfile;
   final String? password;
   final String? fotoUrl;
+  final String? saldo;
 
   const Penjual({
     required this.idPenjual,
@@ -12,7 +13,8 @@ class Penjual {
     required this.email,
     this.fotoProfile,
     this.password,
-    this.fotoUrl
+    this.fotoUrl,
+    this.saldo,
   });
 
   factory Penjual.fromJson(Map<String, dynamic> json) {
@@ -22,7 +24,8 @@ class Penjual {
       email: json['email'] as String,
       fotoProfile: json['foto_profile'] as String?,
       password: json['password'] as String?,
-      fotoUrl: json['foto_url'] as String?
+      fotoUrl: json['foto_url'] as String?,
+      saldo: json['saldo'] as String?,
     );
   }
 }

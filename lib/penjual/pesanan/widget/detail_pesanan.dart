@@ -341,23 +341,43 @@ class _DetailPesananState extends State<DetailPesanan> {
       context: context,
       builder: (context) {
         return AlertDialog(
+          backgroundColor: Colors.white,
           title: const Text("Konfirmasi"),
           content: Text(
             "Apakah Anda yakin ingin mengubah status menjadi \"$statusBaru\"?",
           ),
           actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.pop(context, false);
-              },
-              child: const Text("Batal"),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.pop(context, true);
-              },
-              child: const Text("Ya"),
-            ),
+            Row(
+              children: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.pop(context, false);
+                  },
+                  style: TextButton.styleFrom(
+                    foregroundColor: Colors.black
+                  ),
+                  child: const Text("Batal",
+                    style: TextStyle(
+                      color: Colors.black
+                    ),
+                  ),
+                ),
+                Spacer(),
+                TextButton(
+                  onPressed: () {
+                    Navigator.pop(context, true);
+                  },
+                  style: TextButton.styleFrom(
+                    backgroundColor: Warna.warnaAccent
+                  ),
+                  child: const Text("Ya",
+                    style: TextStyle(
+                      color: Colors.white
+                    ),
+                  ),
+                ),
+              ],
+            )
           ],
         );
       },

@@ -298,10 +298,12 @@ class TopBarHeader extends StatelessWidget {
 
 class TopBarHeaderPenjual extends StatelessWidget {
   final Penjual penjual;
+  final Function returnFunction;
 
   const TopBarHeaderPenjual({
     super.key,
     required this.penjual,
+    required this.returnFunction,
   });
 
   @override
@@ -322,70 +324,72 @@ class TopBarHeaderPenjual extends StatelessWidget {
           children: [
             Row(
               children: [
-                    Text("PNBFoods",
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.w600,
-                        fontSize: 18
+                Text("PNBFoods",
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w600,
+                    fontSize: 18
+                  ),
+                ),
+                SizedBox(width: 5,),
+                Text("Dashboard",
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w400,
+                    fontSize: 18
+                  ),
+                ),
+                Spacer(),
+                GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ProfileUser(),
                       ),
+                    ).then((v) {
+                      returnFunction();
+                    });
+                  },
+                  child: Container(
+                    padding: EdgeInsets.fromLTRB(2, 8, 12, 8),
+                    decoration: BoxDecoration(
+                      color: Colors.white10,
+                      borderRadius: BorderRadius.circular(25),
                     ),
-                    SizedBox(width: 5,),
-                    Text("Dashboard",
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.w400,
-                        fontSize: 18
-                      ),
-                    ),
-                    Spacer(),
-                    GestureDetector(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => ProfileUser(),
+                    child: Row(
+                      children: [
+                        SizedBox(width: 5),
+                        CircleAvatar(
+                              radius: 12,
+                              backgroundColor:Color(0xFFD8BED0),
+                              backgroundImage: penjual.fotoProfile != null
+                                ? NetworkImage(penjual.fotoUrl!)
+                                : null,
+                            
+                              child: penjual.fotoProfile == null
+                                ? Icon( Icons.person, size: 12, color: Colors.white)
+                                : null
+                            ),
+                        SizedBox(width: 5,),
+                        Text(
+                          penjual.namaPenjual,
+                          style: TextStyle(
+                            fontWeight: FontWeight.w300,
+                            color: Colors.white,
+                            fontSize: 16.0,
                           ),
-                        );
-                      },
-                      child: Container(
-                        padding: EdgeInsets.fromLTRB(2, 8, 12, 8),
-                        decoration: BoxDecoration(
-                          color: Colors.white10,
-                          borderRadius: BorderRadius.circular(25),
                         ),
-                        child: Row(
-                          children: [
-                            SizedBox(width: 5),
-                            CircleAvatar(
-                                  radius: 12,
-                                  backgroundColor:Color(0xFFD8BED0),
-                                  backgroundImage: penjual.fotoProfile != null
-                                    ? NetworkImage(penjual.fotoUrl!)
-                                    : null,
-                                
-                                  child: penjual.fotoProfile == null
-                                    ? Icon( Icons.person, size: 12, color: Colors.white)
-                                    : null
-                                ),
-                            SizedBox(width: 5,),
-                            Text(
-                              penjual.namaPenjual,
-                              style: TextStyle(
-                                fontWeight: FontWeight.w300,
-                                color: Colors.white,
-                                fontSize: 16.0,
-                              ),
-                            ),
-                            SizedBox(width: 8,),
-                            Icon(
-                              Icons.keyboard_arrow_right_outlined,
-                              color: Colors.white,
-                              size: 16,
-                            ),
-                          ],
+                        SizedBox(width: 8,),
+                        Icon(
+                          Icons.keyboard_arrow_right_outlined,
+                          color: Colors.white,
+                          size: 16,
                         ),
-                      ),
+                      ],
                     ),
+                  ),
+                ),
               ],
             ),
           ],

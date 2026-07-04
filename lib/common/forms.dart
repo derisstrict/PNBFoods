@@ -8,6 +8,8 @@ class TextFormFieldCustom extends StatelessWidget {
   final String labelText;
   final Widget prefixIcon;
   final bool numberOnly;
+  final Color backgroundColor;
+
 
   const TextFormFieldCustom({
     super.key,
@@ -15,6 +17,7 @@ class TextFormFieldCustom extends StatelessWidget {
     required this.labelText,
     required this.prefixIcon,
     this.numberOnly = false,
+    this.backgroundColor = Colors.white
   });
 
   @override
@@ -30,7 +33,7 @@ class TextFormFieldCustom extends StatelessWidget {
         prefixIconColor: Warna.warnaAccent,
         labelStyle: TextStyle(fontSize: 16),
         filled: true,
-        fillColor: Colors.white,
+        fillColor: backgroundColor,
         floatingLabelStyle: TextStyle(color: Warna.warnaTextGray, fontSize: 16),
         labelText: labelText,
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(15)),

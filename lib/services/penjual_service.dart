@@ -137,3 +137,26 @@ Future<Map<String, dynamic>> changePasswordPenjual({
   );
   return response.data;
 }
+
+Future<int> fetchSaldo(int penjualId) async {
+  final prefs = await SharedPreferences.getInstance();
+  final token = prefs.getString('token');
+
+  final response = await _dio.get(
+    'penjual/$penjualId/saldo',
+    options: Options(headers: {'Authorization': 'Bearer $token'}),
+  );
+
+  return response.data['data']['saldo'] as int;
+}
+
+Future<void> tarikSaldo(int penjualId, int jumlah) async {
+  final prefs = await SharedPreferences.getInstance();
+  final token = prefs.getString('token');
+
+  await _dio.post(
+    'penjual/$penjualId/tarik-saldo',
+    data: {'jumlah': jumlah},
+    options: Options(headers: {'Authorization': 'Bearer $token'}),
+  );
+}

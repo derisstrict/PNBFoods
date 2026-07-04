@@ -20,15 +20,16 @@ class TombolPembayaran extends StatelessWidget {
         const SizedBox(height: 16),
         SizedBox(
           width: double.infinity,
-          child: OutlinedButton(
+          height: 40,
+          child: TextButton(
             onPressed: onKembali,
-            style: OutlinedButton.styleFrom(
+            style: TextButton.styleFrom(
               backgroundColor: Colors.white,
+              foregroundColor: Colors.black12,
               padding: const EdgeInsets.symmetric(vertical: 14),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
               ),
-              side: BorderSide(color: Colors.grey[300]!),
             ),
             child: const Text(
               'Kembali',

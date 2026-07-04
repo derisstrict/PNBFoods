@@ -13,6 +13,7 @@ import 'package:pnbfoods/pembeli/list_produk/widget/card_produk.dart';
 import 'package:pnbfoods/penjual/dashboard/widgets/text_heading.dart';
 import 'package:pnbfoods/penjual/form_produk/form_produk.dart';
 import 'package:pnbfoods/penjual/form_kantin/form_kantin.dart';
+import 'package:pnbfoods/penjual/pendapatan/pendapatan.dart';
 import 'package:pnbfoods/penjual/pesanan/pesanan.dart';
 import 'package:pnbfoods/services/penjual_service.dart';
 import 'package:pnbfoods/services/produk_service.dart';
@@ -93,20 +94,21 @@ class _DashboardState extends State<Dashboard> {
     int totalProductsSold = 0;
 
     for (final o in orderans) {
-      if (o.statusOrderan == 'batal' || o.statusOrderan == 'kadaluwarsa') continue;
+      // if (o.statusOrderan == 'batal' || o.statusOrderan == 'kadaluwarsa' || o.statusOrderan == 'menunggu_pembayaran') continue;
+      if (o.statusOrderan == 'selesai') {
+        final isToday = o.tanggalOrderan.year == today.year &&
+            o.tanggalOrderan.month == today.month &&
+            o.tanggalOrderan.day == today.day;
+        final amount = o.totalHarga.toInt();
 
-      final isToday = o.tanggalOrderan.year == today.year &&
-          o.tanggalOrderan.month == today.month &&
-          o.tanggalOrderan.day == today.day;
-      final amount = o.totalHarga.toInt();
+        totalIncome += amount;
+        if (isToday) todayIncome += amount;
 
-      totalIncome += amount;
-      if (isToday) todayIncome += amount;
-
-      for (final item in o.items) {
-        final jumlah = item['jumlah'] as int;
-        totalProductsSold += jumlah;
-        if (isToday) todayProductsSold += jumlah;
+        for (final item in o.items) {
+          final jumlah = item['jumlah'] as int;
+          totalProductsSold += jumlah;
+          if (isToday) todayProductsSold += jumlah;
+        }
       }
     }
 
@@ -243,6 +245,9 @@ class _DashboardState extends State<Dashboard> {
                   if (penjual != null)
                     TopBarHeaderPenjual(
                       penjual: penjual!,
+                      returnFunction: () {
+                        _ambilDataPenjual();
+                      },
                     ),
                   Container(
                     margin: EdgeInsets.all(20),
@@ -366,150 +371,163 @@ class _DashboardState extends State<Dashboard> {
                               ),
                             ),
                             TextHeading(title: "Pendapatan"),
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                Container(
-                                  padding: EdgeInsets.all(10),
-                                  decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    borderRadius: BorderRadius.circular(15),
-                                  ),
-                                  child: Row(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Column(
-                                        children: [
-                                          Icon(
-                                            Icons
-                                                .account_balance_wallet_rounded,
-                                          ),
-                                        ],
-                                      ),
-                                      SizedBox(width: 5),
-                                      Expanded(
-                                        child: Column(
+                            GestureDetector(
+                              onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => Pendapatan(totalPendapatan: _totalIncome,))),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Container(
+                                    padding: EdgeInsets.all(10),
+                                    decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      borderRadius: BorderRadius.circular(15),
+                                    ),
+                                    child: Row(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Column(
                                           children: [
-                                            Row(
-                                              children: [
-                                                Text(
-                                                  "Total pendapatan hari ini",
-                                                  style: TextStyle(
-                                                    fontSize: 12,
-                                                    fontWeight: FontWeight.w700,
-                                                  ),
-                                                ),
-                                                Spacer(),
-                                                Text(
-                                                  "Total",
-                                                  style: TextStyle(
-                                                    fontSize: 10,
-                                                    fontWeight: FontWeight.w700,
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                            Row(
-                                              children: [
-                                                Row(
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.start,
-                                                  children: [
-                                                    Text(
-                                                      "Rp.",
-                                                      style: TextStyle(
-                                                        fontSize: 11,
-                                                        color:
-                                                            Warna.warnaAccent,
-                                                      ),
-                                                    ),
-                                                    SizedBox(width: 4.0),
-                                                    Text(
-                                                      NumberFormat.decimalPattern('id').format(_todayIncome),
-                                                      style: TextStyle(
-                                                        fontSize: 20.0,
-                                                        fontWeight:
-                                                            FontWeight.w600,
-                                                        color:
-                                                            Warna.warnaAccent,
-                                                      ),
-                                                    ),
-                                                  ],
-                                                ),
-                                                Spacer(),
-                                                Row(
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.start,
-                                                  children: [
-                                                    Text(
-                                                      "Rp.",
-                                                      style: TextStyle(
-                                                        fontSize: 11,
-                                                        color:
-                                                            Warna.warnaAccent,
-                                                      ),
-                                                    ),
-                                                    SizedBox(width: 4.0),
-                                                    Text(
-                                                      NumberFormat.decimalPattern('id').format(_totalIncome),
-                                                      style: TextStyle(
-                                                        fontSize: 14.0,
-                                                        fontWeight:
-                                                            FontWeight.w600,
-                                                        color:
-                                                            Warna.warnaAccent,
-                                                      ),
-                                                    ),
-                                                  ],
-                                                ),
-                                              ],
+                                            Icon(
+                                              Icons
+                                                  .account_balance_wallet_rounded,
                                             ),
                                           ],
                                         ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                Container(
-                                  width: screenWidth - 80,
-                                  padding: EdgeInsets.fromLTRB(20, 2, 20, 2),
-                                  decoration: BoxDecoration(
-                                    color: Warna.warnaAccent,
-                                    borderRadius: BorderRadius.only(
-                                      bottomLeft: Radius.circular(15),
-                                      bottomRight: Radius.circular(15),
+                                        SizedBox(width: 5),
+                                        Expanded(
+                                          child: Column(
+                                            children: [
+                                              Row(
+                                                children: [
+                                                  Text(
+                                                    "Total pendapatan hari ini",
+                                                    style: TextStyle(
+                                                      fontSize: 12,
+                                                      fontWeight: FontWeight.w700,
+                                                    ),
+                                                  ),
+                                                  Icon(Icons.chevron_right,
+                                                    size: 24,
+                                                  ),
+                                                  Spacer(),
+                                                  Text(
+                                                    "Total",
+                                                    style: TextStyle(
+                                                      fontSize: 10,
+                                                      fontWeight: FontWeight.w700,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                              Row(
+                                                children: [
+                                                  Row(
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment.start,
+                                                    children: [
+                                                      Text(
+                                                        "Rp.",
+                                                        style: TextStyle(
+                                                          fontSize: 11,
+                                                          color:
+                                                              Warna.warnaAccent,
+                                                        ),
+                                                      ),
+                                                      SizedBox(width: 4.0),
+                                                      Text(
+                                                        NumberFormat.decimalPattern('id').format(_todayIncome),
+                                                        style: TextStyle(
+                                                          fontSize: 20.0,
+                                                          fontWeight:
+                                                              FontWeight.w600,
+                                                          color:
+                                                              Warna.warnaAccent,
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                  Spacer(),
+                                                  Row(
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment.start,
+                                                    children: [
+                                                      Text(
+                                                        "Rp.",
+                                                        style: TextStyle(
+                                                          fontSize: 11,
+                                                          color:
+                                                              Warna.warnaAccent,
+                                                        ),
+                                                      ),
+                                                      SizedBox(width: 4.0),
+                                                      Text(
+                                                        NumberFormat.decimalPattern('id').format(_totalIncome),
+                                                        style: TextStyle(
+                                                          fontSize: 14.0,
+                                                          fontWeight:
+                                                              FontWeight.w600,
+                                                          color:
+                                                              Warna.warnaAccent,
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ],
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ],
                                     ),
                                   ),
-                                  child: Row(
-                                    children: [
-                                      Text(
-                                        "$_todayProductsSold produk terjual hari ini",
-                                        style: TextStyle(
-                                          fontSize: 11.0,
-                                          fontWeight: FontWeight.w200,
-                                          color: Colors.white,
-                                        ),
+                                  Container(
+                                    width: screenWidth - 80,
+                                    padding: EdgeInsets.fromLTRB(20, 2, 20, 2),
+                                    decoration: BoxDecoration(
+                                      color: Warna.warnaAccent,
+                                      borderRadius: BorderRadius.only(
+                                        bottomLeft: Radius.circular(15),
+                                        bottomRight: Radius.circular(15),
                                       ),
-                                      Spacer(),
-                                      Text(
-                                        "$_totalProductsSold produk total terjual",
-                                        style: TextStyle(
-                                          fontSize: 11.0,
-                                          fontWeight: FontWeight.w200,
-                                          color: Colors.white,
+                                    ),
+                                    child: Row(
+                                      children: [
+                                        Text(
+                                          "$_todayProductsSold produk terjual hari ini",
+                                          style: TextStyle(
+                                            fontSize: 11.0,
+                                            fontWeight: FontWeight.w200,
+                                            color: Colors.white,
+                                          ),
                                         ),
-                                      ),
-                                    ],
+                                        Spacer(),
+                                        Text(
+                                          "$_totalProductsSold total terjual",
+                                          style: TextStyle(
+                                            fontSize: 11.0,
+                                            fontWeight: FontWeight.w200,
+                                            color: Colors.white,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
                                   ),
-                                ),
-                              ],
+                                ],
+                              )
                             ),
+                            
                             //pesanan
                             FutureBuilder(
                               future: _futureOrderan,
                               builder: (context, snapshot) {
-                                final pesanan = snapshot.data ?? [];
+                                final data = snapshot.data ?? [];
+                                final pesanan = data.where((p) {
+                                  if (p.statusOrderan == "lunas") {
+                                    return true;
+                                  }
+                                  return false;
+                                });
                                 return Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   spacing: 12.0,
@@ -520,7 +538,7 @@ class _DashboardState extends State<Dashboard> {
                                         TextHeading(title: "Pesanan"),
                                         Spacer(),
                                         Text(
-                                          "${pesanan.length} pesanan",
+                                          "${pesanan.length} pesanan baru",
                                           style: TextStyle(
                                             fontSize: 12,
                                             color: Warna.warnaAccent,
@@ -534,24 +552,70 @@ class _DashboardState extends State<Dashboard> {
                                         child: CircularProgressIndicator(),
                                       )
                                     else if (pesanan.isEmpty)
-                                      Container(
-                                        padding: EdgeInsets.all(10),
-                                        decoration: BoxDecoration(
-                                          borderRadius: BorderRadius.all(
-                                            Radius.circular(10),
-                                          ),
-                                          color: Colors.white,
-                                        ),
-                                        child: Center(
-                                          child: Text(
-                                            "Saat ini belum ada pesanan untuk ditampilkan",
-                                            style: TextStyle(
-                                              fontSize: 12.0,
-                                              fontWeight: FontWeight.w500,
+                                      Column(
+                                        spacing: 10,
+                                        children: [
+                                          Container(
+                                            padding: EdgeInsets.all(10),
+                                            decoration: BoxDecoration(
+                                              borderRadius: BorderRadius.all(
+                                                Radius.circular(10),
+                                              ),
+                                              color: Colors.white,
+                                            ),
+                                            child: Center(
+                                              child: Text(
+                                                "Saat ini belum ada pesanan untuk diterima",
+                                                style: TextStyle(
+                                                  fontSize: 12.0,
+                                                  fontWeight: FontWeight.w500,
+                                                ),
+                                              ),
                                             ),
                                           ),
-                                        ),
+                                          GestureDetector(
+                                            onTap: () async {
+                                              await Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                  builder: (context) => Pesanan(),
+                                                ),
+                                              );
+                                              _ambilPesananKantin();
+                                            },
+                                            child: Container(
+                                              padding: EdgeInsets.all(10),
+                                              decoration: BoxDecoration(
+                                                borderRadius: BorderRadius.all(
+                                                  Radius.circular(10),
+                                                ),
+                                                color: Colors.white,
+                                              ),
+                                              child: Center(
+                                                child: Row(
+                                                  mainAxisSize: MainAxisSize.min,
+                                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                                  children: [
+                                                    Text(
+                                                      "Lihat Selengkapnya",
+                                                      style: TextStyle(
+                                                        fontSize: 12.0,
+                                                        fontWeight: FontWeight.w500,
+                                                      ),
+                                                    ),
+                                                    Icon(
+                                                      Icons.chevron_right,
+                                                      size: 20,
+                                                    ),
+                                                  ],
+                                                ) 
+                                                
+                                              ),
+                                            ),
+                                          ),
+                                        ],
                                       )
+                                      
                                     else ...[
                                       ...pesanan
                                           .take(3)

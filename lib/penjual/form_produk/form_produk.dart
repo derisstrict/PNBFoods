@@ -142,7 +142,7 @@ class _FormProdukState extends State<FormProduk> {
                             controller: harga!, 
                             labelText: "Harga", 
                             prefixIcon: Padding(
-                              padding: EdgeInsetsGeometry.only(top: 13, left: 12),
+                              padding: EdgeInsetsGeometry.only(top: 13, left: 10, bottom: 12),
                               child: Text("Rp.",
                                 style: TextStyle(
                                   fontSize: 16,
