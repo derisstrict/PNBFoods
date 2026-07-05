@@ -625,10 +625,11 @@ class _ProfilUserState extends State<ProfileUser> {
       // tetap lanjut logout walopun request gagal
     }
 
-    Navigator.pushAndRemoveUntil(
-      context,
-      MaterialPageRoute(builder: (context) => LoginPage(role: 'pelanggan',)),
-      (route) => false,
-    );
+    // Navigator.pushAndRemoveUntil(
+    //   context,
+    //   MaterialPageRoute(builder: (context) => LoginPage(role: 'pelanggan',)),
+    //   (route) => false,
+    // );
+    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => LoginPage(role: 'pelanggan')));
   }
 }

@@ -22,7 +22,7 @@ class _OrderPageState extends State<OrderPage> {
   @override
   void initState() {
     super.initState();
-    _futureOrderan = _loadOrderan();
+    // _futureOrderan = _loadOrderan();
   }
 
   Future _cekTamu() async {
@@ -54,6 +54,7 @@ class _OrderPageState extends State<OrderPage> {
           return Center(child: Text('Error: ${snapshot.error}'));
         }
         if (snapshot.hasData) {
+          _futureOrderan = _loadOrderan();
           return Scaffold(
             appBar: TopBar(title: "Order", icon: Icons.article_outlined,),
             backgroundColor: Warna.warnaBackground,

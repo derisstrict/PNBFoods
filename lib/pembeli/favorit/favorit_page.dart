@@ -22,7 +22,7 @@ class _FavoritPageState extends State<FavoritPage> {
   @override
   void initState() {
     super.initState();
-    _futureFavorit = getFavorit();
+    // _futureFavorit = getFavorit();
   }
 
   Future _cekTamu() async {
@@ -118,6 +118,7 @@ class _FavoritPageState extends State<FavoritPage> {
           return Center(child: Text('Error: ${snapshot.error}'));
         }
         if (snapshot.hasData) {
+          _futureFavorit = getFavorit();
           return Scaffold(
             appBar: TopBar(title: "Favorit", icon: Icons.favorite,),
             backgroundColor: Warna.warnaBackground,
