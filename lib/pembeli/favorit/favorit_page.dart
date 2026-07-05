@@ -120,7 +120,7 @@ class _FavoritPageState extends State<FavoritPage> {
         if (snapshot.hasData) {
           _futureFavorit = getFavorit();
           return Scaffold(
-            appBar: TopBar(title: "Favorit", icon: Icons.favorite,),
+            appBar: TopBar(title: "Favorit", icon: Icons.favorite_outline,),
             backgroundColor: Warna.warnaBackground,
             body: SafeArea(
               child: Column(
