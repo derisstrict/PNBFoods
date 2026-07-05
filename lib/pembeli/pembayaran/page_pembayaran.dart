@@ -119,8 +119,8 @@ class _PembayaranPageState extends State<PembayaranPage> {
       barrierDismissible: false,
       builder: (ctx) => AlertDialog(
         backgroundColor: Colors.white,
-        icon: Icon(Icons.done, size: 58,),
-        iconColor: Warna.warnaSuccess,
+        icon: success ? Icon(Icons.done, size: 58,) : Icon(Icons.error_outline, size: 58,),
+        iconColor: success ? Warna.warnaSuccess : Colors.red,
         title: Text(title, style: TextStyle(fontWeight: FontWeight.w600,)),
         content: Text(msg, textAlign: TextAlign.center,),
         actionsAlignment: MainAxisAlignment.center,
