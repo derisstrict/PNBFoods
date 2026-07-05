@@ -23,13 +23,23 @@ class CardProduk extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final Color color;
+    final habis = produk.stok <= 0;
+    if (habis) {
+      color = Colors.white54;
+    } else if (isAccent) {
+      color = Warna.warnaAccent;
+    } else {
+      color = Colors.white;
+    }
+
     return GestureDetector(
-      onTap: onTap,
+      onTap: habis ? null : onTap,
       child: Container(
         margin: EdgeInsets.all(5),
         padding: EdgeInsets.all(10),
         decoration: BoxDecoration(
-          color: isAccent ? Warna.warnaAccent : Colors.white,
+          color: color,
           borderRadius: BorderRadius.circular(10)
         ),
         child: Column(
@@ -42,13 +52,39 @@ class CardProduk extends StatelessWidget {
                   children: [
                     ClipRRect(
                       borderRadius: BorderRadiusGeometry.circular(10),
-                      child: Container(
-                        child: produk.fotoProduk == "" || produk.fotoProduk == null 
-                        ? 
-                        Icon(Icons.image_rounded, size: 100, color: Warna.warnaBackground,) 
-                        : 
-                        Image.network(produk.fotoUrl!, fit: BoxFit.cover, width: width, height: 220, cacheHeight: 400,),
-                      ) 
+                      child: Stack(
+                        alignment: AlignmentGeometry.center,
+                        children: [
+                          Container(
+                            child: produk.fotoProduk == "" || produk.fotoProduk == null 
+                            ? 
+                            Icon(Icons.image_rounded, size: 100, color: Warna.warnaBackground,) 
+                            : 
+                            Image.network(produk.fotoUrl!, fit: BoxFit.cover, width: width, height: 220, cacheHeight: 400, color: habis ? Colors.black38 : null, colorBlendMode: BlendMode.darken,),
+                          ),
+                          if (habis)
+                            Center(
+                              child: Container(
+                                padding: EdgeInsets.all(20),
+                                decoration: BoxDecoration(
+                                  color: Colors.black54,
+                                  borderRadius: BorderRadius.circular(50)
+                                ),
+                                child: Row(
+                                  spacing: 5,
+                                  children: [
+                                    Icon(Icons.warning_amber,
+                                      size: 24,
+                                      color: Warna.warnaWarning,
+                                    ),
+                                    Text("Habis", style: TextStyle(color: Colors.white, fontWeight: FontWeight.w500, fontSize: 18)),
+                                  ],
+                                ) 
+                                
+                              ),
+                            ),
+                        ],
+                      )
                     )
                   ],
                 ),
