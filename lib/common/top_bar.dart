@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:pnbfoods/akun/akun_user.dart';
 import 'package:pnbfoods/common/warna.dart';
+import 'package:pnbfoods/homepage/home.dart';
 import 'package:pnbfoods/models/kantin.dart';
 import 'package:pnbfoods/models/penjual.dart';
 
@@ -21,11 +22,7 @@ class TopBar extends StatelessWidget implements PreferredSizeWidget {
       centerTitle: true,
       leading: pop ? IconButton(
         onPressed: () {
-          if (title != "Pembayaran") {
-            Navigator.maybePop(context);
-          } else {
-            Navigator.of(context).popUntil((route) => route.isFirst);
-          }
+          Navigator.maybePop(context, true);
         },
         icon: Icon(Icons.arrow_back),
       ) : null,

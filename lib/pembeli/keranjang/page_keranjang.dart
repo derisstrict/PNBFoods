@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:pnbfoods/common/top_bar.dart';
 import 'package:pnbfoods/common/warna.dart';
+import 'package:pnbfoods/homepage/home.dart';
 import 'package:pnbfoods/models/item_keranjang.dart';
 import 'package:pnbfoods/models/kantin.dart';
 import 'package:pnbfoods/pembeli/keranjang/widget/card_item_keranjang.dart';
@@ -112,8 +113,11 @@ class _KeranjangPageState extends State<KeranjangPage> {
                       ),
                     ),
                   );
-                  if (result == true && context.mounted) {
-                    Navigator.of(context).popUntil((route) => route.isFirst);
+                  // if (result == true && context.mounted) {
+                  //   Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => HomePengguna()));
+                  // }
+                  if (result == true) {
+                    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => HomePengguna()));
                   }
                 },
                 style: TextButton.styleFrom(

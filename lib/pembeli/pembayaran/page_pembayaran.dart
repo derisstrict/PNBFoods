@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:pnbfoods/common/tombol.dart';
 import 'package:pnbfoods/common/top_bar.dart';
 import 'package:pnbfoods/common/warna.dart';
+import 'package:pnbfoods/homepage/home.dart';
 import 'package:pnbfoods/models/item_keranjang.dart';
 import 'package:pnbfoods/models/pembayaran.dart';
 import 'package:pnbfoods/pembeli/pembayaran/widget/countdown_kadaluwarsa.dart';
@@ -126,8 +127,9 @@ class _PembayaranPageState extends State<PembayaranPage> {
         actions: [
           TombolNavigasi(
             function: () {
-              Navigator.of(ctx).pop();
-              Navigator.of(context).pop(success);
+              // Navigator.of(ctx).pop();
+              // Navigator.of(context).pop(success);
+              Navigator.pop(context, true);
             },
             text: "Kembali",
             backgroundColor: Warna.warnaAccent,
@@ -198,7 +200,7 @@ class _PembayaranPageState extends State<PembayaranPage> {
               ),
               const SizedBox(height: 24),
               ElevatedButton(
-                onPressed: () => Navigator.pop(context),
+                onPressed: () => Navigator.pop(context, true),
                 child: const Text('Kembali'),
               ),
             ],
@@ -230,7 +232,7 @@ class _PembayaranPageState extends State<PembayaranPage> {
           ),
           const SizedBox(height: 16),
           TombolPembayaran(
-            onKembali: () => Navigator.of(context).popUntil((route) => route.isFirst),
+            onKembali: () => Navigator.pop(context, true),
           ),
           // if (_pembayaran != null)
           //   Padding(
