@@ -133,8 +133,7 @@ class _OrderPageState extends State<OrderPage> {
                                 'Kantin Tidak Diketahui';
                             final kategoriKantin =
                                 orderan.kantin?['kategori'] ?? 'Umum';
-                            final fotoKantin = orderan.kantin?['foto_kantin'];
-
+                            final fotoKantin = orderan.kantin?['foto_url'];
                             final List<Map<String, String>>
                             detailBelanja = orderan.items.map<Map<String, String>>((
                               item,
