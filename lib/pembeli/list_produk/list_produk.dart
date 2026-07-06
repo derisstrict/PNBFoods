@@ -100,7 +100,6 @@ class _ListProdukState extends State<ListProduk> {
                       children: [
                         TopBarHeader(
                           width: double.infinity,
-                          style: TopBarHeader.pembeli,
                           text1: widget.kantin.namaKantin,
                           text2: widget.kantin.kategori,
                           searchController: _searchController,

@@ -65,7 +65,6 @@ class TopBarless extends StatelessWidget implements PreferredSizeWidget {
 
 class TopBarHeader extends StatelessWidget {
   final double width;
-  final String style;
   final String text1;
   final String text2;
   final TextEditingController? searchController;
@@ -73,13 +72,9 @@ class TopBarHeader extends StatelessWidget {
   final String? searchHint;
   final Kantin? kantin;
 
-  static const String pembeli = "Pembeli";
-  static const String penjual = "Penjual";
-
   const TopBarHeader({
     super.key,
     required this.width,
-    required this.style,
     required this.text1,
     required this.text2,
     this.searchController,
@@ -92,7 +87,7 @@ class TopBarHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: width,
-      height: style == pembeli ? 134 : 140,
+      height: 145,
       decoration: BoxDecoration(
         color: Warna.warnaAccent,
         borderRadius: BorderRadius.only(
@@ -103,19 +98,33 @@ class TopBarHeader extends StatelessWidget {
       child: Container(
         margin: EdgeInsets.all(20),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
-              children: [
-                if (style == pembeli)
-                  Visibility(
-                    visible: style == pembeli,
-                    child: Row(
+            GestureDetector(
+              onTap: () {
+                Navigator.pop(context);
+              },
+              child: Container(
+                padding: EdgeInsets.fromLTRB(15, 6, 15, 6),
+                decoration: BoxDecoration(
+                  color: Colors.white.withAlpha(30),
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(Icons.arrow_back,
+                      color: Colors.white,
+                      size: 20,
+                    ),
+                    SizedBox(width: 5,),
+                    Row(
                       children: [
                         ClipRRect(
                           borderRadius: BorderRadius.circular(10),
                           child: Container(
-                            width: 50,
-                            height: 50,
+                            width: 45,
+                            height: 45,
                             color: Colors.white24,
                             child:
                                 kantin == null ||
@@ -130,8 +139,8 @@ class TopBarHeader extends StatelessWidget {
                                       ? Image.network(
                                           kantin!.fotoUrl!,
                                           fit: BoxFit.cover,
-                                          width: 50,
-                                          height: 50,
+                                          width: 45,
+                                          height: 45,
                                           errorBuilder:
                                               (context, error, stackTrace) =>
                                                   const Icon(
@@ -158,90 +167,30 @@ class TopBarHeader extends StatelessWidget {
                         SizedBox(width: 10),
                       ],
                     ),
-                  ),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      text1,
-                      style: TextStyle(
-                        fontWeight: style == "Pembeli"
-                            ? FontWeight.w500
-                            : FontWeight.w200,
-                        color: Colors.white,
-                        fontSize: style == "Pembeli" ? 16.0 : 12.0,
-                      ),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          text1,
+                          style: TextStyle(
+                            fontWeight: FontWeight.w500,
+                            color: Colors.white,
+                            fontSize: 16.0,
+                          ),
+                        ),
+                        Text(
+                          text2,
+                          style: TextStyle(
+                            fontWeight: FontWeight.w200,
+                            color: Colors.white,
+                            fontSize: 11.0,
+                          ),
+                        ),
+                      ],
                     ),
-                    SizedBox(height: 5),
-                    if (style == "Pembeli")
-                      Text(
-                        text2,
-                        style: TextStyle(
-                          fontWeight: FontWeight.w200,
-                          color: Colors.white,
-                          fontSize: 12.0,
-                        ),
-                      ),
-
-                    if (style == "Penjual")
-                      GestureDetector(
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => ProfileUser(),
-                            ),
-                          );
-                        },
-                        child: Container(
-                          padding: EdgeInsets.fromLTRB(15, 5, 15, 5),
-                          decoration: BoxDecoration(
-                            color: Colors.white12,
-                            borderRadius: BorderRadius.circular(25),
-                          ),
-                          child: Row(
-                            children: [
-                              SizedBox(width: 5),
-                              Text(
-                                text2,
-                                style: TextStyle(
-                                  fontWeight: FontWeight.w300,
-                                  color: Colors.white,
-                                  fontSize: 16.0,
-                                ),
-                              ),
-                              Icon(
-                                Icons.keyboard_arrow_right_outlined,
-                                color: Colors.white,
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
                   ],
                 ),
-                Spacer(),
-                TextButton.icon(
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                  style: TextButton.styleFrom(
-                    backgroundColor: Colors.white10,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(10))
-                    )
-                  ),
-                  label: Text("Daftar kantin", 
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w300
-                    ),
-                  ),
-                  icon: Icon(Icons.store_mall_directory_outlined,
-                    color: Colors.white,
-                  )
-                ),
-              ],
+              ),
             ),
             SizedBox(height: 10),
             Container(
