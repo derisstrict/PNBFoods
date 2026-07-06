@@ -65,7 +65,7 @@ class CardProduk extends StatelessWidget {
                           if (habis)
                             Center(
                               child: Container(
-                                padding: EdgeInsets.all(20),
+                                padding: EdgeInsets.all(10),
                                 decoration: BoxDecoration(
                                   color: Colors.black54,
                                   borderRadius: BorderRadius.circular(50)
