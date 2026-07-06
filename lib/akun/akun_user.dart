@@ -291,6 +291,33 @@ class _ProfilUserState extends State<ProfileUser> {
                                 ),
                               ),
                               SizedBox(height: 10),
+                              if (Navigator.canPop(context))
+                              Column(
+                                children: [
+                                  GestureDetector(
+                                    onTap: () {
+                                      Navigator.pop(context, true);
+                                    },
+                                    child: Container(
+                                      padding: EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+                                      decoration: BoxDecoration(
+                                        color: Colors.white,
+                                        borderRadius: BorderRadius.circular(15),
+                                      ),
+                                      child: Row(
+                                        children: [
+                                          Icon(Icons.arrow_back),
+                                          SizedBox(width: 10),
+                                          Text("Kembali",
+                                            style: TextStyle(fontWeight: FontWeight.w400, fontSize: 14, color: Colors.black87),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                  SizedBox(height: 10,),
+                                ],
+                              ),
                               Divider(),
                               SizedBox(height: 10),
                               GestureDetector(
