@@ -113,11 +113,8 @@ class _KeranjangPageState extends State<KeranjangPage> {
                       ),
                     ),
                   );
-                  // if (result == true && context.mounted) {
-                  //   Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => HomePengguna()));
-                  // }
                   if (result == true) {
-                    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => HomePengguna()));
+                    Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => HomePengguna()), (route) => false);
                   }
                 },
                 style: TextButton.styleFrom(

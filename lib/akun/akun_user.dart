@@ -122,7 +122,7 @@ class _ProfilUserState extends State<ProfileUser> {
                       onTap: () async {
                         final prefs = await SharedPreferences.getInstance();
                         await prefs.clear();
-                        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => LoginPage(role: 'pelanggan')));
+                        Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => LoginPage(role: 'pelanggan')), (route) => false);
                       },
                       child: Container(
                         padding: EdgeInsets.symmetric(vertical: 15, horizontal: 20),
@@ -652,11 +652,11 @@ class _ProfilUserState extends State<ProfileUser> {
       // tetap lanjut logout walopun request gagal
     }
 
-    // Navigator.pushAndRemoveUntil(
-    //   context,
-    //   MaterialPageRoute(builder: (context) => LoginPage(role: 'pelanggan',)),
-    //   (route) => false,
-    // );
-    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => LoginPage(role: 'pelanggan')));
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(builder: (context) => LoginPage(role: 'pelanggan',)),
+      (route) => false,
+    );
+    // Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => LoginPage(role: 'pelanggan')));
   }
 }

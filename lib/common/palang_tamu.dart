@@ -36,7 +36,7 @@ class PalangTamu extends StatelessWidget {
                   onPressed: () async {
                     final prefs = await SharedPreferences.getInstance();
                     await prefs.clear();
-                    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => LoginPage(role: 'pelanggan')));
+                    Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => LoginPage(role: 'pelanggan')), (route) => false);
                   },
                   style: TextButton.styleFrom(
                     
