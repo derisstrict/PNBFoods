@@ -100,279 +100,282 @@ class _PendapatanState extends State<Pendapatan> {
         child: LayoutBuilder(
           builder: (context, constraints) {
             double screenWidth = constraints.maxWidth;
-            return Container(
-              margin: EdgeInsets.all(20),
-              child: Column(
-                children: [
-                  Container(
-                    padding: EdgeInsets.all(10),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(15),
-                    ),
-                    child: Column(
-                      spacing: 5,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          spacing: 5,
-                          children: [
-                            Icon(Icons.account_balance_wallet),
-                            Text(
-                              "Saldo kamu",
-                              style: TextStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.w700,
-                              ),
-                            ),
-                          ],
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Row(
-                              crossAxisAlignment:
-                                  CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  "Rp.",
-                                  style: TextStyle(
-                                    fontSize: 11,
-                                    color:
-                                        Warna.warnaAccent,
-                                  ),
-                                ),
-                                SizedBox(width: 4.0),
-                                Text(
-                                  _isLoading ? "-" : NumberFormat.decimalPattern('id').format(_saldo),
-                                  style: TextStyle(
-                                    fontSize: 34.0,
-                                    fontWeight:
-                                        FontWeight.w600,
-                                    color:
-                                        Warna.warnaAccent,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                  Container(
-                    width: screenWidth - 80,
-                    padding: EdgeInsets.fromLTRB(20, 2, 20, 2),
-                    decoration: BoxDecoration(
-                      color: Warna.warnaAccent,
-                      borderRadius: BorderRadius.only(
-                        bottomLeft: Radius.circular(15),
-                        bottomRight: Radius.circular(15),
+            return SingleChildScrollView(
+              child: Container(
+                margin: EdgeInsets.all(20),
+                child: Column(
+                  children: [
+                    Container(
+                      padding: EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(15),
                       ),
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          "Total pendapatan anda ${formatRupiah(widget.totalPendapatan)}",
-                          style: TextStyle(
-                            fontSize: 11.0,
-                            fontWeight: FontWeight.w200,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  SizedBox(height: 25,),
-                  TextHeading(title: "Penarikan"),
-                  SizedBox(height: 10,),
-                  Container(
-                    padding: EdgeInsets.all(15),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(15)
-                    ),
-                    child: Column(
-                      spacing: 12,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text("Metode penarikan",
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w600
-                          ),
-                        ),
-                        Container(
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                          ),
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                      child: Column(
+                        spacing: 5,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            spacing: 5,
                             children: [
-                              Column(
-                                children: [
-                                  SizedBox(height: 4,),
-                                  Image.network("https://upload.wikimedia.org/wikipedia/commons/thumb/5/5c/Bank_Central_Asia.svg/330px-Bank_Central_Asia.svg.png",
-                                    height: 12,
-                                    fit: BoxFit.cover, 
-                                    errorBuilder: (context, error, stackTrace) => Container(
-                                      width: 12,
-                                      height: 12,
-                                      color: Warna.warnaBackground,
-                                      child: Icon(Icons.image_not_supported, size: 20, color: Colors.black,),
-                                    )
-                                  ),
-                                ],
+                              Icon(Icons.account_balance_wallet),
+                              Text(
+                                "Saldo kamu",
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w700,
+                                ),
                               ),
-                              SizedBox(width: 5,),
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: [
-                                  Text("BCA",
-                                    style: TextStyle(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w600
-                                    ),
-                                  ),
-                                  Row(
-                                    spacing: 3,
-                                    children: [
-                                      Icon(Icons.info_outline,
-                                        size: 16,
-                                        color: Warna.warnaTextGray,
-                                      ),
-                                      Text("Dana akan tiba dalam 1 hari kerja",
-                                        style: TextStyle(
-                                          fontSize: 11
-                                        ),
-                                      )
-                                    ],
-                                  )
-                                ],
-                              ),
-                              Spacer(),
-                              Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  SizedBox(height: 8,),
-                                  Icon(Icons.chevron_right)
-                                ],
-                              )
                             ],
                           ),
-                        ),
-
-                        Text("Jumlah",
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w600
-                          ),
-                        ),
-
-                        TextFormFieldCustom(
-                          controller: _amountController, 
-                          labelText: "Nominal", 
-                          prefixIcon: Padding(
-                            padding: EdgeInsetsGeometry.only(top: 13, left: 10, bottom: 12),
-                            child: Text("Rp.",
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w500,
-                                color: Warna.warnaAccent
-                              ),),
-                          ),
-                          numberOnly: true,
-                          backgroundColor: Warna.warnaBackground,
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceAround,
-                          children: [
-                            TextButton(
-                              onPressed: () {
-                                setState(() {
-                                  _amountController.text = _saldo.toString();
-                                });
-                              },
-                              style: TextButton.styleFrom(
-                                backgroundColor: Warna.warnaBackground,
-                                foregroundColor: Colors.black12
-                              ), 
-                              child: Text("Tarik semua",
-                                style: TextStyle(
-                                  color: Warna.warnaAccent
-                                ),
-                              )
-                            ),
-                            TextButton(
-                              onPressed: () {
-                                setState(() {
-                                  _amountController.text = "${_amountController.text}00";
-                                });
-                              },
-                              style: TextButton.styleFrom(
-                                backgroundColor: Warna.warnaBackground,
-                                foregroundColor: Colors.black12
-                              ), 
-                              child: Text("00",
-                                style: TextStyle(
-                                  color: Warna.warnaAccent
-                                ),
-                              )
-                            ),
-                            TextButton(
-                              onPressed: () {
-                                setState(() {
-                                  _amountController.text = "${_amountController.text}000";
-                                });
-                              },
-                              style: TextButton.styleFrom(
-                                backgroundColor: Warna.warnaBackground,
-                                foregroundColor: Colors.black12
-                              ), 
-                              child: Text("000",
-                                style: TextStyle(
-                                  color: Warna.warnaAccent
-                                ),
-                              )
-                            ),
-                          ],
-                        ),
-                        SizedBox(height: 10,),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            SizedBox(
-                              width: 200,
-                              height: 40,
-                              child: TextButton.icon(
-                                onPressed: () => _handleTarikUang(), 
-                                style: TextButton.styleFrom(
-                                  backgroundColor: Warna.warnaAccent,
-                                  foregroundColor:  Colors.white,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadiusGeometry.circular(15)
-                                  )
-                                ),
-                                label: Text("Tarik uang",
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.w500
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Row(
+                                crossAxisAlignment:
+                                    CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    "Rp.",
+                                    style: TextStyle(
+                                      fontSize: 11,
+                                      color:
+                                          Warna.warnaAccent,
+                                    ),
                                   ),
-                                ),
-                                icon: Icon(Icons.payments_outlined),
+                                  SizedBox(width: 4.0),
+                                  Text(
+                                    _isLoading ? "-" : NumberFormat.decimalPattern('id').format(_saldo),
+                                    style: TextStyle(
+                                      fontSize: 34.0,
+                                      fontWeight:
+                                          FontWeight.w600,
+                                      color:
+                                          Warna.warnaAccent,
+                                    ),
+                                  ),
+                                ],
                               ),
-                            )
-                            
-                          ],
-                        ),
-                      ],
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
-                  )
-                ],
+                    Container(
+                      width: screenWidth - 80,
+                      padding: EdgeInsets.fromLTRB(20, 2, 20, 2),
+                      decoration: BoxDecoration(
+                        color: Warna.warnaAccent,
+                        borderRadius: BorderRadius.only(
+                          bottomLeft: Radius.circular(15),
+                          bottomRight: Radius.circular(15),
+                        ),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            "Total pendapatan anda ${formatRupiah(widget.totalPendapatan)}",
+                            style: TextStyle(
+                              fontSize: 11.0,
+                              fontWeight: FontWeight.w200,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    SizedBox(height: 25,),
+                    TextHeading(title: "Penarikan"),
+                    SizedBox(height: 10,),
+                    Container(
+                      padding: EdgeInsets.all(15),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(15)
+                      ),
+                      child: Column(
+                        spacing: 12,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text("Metode penarikan",
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600
+                            ),
+                          ),
+                          Container(
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                            ),
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Column(
+                                  children: [
+                                    SizedBox(height: 4,),
+                                    Image.network("https://upload.wikimedia.org/wikipedia/commons/thumb/5/5c/Bank_Central_Asia.svg/330px-Bank_Central_Asia.svg.png",
+                                      height: 12,
+                                      fit: BoxFit.cover, 
+                                      errorBuilder: (context, error, stackTrace) => Container(
+                                        width: 12,
+                                        height: 12,
+                                        color: Warna.warnaBackground,
+                                        child: Icon(Icons.image_not_supported, size: 20, color: Colors.black,),
+                                      )
+                                    ),
+                                  ],
+                                ),
+                                SizedBox(width: 5,),
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: [
+                                    Text("BCA",
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w600
+                                      ),
+                                    ),
+                                    Row(
+                                      spacing: 3,
+                                      children: [
+                                        Icon(Icons.info_outline,
+                                          size: 16,
+                                          color: Warna.warnaTextGray,
+                                        ),
+                                        Text("Dana akan tiba dalam 1 hari kerja",
+                                          style: TextStyle(
+                                            fontSize: 11
+                                          ),
+                                        )
+                                      ],
+                                    )
+                                  ],
+                                ),
+                                Spacer(),
+                                Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    SizedBox(height: 8,),
+                                    Icon(Icons.chevron_right)
+                                  ],
+                                )
+                              ],
+                            ),
+                          ),
+
+                          Text("Jumlah",
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600
+                            ),
+                          ),
+
+                          TextFormFieldCustom(
+                            controller: _amountController, 
+                            labelText: "Nominal", 
+                            prefixIcon: Padding(
+                              padding: EdgeInsetsGeometry.only(top: 13, left: 10, bottom: 12),
+                              child: Text("Rp.",
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w500,
+                                  color: Warna.warnaAccent
+                                ),),
+                            ),
+                            numberOnly: true,
+                            backgroundColor: Warna.warnaBackground,
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            children: [
+                              TextButton(
+                                onPressed: () {
+                                  setState(() {
+                                    _amountController.text = _saldo.toString();
+                                  });
+                                },
+                                style: TextButton.styleFrom(
+                                  backgroundColor: Warna.warnaBackground,
+                                  foregroundColor: Colors.black12
+                                ), 
+                                child: Text("Tarik semua",
+                                  style: TextStyle(
+                                    color: Warna.warnaAccent
+                                  ),
+                                )
+                              ),
+                              TextButton(
+                                onPressed: () {
+                                  setState(() {
+                                    _amountController.text = "${_amountController.text}00";
+                                  });
+                                },
+                                style: TextButton.styleFrom(
+                                  backgroundColor: Warna.warnaBackground,
+                                  foregroundColor: Colors.black12
+                                ), 
+                                child: Text("00",
+                                  style: TextStyle(
+                                    color: Warna.warnaAccent
+                                  ),
+                                )
+                              ),
+                              TextButton(
+                                onPressed: () {
+                                  setState(() {
+                                    _amountController.text = "${_amountController.text}000";
+                                  });
+                                },
+                                style: TextButton.styleFrom(
+                                  backgroundColor: Warna.warnaBackground,
+                                  foregroundColor: Colors.black12
+                                ), 
+                                child: Text("000",
+                                  style: TextStyle(
+                                    color: Warna.warnaAccent
+                                  ),
+                                )
+                              ),
+                            ],
+                          ),
+                          SizedBox(height: 10,),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              SizedBox(
+                                width: 200,
+                                height: 40,
+                                child: TextButton.icon(
+                                  onPressed: () => _handleTarikUang(), 
+                                  style: TextButton.styleFrom(
+                                    backgroundColor: Warna.warnaAccent,
+                                    foregroundColor:  Colors.white,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadiusGeometry.circular(15)
+                                    )
+                                  ),
+                                  label: Text("Tarik uang",
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w500
+                                    ),
+                                  ),
+                                  icon: Icon(Icons.payments_outlined),
+                                ),
+                              )
+                              
+                            ],
+                          ),
+                        ],
+                      ),
+                    )
+                  ],
+                ),
               ),
             );
+            
           }
         )
       ) 
