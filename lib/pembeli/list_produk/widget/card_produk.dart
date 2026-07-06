@@ -34,7 +34,7 @@ class CardProduk extends StatelessWidget {
     }
 
     return GestureDetector(
-      onTap: habis ? null : onTap,
+      onTap: habis && !isEditable ? null : onTap,
       child: Container(
         margin: EdgeInsets.all(5),
         padding: EdgeInsets.all(10),
