@@ -130,6 +130,7 @@ class _PembayaranPageState extends State<PembayaranPage> {
               // Navigator.of(ctx).pop();
               // Navigator.of(context).pop(success);
               Navigator.pop(context, true);
+              Navigator.pop(context, true);
             },
             text: "Kembali",
             backgroundColor: Warna.warnaAccent,
