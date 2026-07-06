@@ -458,28 +458,33 @@ class _ProfilUserState extends State<ProfileUser> {
                             ),
                           ),
                         ),
-                        SizedBox(height: 10),
-                        GestureDetector(
-                          onTap: () {
-                            _openRiwayat(context);
-                          },
-                          child: Container(
-                            padding: EdgeInsets.symmetric(vertical: 15, horizontal: 20),
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(15),
-                            ),
-                            child: Row(
-                              children: [
-                                Icon(Icons.history_outlined),
-                                SizedBox(width: 10),
-                                Text("Riwayat",
-                                  style: TextStyle(fontWeight: FontWeight.w400, fontSize: 14, color: Colors.black87),
+                        if (rolePengguna == "pelanggan")
+                          Column(
+                            children: [
+                              SizedBox(height: 10),
+                              GestureDetector(
+                                onTap: () {
+                                  _openRiwayat(context);
+                                },
+                                child: Container(
+                                  padding: EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(15),
+                                  ),
+                                  child: Row(
+                                    children: [
+                                      Icon(Icons.history_outlined),
+                                      SizedBox(width: 10),
+                                      Text("Riwayat",
+                                        style: TextStyle(fontWeight: FontWeight.w400, fontSize: 14, color: Colors.black87),
+                                      ),
+                                    ],
+                                  ),
                                 ),
-                              ],
-                            ),
+                              ),
+                            ],
                           ),
-                        ),
                         if (rolePengguna == "penjual")
                           Column(
                             children: [
