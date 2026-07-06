@@ -23,6 +23,7 @@ class _UbahPasswordState extends State<UbahPassword> {
   final TextEditingController passLamaController = TextEditingController();
   final TextEditingController passBaruController = TextEditingController();
   final TextEditingController konfirmasiController = TextEditingController();
+  bool _obscurePassLama = true;
   bool _obscurePass = true;
   bool _obscureKonfirmasi = true;
 
@@ -63,17 +64,17 @@ class _UbahPasswordState extends State<UbahPassword> {
               //Password lama
               TextFormField(
                 controller: passLamaController,
-                obscureText: _obscureKonfirmasi,
+                obscureText: _obscurePassLama,
                 decoration: InputDecoration(
                   labelText: "Password Lama",
                   suffixIcon: IconButton(
                     icon: Icon(
-                      _obscureKonfirmasi ? Icons.visibility_off : Icons.visibility,
+                      _obscurePassLama ? Icons.visibility_off : Icons.visibility,
                       color: Colors.grey,
                     ),
                     onPressed: () {
                       setState(() {
-                        _obscureKonfirmasi = !_obscureKonfirmasi;
+                        _obscurePassLama = !_obscurePassLama;
                       });
                     },
                   ),
@@ -99,17 +100,17 @@ class _UbahPasswordState extends State<UbahPassword> {
               //Password baru
               TextFormField(
                 controller: passBaruController,
-                obscureText: _obscureKonfirmasi,
+                obscureText: _obscurePass,
                 decoration: InputDecoration(
                   labelText: "Password Baru",
                   suffixIcon: IconButton(
                     icon: Icon(
-                      _obscureKonfirmasi ? Icons.visibility_off : Icons.visibility,
+                      _obscurePass ? Icons.visibility_off : Icons.visibility,
                       color: Colors.grey,
                     ),
                     onPressed: () {
                       setState(() {
-                        _obscureKonfirmasi = !_obscureKonfirmasi;
+                        _obscurePass = !_obscurePass;
                       });
                     },
                   ),
