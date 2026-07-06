@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pnbfoods/akun/akun_user.dart';
 import 'package:pnbfoods/common/warna.dart';
 import 'package:pnbfoods/models/kantin.dart';
 import 'package:pnbfoods/models/pelanggan.dart';
@@ -28,10 +29,11 @@ class _ListKantinState extends State<ListKantin> {
   void getIdPengguna() async {
     final prefs = await SharedPreferences.getInstance();
     final id = prefs.getInt('userId');
-    if (mounted)
+    if (mounted) {
       setState(() {
         idPelanggan = id;
       });
+    }
     if (idPelanggan != null) {
       pelanggan = fetchPelanggan(idPelanggan!);
     }
@@ -154,25 +156,56 @@ class _ListKantinState extends State<ListKantin> {
                               ); 
                             }
                             if (snapshot.hasError || !snapshot.hasData) {
-                              return const CircleAvatar(
+                              return GestureDetector(
+                                onTap: () async {
+                                  final result = await Navigator.push(context, MaterialPageRoute(builder: (context) => ProfileUser()));
+                                  if (result == true) {
+                                    setState(() {
+                                      getIdPengguna();
+                                    });
+                                  }
+                                },
+                                child: CircleAvatar(
+                                  radius: 20,
+                                  backgroundColor: Colors.white24,
+                                  child: Icon(Icons.person, size: 24, color: Colors.white,),
+                                ),
+                              ); 
+                            }
+                            if (snapshot.data!.fotoUrl != null) {
+                              return GestureDetector(
+                                onTap: () async {
+                                  final result = await Navigator.push(context, MaterialPageRoute(builder: (context) => ProfileUser()));
+                                  if (result == true) {
+                                    setState(() {
+                                      getIdPengguna();
+                                    });
+                                  }  
+                                },
+                                child: CircleAvatar(
+                                  radius: 20,
+                                  backgroundImage: NetworkImage(
+                                    snapshot.data!.fotoUrl!,
+                                  ),
+                                )
+                              );
+                              
+                            } 
+                            return GestureDetector(
+                              onTap: () async {
+                                final result = await Navigator.push(context, MaterialPageRoute(builder: (context) => ProfileUser()));
+                                if (result == true) {
+                                  setState(() {
+                                    getIdPengguna();
+                                  });
+                                }  
+                              },
+                              child: CircleAvatar(
                                 radius: 20,
                                 backgroundColor: Colors.white24,
                                 child: Icon(Icons.person, size: 24, color: Colors.white,),
-                              );
-                            }
-                            if (snapshot.data!.fotoUrl != null) {
-                              return CircleAvatar(
-                                radius: 20,
-                                backgroundImage: NetworkImage(
-                                  snapshot.data!.fotoUrl!,
-                                ),
-                              );
-                            } 
-                            return const CircleAvatar(
-                              radius: 20,
-                              backgroundColor: Colors.white24,
-                              child: Icon(Icons.person, size: 24, color: Colors.white,),
-                            ); 
+                              ),
+                            );
                           }
                         )
                       ],
