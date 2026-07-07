@@ -7,11 +7,13 @@ import 'package:pnbfoods/common/warna.dart';
 import 'package:pnbfoods/akun/edit_user.dart';
 import 'package:pnbfoods/models/pelanggan.dart';
 import 'package:pnbfoods/pembeli/riwayat/page_riwayat.dart';
+import 'package:pnbfoods/pembeli/notifikasi/notifikasi.dart';
 import 'package:pnbfoods/services/cart_service.dart';
 import 'package:pnbfoods/services/pelanggan_service.dart';
 import 'package:pnbfoods/models/penjual.dart';
 import 'package:pnbfoods/services/penjual_service.dart';
 import 'package:pnbfoods/services/riwayat_service.dart';
+import 'package:pnbfoods/services/notifikasi_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:pnbfoods/pembeli/riwayat/page_riwayat.dart';
 
@@ -32,6 +34,7 @@ class _ProfilUserState extends State<ProfileUser> {
 
   String? rolePengguna;
   int? idPengguna;
+  int _unreadCount = 0;
 
   void _ambilDataUser() async {
     final prefs = await SharedPreferences.getInstance();
@@ -60,6 +63,14 @@ class _ProfilUserState extends State<ProfileUser> {
   void initState() {
     super.initState();
     _ambilDataUser();
+    _fetchUnreadCount();
+  }
+
+  Future<void> _fetchUnreadCount() async {
+    try {
+      final count = await fetchUnreadCount();
+      if (mounted) setState(() => _unreadCount = count);
+    } catch (_) {}
   }
 
   @override 
@@ -221,6 +232,39 @@ class _ProfilUserState extends State<ProfileUser> {
                                     ),
                                   ],
                                 ),
+                                Spacer(),
+                                Stack(
+                                  alignment: AlignmentGeometry.topRight,
+                                  children: [
+                                    IconButton(
+                                      onPressed: () async {
+                                        await Navigator.push(context, MaterialPageRoute(builder: (context) => Notifikasi()));
+                                        _fetchUnreadCount();
+                                      }, 
+                                      icon: Icon(
+                                        Icons.notifications,
+                                        color: Colors.white,
+                                      )
+                                    ),
+                                    if (_unreadCount > 0)
+                                      Container(
+                                        width: 20,
+                                        height: 20,
+                                        alignment: Alignment.center,
+                                        decoration: BoxDecoration(
+                                          color: Colors.red,
+                                          shape: BoxShape.circle,
+                                        ),
+                                        child: Text(
+                                          _unreadCount > 99 ? "99+" : "$_unreadCount",
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 12
+                                          ),
+                                        ),
+                                      )
+                                  ],
+                                )
                               ],
                             ),
                           ),
@@ -409,6 +453,39 @@ class _ProfilUserState extends State<ProfileUser> {
                               Text(penjual.email,
                                 style: TextStyle(fontWeight: FontWeight.w200, color: Colors.white, fontSize: 10.0),
                               ),
+                            ],
+                          ),
+                          Spacer(),
+                          Stack(
+                            alignment: AlignmentGeometry.topRight,
+                            children: [
+                              IconButton(
+                                onPressed: () async {
+                                  await Navigator.push(context, MaterialPageRoute(builder: (context) => Notifikasi()));
+                                  _fetchUnreadCount();
+                                }, 
+                                icon: Icon(
+                                  Icons.notifications,
+                                  color: Colors.white,
+                                )
+                              ),
+                              if (_unreadCount > 0)
+                                Container(
+                                  width: 20,
+                                  height: 20,
+                                  alignment: Alignment.center,
+                                  decoration: BoxDecoration(
+                                    color: Colors.red,
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: Text(
+                                    _unreadCount > 99 ? "99+" : "$_unreadCount",
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 12
+                                    ),
+                                  ),
+                                )
                             ],
                           ),
                         ],

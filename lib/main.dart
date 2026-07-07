@@ -11,11 +11,13 @@ import 'package:pnbfoods/penjual/form_produk/form_produk.dart';
 import '/pembeli/keranjang/page_keranjang.dart';
 import 'package:pnbfoods/penjual/dashboard/dashboard.dart';
 import 'package:pnbfoods/services/cart_service.dart';
+import 'package:pnbfoods/services/notification_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Hive.initFlutter();
   await CartService().init();
+  await NotificationService.init();
   runApp(const PNBFoods());
 }
 

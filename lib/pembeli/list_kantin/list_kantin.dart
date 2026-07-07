@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pnbfoods/akun/akun_user.dart';
+import 'package:pnbfoods/common/top_bar.dart';
 import 'package:pnbfoods/common/warna.dart';
 import 'package:pnbfoods/models/kantin.dart';
 import 'package:pnbfoods/models/pelanggan.dart';
@@ -9,6 +10,8 @@ import 'package:pnbfoods/services/cart_service.dart';
 import 'package:pnbfoods/services/kantin_service.dart';
 import 'package:pnbfoods/services/pelanggan_service.dart';
 import 'package:pnbfoods/services/produk_service.dart';
+import 'package:pnbfoods/services/notifikasi_service.dart';
+import 'package:pnbfoods/services/notification_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ListKantin extends StatefulWidget {
@@ -16,12 +19,13 @@ class ListKantin extends StatefulWidget {
   _ListKantinState createState() => _ListKantinState();
 }
 
-class _ListKantinState extends State<ListKantin> {
+class _ListKantinState extends State<ListKantin> with WidgetsBindingObserver {
   late Future<List<Kantin>> futureKantin;
   Future<Pelanggan>? pelanggan;
   Pelanggan? pelangganData;
 
   int? idPelanggan;
+  int _unreadCount = 0;
   final _searchController = TextEditingController();
   String _searchQuery = "";
   Map<int, ({int min, int max})> _priceRanges = {};
@@ -39,10 +43,20 @@ class _ListKantinState extends State<ListKantin> {
     }
   }
 
+  Future<void> _fetchUnreadCount() async {
+    try {
+      final count = await fetchUnreadCount();
+      if (mounted) setState(() => _unreadCount = count);
+    } catch (_) {}
+  }
+
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     getIdPengguna();
+    _fetchUnreadCount();
+    NotificationService.startPolling();
     futureKantin = fetchSemuaKantin();
     fetchSemuaProduk().then((produkList) {
       for (final p in produkList) {
@@ -62,7 +76,19 @@ class _ListKantinState extends State<ListKantin> {
   }
 
   @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      NotificationService.startPolling();
+      _fetchUnreadCount();
+    } else if (state == AppLifecycleState.paused) {
+      NotificationService.stopPolling();
+    }
+  }
+
+  @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    NotificationService.stopPolling();
     _searchController.dispose();
     super.dispose();
   }
@@ -81,6 +107,7 @@ class _ListKantinState extends State<ListKantin> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: TopBarless(),
       backgroundColor: Warna.warnaBackground,
       body: Column(
         children: [
@@ -144,69 +171,93 @@ class _ListKantinState extends State<ListKantin> {
                         ),
 
                         Spacer(),
-
-                        FutureBuilder(
-                          future: pelanggan,
-                          builder: (context, snapshot) {
-                            if (snapshot.connectionState == ConnectionState.waiting) {
-                              return const CircleAvatar(
-                                radius: 20,
-                                backgroundColor: Colors.white24,
-                                child: Icon(Icons.person, size: 24, color: Colors.white,),
-                              ); 
-                            }
-                            if (snapshot.hasError || !snapshot.hasData) {
-                              return GestureDetector(
-                                onTap: () async {
-                                  final result = await Navigator.push(context, MaterialPageRoute(builder: (context) => ProfileUser()));
-                                  if (result == true) {
-                                    setState(() {
-                                      getIdPengguna();
-                                    });
-                                  }
-                                },
-                                child: CircleAvatar(
-                                  radius: 20,
-                                  backgroundColor: Colors.white24,
-                                  child: Icon(Icons.person, size: 24, color: Colors.white,),
-                                ),
-                              ); 
-                            }
-                            if (snapshot.data!.fotoUrl != null) {
-                              return GestureDetector(
-                                onTap: () async {
-                                  final result = await Navigator.push(context, MaterialPageRoute(builder: (context) => ProfileUser()));
-                                  if (result == true) {
-                                    setState(() {
-                                      getIdPengguna();
-                                    });
-                                  }  
-                                },
-                                child: CircleAvatar(
-                                  radius: 20,
-                                  backgroundImage: NetworkImage(
-                                    snapshot.data!.fotoUrl!,
+                        Stack(
+                          alignment: AlignmentGeometry.topRight,
+                          children: [
+                            FutureBuilder(
+                              future: pelanggan,
+                              builder: (context, snapshot) {
+                                if (snapshot.connectionState == ConnectionState.waiting) {
+                                  return const CircleAvatar(
+                                    radius: 20,
+                                    backgroundColor: Colors.white24,
+                                    child: Icon(Icons.person, size: 24, color: Colors.white,),
+                                  ); 
+                                }
+                                if (snapshot.hasError || !snapshot.hasData) {
+                                  return GestureDetector(
+                                    onTap: () async {
+                                      final result = await Navigator.push(context, MaterialPageRoute(builder: (context) => ProfileUser()));
+                                      if (result == true) {
+                                        setState(() {
+                                          getIdPengguna();
+                                        });
+                                        _fetchUnreadCount();
+                                      }
+                                    },
+                                    child: CircleAvatar(
+                                      radius: 20,
+                                      backgroundColor: Colors.white24,
+                                      child: Icon(Icons.person, size: 24, color: Colors.white,),
+                                    ),
+                                  ); 
+                                }
+                                if (snapshot.data!.fotoUrl != null) {
+                                  return GestureDetector(
+                                    onTap: () async {
+                                      final result = await Navigator.push(context, MaterialPageRoute(builder: (context) => ProfileUser()));
+                                      if (result == true) {
+                                        setState(() {
+                                          getIdPengguna();
+                                        });
+                                        _fetchUnreadCount();
+                                      }  
+                                    },
+                                    child: CircleAvatar(
+                                      radius: 20,
+                                      backgroundImage: NetworkImage(
+                                        snapshot.data!.fotoUrl!,
+                                      ),
+                                    )
+                                  );
+                                  
+                                } 
+                                return GestureDetector(
+                                  onTap: () async {
+                                    final result = await Navigator.push(context, MaterialPageRoute(builder: (context) => ProfileUser()));
+                                    if (result == true) {
+                                      setState(() {
+                                        getIdPengguna();
+                                      });
+                                      _fetchUnreadCount();
+                                    }  
+                                  },
+                                  child: CircleAvatar(
+                                    radius: 20,
+                                    backgroundColor: Colors.white24,
+                                    child: Icon(Icons.person, size: 24, color: Colors.white,),
                                   ),
-                                )
-                              );
-                              
-                            } 
-                            return GestureDetector(
-                              onTap: () async {
-                                final result = await Navigator.push(context, MaterialPageRoute(builder: (context) => ProfileUser()));
-                                if (result == true) {
-                                  setState(() {
-                                    getIdPengguna();
-                                  });
-                                }  
-                              },
-                              child: CircleAvatar(
-                                radius: 20,
-                                backgroundColor: Colors.white24,
-                                child: Icon(Icons.person, size: 24, color: Colors.white,),
-                              ),
-                            );
-                          }
+                                );
+                              }
+                            ),
+                            if (_unreadCount > 0)
+                              Container(
+                                width: 20,
+                                height: 20,
+                                alignment: Alignment.center,
+                                decoration: BoxDecoration(
+                                  color: Colors.red,
+                                  shape: BoxShape.circle,
+                                ),
+                                child: Text(
+                                  _unreadCount > 99 ? "99+" : "$_unreadCount",
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 12
+                                  ),
+                                ),
+                              )
+                          ],
                         )
                       ],
                     ),
