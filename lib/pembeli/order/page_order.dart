@@ -58,23 +58,34 @@ class _OrderPageState extends State<OrderPage> {
           return Scaffold(
             appBar: TopBar(title: "Order", icon: Icons.article_outlined,),
             backgroundColor: Warna.warnaBackground,
-            body: SafeArea(
-              child: FutureBuilder<List<Orderan>>(
-                future: _futureOrderan,
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const Center(child: CircularProgressIndicator());
-                  }
+              body: SafeArea(
+                child: RefreshIndicator(
+                  onRefresh: () async {
+                    setState(() {
+                      _futureOrderan = _loadOrderan();
+                    });
+                    await _futureOrderan;
+                  },
+                  child: FutureBuilder<List<Orderan>>(
+                    future: _futureOrderan,
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const Center(child: CircularProgressIndicator());
+                      }
 
-                  if (snapshot.hasError) {
-                    return Center(child: Text('Error: ${snapshot.error}'));
-                  }
+                      if (snapshot.hasError) {
+                        return ListView(
+                          children: [Center(child: Text('Error: ${snapshot.error}'))],
+                        );
+                      }
 
-                  if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                    return const Center(child: Text('Belum ada riwayat orderan.'));
-                  }
+                      if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                        return ListView(
+                          children: const [Center(child: Text('Belum ada riwayat orderan.'))],
+                        );
+                      }
 
-                  final listOrderanMentah = snapshot.data!;
+                      final listOrderanMentah = snapshot.data!;
 
                   final Map<String, List<Orderan>> groupedOrderan =
                       Orderan.orderanPertanggal(listOrderanMentah);
@@ -190,11 +201,12 @@ class _OrderPageState extends State<OrderPage> {
                       );
                     },
                   );
-                },
+                    },
+                  ),
+                ),
               ),
-            ),
-          );
-        } else {
+            );
+          } else {
           return PalangTamu(text: 'Silahkan login untuk dapat melihat daftar order anda',);
         }
       }

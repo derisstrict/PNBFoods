@@ -35,7 +35,7 @@ class _PesananState extends State<Pesanan> {
     _ambilPesanan();
   }
 
-  void _ambilPesanan() async {
+  Future<void> _ambilPesanan() async {
     final prefs = await SharedPreferences.getInstance();
     final kantinId = prefs.getInt('kantinId');
     if (kantinId != null) {
@@ -108,8 +108,11 @@ class _PesananState extends State<Pesanan> {
       backgroundColor: Warna.warnaBackground,
       appBar: TopBar(title: "Pesanan"),
       body: SafeArea(
-        child: SingleChildScrollView(
-          child: Container(
+        child: RefreshIndicator(
+          onRefresh: _ambilPesanan,
+          child: SingleChildScrollView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            child: Container(
             margin: EdgeInsets.all(20),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -166,6 +169,7 @@ class _PesananState extends State<Pesanan> {
                   ),
               ],
             ),
+          ),
           ),
         ),
       ),
