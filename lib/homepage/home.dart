@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:pnbfoods/akun/akun_user.dart';
 import 'package:pnbfoods/common/navbar.dart';
+import 'package:pnbfoods/common/top_bar.dart';
 import 'package:pnbfoods/common/warna.dart';
 import 'package:pnbfoods/pembeli/list_kantin/list_kantin.dart';
 import 'package:pnbfoods/pembeli/order/page_order.dart';
@@ -36,6 +37,7 @@ class _HomeState extends State<HomePengguna> {
   Widget build(BuildContext context) {
     // TODO: implement build
     return Scaffold(
+      appBar: TopBarless(),
       backgroundColor: Warna.warnaBackground,
       body: SafeArea(child: halaman[_selectedNavbar]),
       bottomNavigationBar: Navbar(

@@ -107,7 +107,6 @@ class _ListKantinState extends State<ListKantin> with WidgetsBindingObserver {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: TopBarless(),
       backgroundColor: Warna.warnaBackground,
       body: Column(
         children: [
