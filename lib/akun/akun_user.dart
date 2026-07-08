@@ -159,7 +159,7 @@ class _ProfilUserState extends State<ProfileUser> {
           ),
           
         if (idPengguna != null)
-          FutureBuilder<Pelanggan>(
+          Expanded(child: FutureBuilder<Pelanggan>(
             future: futurePelanggan, 
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
@@ -394,7 +394,9 @@ class _ProfilUserState extends State<ProfileUser> {
                 );
               }
               return SizedBox();
-            })
+            }
+          )
+        )
       ],
     );
     
