@@ -6,6 +6,7 @@ import 'package:pnbfoods/common/login_form.dart';
 import 'package:pnbfoods/auth/forgot_password_page.dart';
 import 'package:pnbfoods/homepage/home.dart';
 import 'package:pnbfoods/pembeli/list_produk/list_produk.dart';
+import 'package:pnbfoods/server/pengaturan_server.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:dio/dio.dart';
 import 'package:pnbfoods/services/pelanggan_service.dart';
@@ -48,7 +49,11 @@ class _LoginPageState extends State<LoginPage> {
           child: Column(
             children: [
               // Logo
-              Image.asset('assets/img/logo.png', height: 200),
+              GestureDetector(
+                onDoubleTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => PengaturanServer())),
+                child: Image.asset('assets/img/logo.png', height: 200),
+              ),
+
               const SizedBox(height: 40),
 
               Container(

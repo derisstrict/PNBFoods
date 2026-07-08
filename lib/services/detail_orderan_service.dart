@@ -2,10 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:pnbfoods/models/detail_orderan.dart';
 import 'package:pnbfoods/services/base_url.dart';
 
-final dio = Dio(BaseOptions(
-  baseUrl: BaseUrl.baseUrl,
-  headers: {'Accept': 'application/json'},
-));
+final dio = BaseUrl.dio;
 
 Future<DetailOrderan> fetchDetailOrderan(int id) async {
   final response = await dio.get('detail-orderan/$id');

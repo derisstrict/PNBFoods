@@ -6,10 +6,7 @@ import 'package:http/http.dart' as http;
 import 'package:pnbfoods/models/produk.dart';
 import 'package:pnbfoods/services/base_url.dart';
 
-final dio = Dio(BaseOptions(
-  baseUrl: BaseUrl.baseUrl,
-  headers: {'Accept': 'application/json'}
-));
+final dio = BaseUrl.dio;
 
 Future<Produk> fetchProduk(int id) async {
   final response = await dio.get('produk/$id');

@@ -3,10 +3,7 @@ import 'package:pnbfoods/models/item_keranjang.dart';
 import 'package:pnbfoods/models/pembayaran.dart';
 import 'package:pnbfoods/services/base_url.dart';
 
-final dio = Dio(BaseOptions(
-  baseUrl: BaseUrl.baseUrl,
-  headers: {'Accept': 'application/json'},
-));
+final dio = BaseUrl.dio;
 
 Future<Pembayaran> fetchPembayaran(int id) async {
   final response = await dio.get('pembayaran/$id');

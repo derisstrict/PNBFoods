@@ -7,12 +7,7 @@ import 'package:pnbfoods/models/pelanggan.dart';
 import 'package:pnbfoods/services/base_url.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-final Dio _dio = Dio(
-  BaseOptions(
-    baseUrl: BaseUrl.baseUrl,
-    headers: {'Accept': 'application/json'},
-  )
-);
+final _dio = BaseUrl.dio;
 
 Future<Pelanggan> fetchPelanggan(int idPelanggan) async {
   final prefs = await SharedPreferences.getInstance();

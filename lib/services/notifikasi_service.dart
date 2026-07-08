@@ -3,10 +3,7 @@ import 'package:pnbfoods/models/notifikasi.dart';
 import 'package:pnbfoods/services/base_url.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-final dio = Dio(BaseOptions(
-  baseUrl: BaseUrl.baseUrl,
-  headers: {'Accept': 'application/json'},
-));
+final dio = BaseUrl.dio;
 
 Future<Map<String, dynamic>> getAuthHeaders() async {
   final prefs = await SharedPreferences.getInstance();

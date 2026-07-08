@@ -3,12 +3,7 @@ import 'package:dio/dio.dart';
 import 'package:pnbfoods/models/kantin.dart';
 import 'package:pnbfoods/services/base_url.dart';
 
-final dio = Dio(
-  BaseOptions(
-    baseUrl: BaseUrl.baseUrl,
-    headers: {'Accept': 'application/json'},
-  ),
-);
+final dio = BaseUrl.dio;
 
 Future<Kantin> fetchKantin(int id) async {
   final response = await dio.get('kantin/$id');

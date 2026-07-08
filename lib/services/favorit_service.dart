@@ -2,12 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:pnbfoods/services/base_url.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-final Dio _dio = Dio(
-  BaseOptions(
-    baseUrl: BaseUrl.baseUrl,
-    headers: {'Accept': 'application/json'},
-  ),
-);
+final _dio = BaseUrl.dio;
 
 Future<List<Map<String, dynamic>>> getFavorit() async {
   final prefs = await SharedPreferences.getInstance();
