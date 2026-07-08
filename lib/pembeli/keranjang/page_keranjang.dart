@@ -37,7 +37,9 @@ class _KeranjangPageState extends State<KeranjangPage> {
   void tambah(int index) {
     final item = keranjang[index];
     final id = item.produkId ?? item.nama.hashCode;
-    CartService().addOrUpdate(widget.kantin.id, id, item.nama, item.harga, item.imageUrl, item.jumlah + 1);
+    if (item.jumlah < item.stok!) {
+      CartService().addOrUpdate(widget.kantin.id, id, item.nama, item.harga, item.imageUrl, item.jumlah + 1, item.stok!);
+    }
     setState(() {});
   }
 
@@ -47,7 +49,7 @@ class _KeranjangPageState extends State<KeranjangPage> {
     if (item.jumlah <= 1) {
       CartService().removeItem(widget.kantin.id, id);
     } else {
-      CartService().addOrUpdate(widget.kantin.id, id, item.nama, item.harga, item.imageUrl, item.jumlah - 1);
+      CartService().addOrUpdate(widget.kantin.id, id, item.nama, item.harga, item.imageUrl, item.jumlah - 1, item.stok!);
     }
     if (CartService().isEmpty(kantinId: widget.kantin.id)) {
       Navigator.pop(context);

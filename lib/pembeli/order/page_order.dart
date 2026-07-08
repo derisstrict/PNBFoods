@@ -461,6 +461,7 @@ class _OrderPageState extends State<OrderPage> {
                   nama: item['nama_produk'] as String,
                   harga: jumlah > 0 ? subtotal ~/ jumlah : 0,
                   jumlah: jumlah,
+                  stok: item['stok'],
                   catatan: item['catatan'] as String?,
                   imageUrl: '',
                 );

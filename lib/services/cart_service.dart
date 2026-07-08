@@ -18,12 +18,13 @@ class CartService {
     _box = await Hive.openBox('cart');
   }
 
-  void addOrUpdate(int kantinId, int produkId, String nama, int harga, String imageUrl, int jumlah, {String? catatan}) {
+  void addOrUpdate(int kantinId, int produkId, String nama, int harga, String imageUrl, int jumlah, int stok, {String? catatan}) {
     _box.put(_key(kantinId, produkId), {
       'nama': nama,
       'harga': harga,
       'imageUrl': imageUrl,
       'jumlah': jumlah,
+      'stok': stok,
       'produk_id': produkId,
       'kantin_id': kantinId,
       'catatan': catatan ?? '',
@@ -52,6 +53,7 @@ class CartService {
         harga: data['harga'] as int,
         imageUrl: data['imageUrl'] as String,
         jumlah: data['jumlah'] as int,
+        stok: data['stok'] as int,
         produkId: data['produk_id'] as int?,
         catatan: data['catatan'] as String?,
       );

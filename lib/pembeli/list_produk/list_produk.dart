@@ -66,6 +66,7 @@ class _ListProdukState extends State<ListProduk> {
               widget.produkAwal!.hargaProduk,
               widget.produkAwal!.fotoUrl ?? '',
               result['quantity'] as int,
+              widget.produkAwal!.stok,
               catatan: result['note'] as String?,
             );
             setState(() {});
@@ -248,15 +249,16 @@ class _ListProdukState extends State<ListProduk> {
                                                         produk: produk,
                                                       ),
                                                 );
-                                            if (result != null) {
+                                            int jumlah = qty + (result['quantity'] as int);
+                                            if (result != null && produk.stok >= jumlah) {
                                               CartService().addOrUpdate(
                                                 widget.kantin.id,
                                                 produk.id,
                                                 produk.namaProduk,
                                                 produk.hargaProduk,
                                                 produk.fotoUrl ?? '',
-                                                qty +
-                                                    (result['quantity'] as int),
+                                                jumlah,
+                                                produk.stok,
                                                 catatan:
                                                     result['note'] as String?,
                                               );
