@@ -11,7 +11,6 @@ import 'package:pnbfoods/services/kantin_service.dart';
 import 'package:pnbfoods/services/pelanggan_service.dart';
 import 'package:pnbfoods/services/produk_service.dart';
 import 'package:pnbfoods/services/notifikasi_service.dart';
-import 'package:pnbfoods/services/notification_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ListKantin extends StatefulWidget {
@@ -19,7 +18,7 @@ class ListKantin extends StatefulWidget {
   _ListKantinState createState() => _ListKantinState();
 }
 
-class _ListKantinState extends State<ListKantin> with WidgetsBindingObserver {
+class _ListKantinState extends State<ListKantin> {
   late Future<List<Kantin>> futureKantin;
   Future<Pelanggan>? pelanggan;
   Pelanggan? pelangganData;
@@ -53,10 +52,8 @@ class _ListKantinState extends State<ListKantin> with WidgetsBindingObserver {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addObserver(this);
     getIdPengguna();
     _fetchUnreadCount();
-    NotificationService.startPolling();
     futureKantin = fetchSemuaKantin();
     fetchSemuaProduk().then((produkList) {
       for (final p in produkList) {
@@ -76,19 +73,7 @@ class _ListKantinState extends State<ListKantin> with WidgetsBindingObserver {
   }
 
   @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.resumed) {
-      NotificationService.startPolling();
-      _fetchUnreadCount();
-    } else if (state == AppLifecycleState.paused) {
-      NotificationService.stopPolling();
-    }
-  }
-
-  @override
   void dispose() {
-    WidgetsBinding.instance.removeObserver(this);
-    NotificationService.stopPolling();
     _searchController.dispose();
     super.dispose();
   }

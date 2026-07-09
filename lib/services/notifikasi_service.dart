@@ -29,6 +29,23 @@ Future<List<NotifikasiModel>> fetchNotifikasi() async {
   throw Exception('Gagal mengambil notifikasi');
 }
 
+Future<List<NotifikasiModel>> fetchNotifikasiRecent(int sinceId) async {
+  final headers = await getAuthHeaders();
+  final response = await dio.get(
+    'notifikasi/recent',
+    queryParameters: {'since': sinceId},
+    options: Options(headers: headers),
+  );
+
+  if (response.statusCode == 200) {
+    final List<dynamic> data = response.data['data'];
+    return data
+        .map((item) => NotifikasiModel.fromJson(item as Map<String, dynamic>))
+        .toList();
+  }
+  return [];
+}
+
 Future<int> fetchUnreadCount() async {
   final headers = await getAuthHeaders();
   final response = await dio.get(

@@ -23,8 +23,36 @@ void main() async {
   runApp(const PNBFoods());
 }
 
-class PNBFoods extends StatelessWidget {
+class PNBFoods extends StatefulWidget {
   const PNBFoods({super.key});
+
+  @override
+  State<PNBFoods> createState() => _PNBFoodsState();
+}
+
+class _PNBFoodsState extends State<PNBFoods> with WidgetsBindingObserver {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    NotificationService.startPolling();
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    NotificationService.stopPolling();
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      NotificationService.startPolling();
+    } else if (state == AppLifecycleState.paused) {
+      NotificationService.stopPolling();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {

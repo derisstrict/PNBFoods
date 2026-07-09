@@ -7,7 +7,7 @@ class NotificationService {
       FlutterLocalNotificationsPlugin();
 
   static bool _initialized = false;
-  static int _lastCount = 0;
+  static int _lastSeenId = 0;
   static Timer? _timer;
 
   static Future<void> init() async {
@@ -31,7 +31,11 @@ class NotificationService {
 
     await _plugin.initialize(settings);
     _initialized = true;
-    _lastCount = 0;
+    _lastSeenId = 0;
+
+    final androidImpl = _plugin.resolvePlatformSpecificImplementation<
+        AndroidFlutterLocalNotificationsPlugin>();
+    await androidImpl?.requestNotificationsPermission();
   }
 
   static Future<void> showNotification({
@@ -46,6 +50,7 @@ class NotificationService {
       channelDescription: 'Notifikasi pesanan dan pembayaran',
       importance: Importance.high,
       priority: Priority.high,
+      icon: 'ic_notification',
     );
 
     const iosDetails = DarwinNotificationDetails();
@@ -63,11 +68,24 @@ class NotificationService {
     );
   }
 
-  static void startPolling() {
+  static void startPolling({Duration interval = const Duration(seconds: 5)}) {
     _timer?.cancel();
-    _timer = Timer.periodic(const Duration(seconds: 30), (_) async {
-      await _checkAndNotify();
+    _initLastSeenId().then((_) {
+      _timer = Timer.periodic(interval, (_) async {
+        await _checkAndNotify();
+      });
     });
+  }
+
+  static Future<void> _initLastSeenId() async {
+    try {
+      final notifikasi = await fetchNotifikasi();
+      if (notifikasi.isNotEmpty) {
+        _lastSeenId = notifikasi.map((n) => n.id).reduce(
+          (a, b) => a > b ? a : b,
+        );
+      }
+    } catch (_) {}
   }
 
   static void stopPolling() {
@@ -77,17 +95,16 @@ class NotificationService {
 
   static Future<void> _checkAndNotify() async {
     try {
-      final count = await fetchUnreadCount();
-      if (count > _lastCount) {
-        final newCount = count - _lastCount;
+      final notifikasi = await fetchNotifikasiRecent(_lastSeenId);
+      for (final n in notifikasi) {
         await showNotification(
-          title: 'Notifikasi Baru',
-          body: newCount == 1
-              ? 'Ada 1 notifikasi baru'
-              : 'Ada $newCount notifikasi baru',
+          title: n.judul,
+          body: n.isi,
         );
+        if (n.id > _lastSeenId) {
+          _lastSeenId = n.id;
+        }
       }
-      _lastCount = count;
     } catch (_) {}
   }
 }
