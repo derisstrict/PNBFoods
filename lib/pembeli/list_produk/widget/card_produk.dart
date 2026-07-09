@@ -24,7 +24,7 @@ class CardProduk extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final Color color;
-    final habis = produk.stok <= 0;
+    final habis = produk.stok == 0;
     if (habis) {
       color = Colors.white54;
     } else if (isAccent) {

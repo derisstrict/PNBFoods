@@ -37,7 +37,7 @@ class _KeranjangPageState extends State<KeranjangPage> {
   void tambah(int index) {
     final item = keranjang[index];
     final id = item.produkId ?? item.nama.hashCode;
-    if (item.jumlah < item.stok!) {
+    if (item.stok == -1 || item.jumlah < item.stok!) {
       CartService().addOrUpdate(widget.kantin.id, id, item.nama, item.harga, item.imageUrl, item.jumlah + 1, item.stok!);
     }
     setState(() {});

@@ -279,7 +279,7 @@ class _DeskripsiMakananState extends State<DeskripsiMakanan> {
 
                       IconButton(
                         onPressed: () {
-                          if (_count < widget.produk.stok) {
+                          if (widget.produk.stok == -1 || _count < widget.produk.stok) {
                             setState(() => _count++);
                           }
                         },

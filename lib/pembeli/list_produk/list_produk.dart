@@ -250,7 +250,7 @@ class _ListProdukState extends State<ListProduk> {
                                                       ),
                                                 );
                                             int jumlah = qty + (result['quantity'] as int);
-                                            if (result != null && produk.stok >= jumlah) {
+                                            if (result != null && (produk.stok == -1 || produk.stok >= jumlah)) {
                                               CartService().addOrUpdate(
                                                 widget.kantin.id,
                                                 produk.id,
