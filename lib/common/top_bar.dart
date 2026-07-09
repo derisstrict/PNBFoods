@@ -245,10 +245,12 @@ class TopBarHeader extends StatelessWidget {
 class TopBarHeaderPenjual extends StatelessWidget {
   final Penjual penjual;
   final Function returnFunction;
+  final int unreadCount;
 
   const TopBarHeaderPenjual({
     super.key,
     required this.penjual,
+    required this.unreadCount,
     required this.returnFunction,
   });
 
@@ -306,7 +308,9 @@ class TopBarHeaderPenjual extends StatelessWidget {
                     child: Row(
                       children: [
                         SizedBox(width: 5),
-                        CircleAvatar(
+                        Stack(
+                          children: [
+                            CircleAvatar(
                               radius: 12,
                               backgroundColor:Color(0xFFD8BED0),
                               backgroundImage: penjual.fotoProfile != null
@@ -317,6 +321,25 @@ class TopBarHeaderPenjual extends StatelessWidget {
                                 ? Icon( Icons.person, size: 12, color: Colors.white)
                                 : null
                             ),
+                            if (unreadCount > 0)
+                              Container(
+                                width: 15,
+                                height: 15,
+                                alignment: Alignment.center,
+                                decoration: BoxDecoration(
+                                  color: Colors.red,
+                                  shape: BoxShape.circle,
+                                ),
+                                child: Text(
+                                  unreadCount > 99 ? "99+" : "$unreadCount",
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 11
+                                  ),
+                                ),
+                              )
+                          ],
+                        ),
                         SizedBox(width: 5,),
                         Text(
                           penjual.namaPenjual,
