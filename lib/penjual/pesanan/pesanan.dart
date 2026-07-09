@@ -52,7 +52,9 @@ class _PesananState extends State<Pesanan> {
     final prefs = await SharedPreferences.getInstance();
     final kantinId = prefs.getInt('kantinId');
     if (kantinId != null) {
-      final data = await fetchOrderanByKantin(kantinId);
+      final data = (await fetchOrderanByKantin(kantinId))
+          .where((o) => o.statusOrderan != 'kadaluwarsa')
+          .toList();
       if (!mounted) return;
       _semuaPesanan = _urutkanPesanan(data);
       _isFirstLoad = false;
