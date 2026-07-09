@@ -16,6 +16,7 @@ import 'package:pnbfoods/penjual/form_produk/form_produk.dart';
 import 'package:pnbfoods/penjual/form_kantin/form_kantin.dart';
 import 'package:pnbfoods/penjual/pendapatan/pendapatan.dart';
 import 'package:pnbfoods/penjual/pesanan/pesanan.dart';
+import 'package:pnbfoods/services/notifikasi_service.dart';
 import 'package:pnbfoods/services/penjual_service.dart';
 import 'package:pnbfoods/services/produk_service.dart';
 import 'package:pnbfoods/models/kantin.dart';
@@ -41,6 +42,7 @@ class _DashboardState extends State<Dashboard> {
   int _totalProductsSold = 0;
   String? _appDirPath;
   Timer? _refreshTimer;
+  int _unreadCount = 0;
 
   Future<void> _initPath() async {
     final Directory appDir = await getApplicationDocumentsDirectory();
@@ -126,11 +128,19 @@ class _DashboardState extends State<Dashboard> {
     _pesananController.add(orderans);
   }
 
+  Future<void> _fetchUnreadCount() async {
+    try {
+      final count = await fetchUnreadCount();
+      if (mounted) setState(() => _unreadCount = count);
+    } catch (_) {}
+  }
+
   @override
   void initState() {
     super.initState();
     _ambilProdukPenjual();
     _ambilDataPenjual();
+    _fetchUnreadCount();
     _futureKantin = _loadKantin().then((kantin) {
       if (kantin != null) {
         _ambilPesananKantin();
@@ -277,6 +287,7 @@ class _DashboardState extends State<Dashboard> {
                     if (penjual != null)
                       TopBarHeaderPenjual(
                         penjual: penjual!,
+                        unreadCount: _unreadCount,
                         returnFunction: () {
                           _ambilDataPenjual();
                         },
