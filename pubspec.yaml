@@ -28,6 +28,7 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^6.0.0
+  flutter_launcher_icons: ^0.14.4
 
 flutter:
   uses-material-design: true
@@ -51,3 +52,10 @@ flutter:
           weight: 700  
         - asset: fonts/Poppins-Black.ttf
           weight: 900   
+
+flutter_launcher_icons:
+  android: "launcher_icon"
+  ios: true
+  image_path: "assets/img/pnbfoods.png"
+  remove_alpha_ios: true
+  min_sdk_android: 21 
