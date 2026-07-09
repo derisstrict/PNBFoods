@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:pnbfoods/akun/ubah_password.dart';
 import 'package:pnbfoods/auth/login_page.dart';
@@ -14,6 +16,7 @@ import 'package:pnbfoods/models/penjual.dart';
 import 'package:pnbfoods/services/penjual_service.dart';
 import 'package:pnbfoods/services/riwayat_service.dart';
 import 'package:pnbfoods/services/notifikasi_service.dart';
+import 'package:pnbfoods/services/notification_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:pnbfoods/pembeli/riwayat/page_riwayat.dart';
 
@@ -35,6 +38,7 @@ class _ProfilUserState extends State<ProfileUser> {
   String? rolePengguna;
   int? idPengguna;
   int _unreadCount = 0;
+  StreamSubscription<int>? _unreadSub;
 
   void _ambilDataUser() async {
     final prefs = await SharedPreferences.getInstance();
@@ -64,6 +68,15 @@ class _ProfilUserState extends State<ProfileUser> {
     super.initState();
     _ambilDataUser();
     _fetchUnreadCount();
+    _unreadSub = NotificationService.unreadStream.listen((c) {
+      if (mounted) setState(() => _unreadCount = c);
+    });
+  }
+
+  @override
+  void dispose() {
+    _unreadSub?.cancel();
+    super.dispose();
   }
 
   Future<void> _fetchUnreadCount() async {

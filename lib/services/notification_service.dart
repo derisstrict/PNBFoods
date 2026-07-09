@@ -9,6 +9,8 @@ class NotificationService {
   static bool _initialized = false;
   static int _lastSeenId = 0;
   static Timer? _timer;
+  static final _unreadStream = StreamController<int>.broadcast();
+  static Stream<int> get unreadStream => _unreadStream.stream;
 
   static Future<void> init() async {
     if (_initialized) return;
@@ -105,6 +107,8 @@ class NotificationService {
           _lastSeenId = n.id;
         }
       }
+      final count = await fetchUnreadCount();
+      _unreadStream.add(count);
     } catch (_) {}
   }
 }

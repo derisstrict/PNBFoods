@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:pnbfoods/akun/akun_user.dart';
 import 'package:pnbfoods/common/top_bar.dart';
@@ -11,6 +13,7 @@ import 'package:pnbfoods/services/kantin_service.dart';
 import 'package:pnbfoods/services/pelanggan_service.dart';
 import 'package:pnbfoods/services/produk_service.dart';
 import 'package:pnbfoods/services/notifikasi_service.dart';
+import 'package:pnbfoods/services/notification_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ListKantin extends StatefulWidget {
@@ -25,6 +28,7 @@ class _ListKantinState extends State<ListKantin> {
 
   int? idPelanggan;
   int _unreadCount = 0;
+  StreamSubscription<int>? _unreadSub;
   final _searchController = TextEditingController();
   String _searchQuery = "";
   Map<int, ({int min, int max})> _priceRanges = {};
@@ -54,6 +58,9 @@ class _ListKantinState extends State<ListKantin> {
     super.initState();
     getIdPengguna();
     _fetchUnreadCount();
+    _unreadSub = NotificationService.unreadStream.listen((c) {
+      if (mounted) setState(() => _unreadCount = c);
+    });
     futureKantin = fetchSemuaKantin();
     fetchSemuaProduk().then((produkList) {
       for (final p in produkList) {
@@ -74,6 +81,7 @@ class _ListKantinState extends State<ListKantin> {
 
   @override
   void dispose() {
+    _unreadSub?.cancel();
     _searchController.dispose();
     super.dispose();
   }

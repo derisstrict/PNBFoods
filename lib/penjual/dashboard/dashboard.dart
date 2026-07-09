@@ -17,6 +17,7 @@ import 'package:pnbfoods/penjual/form_kantin/form_kantin.dart';
 import 'package:pnbfoods/penjual/pendapatan/pendapatan.dart';
 import 'package:pnbfoods/penjual/pesanan/pesanan.dart';
 import 'package:pnbfoods/services/notifikasi_service.dart';
+import 'package:pnbfoods/services/notification_service.dart';
 import 'package:pnbfoods/services/penjual_service.dart';
 import 'package:pnbfoods/services/produk_service.dart';
 import 'package:pnbfoods/models/kantin.dart';
@@ -43,6 +44,7 @@ class _DashboardState extends State<Dashboard> {
   String? _appDirPath;
   Timer? _refreshTimer;
   int _unreadCount = 0;
+  StreamSubscription<int>? _unreadSub;
 
   Future<void> _initPath() async {
     final Directory appDir = await getApplicationDocumentsDirectory();
@@ -141,6 +143,9 @@ class _DashboardState extends State<Dashboard> {
     _ambilProdukPenjual();
     _ambilDataPenjual();
     _fetchUnreadCount();
+    _unreadSub = NotificationService.unreadStream.listen((c) {
+      if (mounted) setState(() => _unreadCount = c);
+    });
     _futureKantin = _loadKantin().then((kantin) {
       if (kantin != null) {
         _ambilPesananKantin();
@@ -157,6 +162,7 @@ class _DashboardState extends State<Dashboard> {
   void dispose() {
     _refreshTimer?.cancel();
     _pesananController.close();
+    _unreadSub?.cancel();
     super.dispose();
   }
 
