@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:pnbfoods/common/palang_tamu.dart';
@@ -17,12 +19,17 @@ class OrderPage extends StatefulWidget {
 }
 
 class _OrderPageState extends State<OrderPage> {
-  late Future<List<Orderan>> _futureOrderan;
+  final _orderanController = StreamController<List<Orderan>>.broadcast();
+  bool _isFirstLoad = true;
+  String? _error;
+  Timer? _refreshTimer;
 
   @override
-  void initState() {
-    super.initState();
-    // _futureOrderan = _loadOrderan();
+  void dispose() {
+    _refreshTimer?.cancel();
+    _refreshTimer = null;
+    _orderanController.close();
+    super.dispose();
   }
 
   Future _cekTamu() async {
@@ -30,12 +37,23 @@ class _OrderPageState extends State<OrderPage> {
     return prefs.getInt('userId');
   }
 
-  Future<List<Orderan>> _loadOrderan() async {
+  Future<void> _loadOrderan() async {
     final prefs = await SharedPreferences.getInstance();
     final pelangganId = prefs.getInt('userId');
-
-    if (pelangganId == null) throw Exception('User belum login');
-    return fetchOrderanByPelanggan(pelangganId);
+    if (pelangganId == null) return;
+    try {
+      final data = await fetchOrderanByPelanggan(pelangganId);
+      if (!mounted) return;
+      _error = null;
+      _isFirstLoad = false;
+      _orderanController.add(data);
+    } catch (e) {
+      if (mounted) {
+        _error = e.toString();
+        _isFirstLoad = false;
+        setState(() {});
+      }
+    }
   }
 
   double _TotalHarian(List<Orderan> list) {
@@ -54,153 +72,33 @@ class _OrderPageState extends State<OrderPage> {
           return Center(child: Text('Error: ${snapshot.error}'));
         }
         if (snapshot.hasData) {
-          _futureOrderan = _loadOrderan();
+          if (_isFirstLoad) _loadOrderan();
+          _refreshTimer ??= Timer.periodic(const Duration(seconds: 3), (_) {
+            if (mounted) _loadOrderan();
+            print("test");
+          });
           return Scaffold(
             appBar: TopBar(title: "Order", icon: Icons.article_outlined,),
             backgroundColor: Warna.warnaBackground,
               body: SafeArea(
                 child: RefreshIndicator(
-                  onRefresh: () async {
-                    setState(() {
-                      _futureOrderan = _loadOrderan();
-                    });
-                    await _futureOrderan;
-                  },
-                  child: FutureBuilder<List<Orderan>>(
-                    future: _futureOrderan,
+                  onRefresh: _loadOrderan,
+                  child: StreamBuilder<List<Orderan>>(
+                    stream: _orderanController.stream,
                     builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return const Center(child: CircularProgressIndicator());
-                      }
-
-                      if (snapshot.hasError) {
+                      if (_isFirstLoad) return const Center(child: CircularProgressIndicator());
+                      if (_error != null) {
                         return ListView(
-                          children: [Center(child: Text('Error: ${snapshot.error}'))],
+                          children: [Center(child: Text('Error: $_error'))],
                         );
                       }
-
-                      if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                      final data = snapshot.data ?? [];
+                      if (data.isEmpty) {
                         return ListView(
                           children: const [Center(child: Text('Belum ada riwayat orderan.'))],
                         );
                       }
-
-                      final listOrderanMentah = snapshot.data!;
-
-                  final Map<String, List<Orderan>> groupedOrderan =
-                      Orderan.orderanPertanggal(listOrderanMentah);
-                  final List<String> listTanggal = groupedOrderan.keys.toList();
-
-                  return ListView.builder(
-                    itemCount: listTanggal.length,
-                    itemBuilder: (context, indexTanggal) {
-                      final tanggalRaw = listTanggal[indexTanggal];
-                      final orderanPerHari = groupedOrderan[tanggalRaw]!;
-                      final totalHarian = _TotalHarian(orderanPerHari);
-                      final formatRupiah = NumberFormat.decimalPattern('id');
-
-                      String tanggalFormatted = tanggalRaw;
-                      try {
-                        DateTime parsedDate = DateTime.parse(tanggalRaw);
-                        tanggalFormatted = DateFormat(
-                          'dd MMMM yyyy',
-                        ).format(parsedDate);
-                      } catch (_) {}
-
-                      return Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.only(
-                              top: 18,
-                              right: 18,
-                              left: 18,
-                              bottom: 8,
-                            ),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  tanggalFormatted,
-                                  style: const TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w700,
-                                  ),
-                                ),
-                                Text(
-                                  'Rp. ${formatRupiah.format(totalHarian)}',
-                                  style: const TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-
-                          ...orderanPerHari.map((orderan) {
-                            final namaKantin =
-                                orderan.kantin?['nama_kantin'] ??
-                                'Kantin Tidak Diketahui';
-                            final kategoriKantin =
-                                orderan.kantin?['kategori'] ?? 'Umum';
-                            final fotoKantin = orderan.kantin?['foto_url'];
-                            final List<Map<String, String>>
-                            detailBelanja = orderan.items.map<Map<String, String>>((
-                              item,
-                            ) {
-                              return {
-                                'jumlah': "${item['jumlah']}",
-                                'nama': item['nama_produk'].toString(),
-                                'harga':
-                                    'Rp. ${formatRupiah.format(item['harga_subtotal'])}',
-                                'catatan': item['catatan']?.toString() ?? '',
-                              };
-                            }).toList();
-
-                            String waktu = DateFormat(
-                              'HH.mm',
-                            ).format(orderan.tanggalOrderan);
-
-                            final jumlahItem = orderan.items.fold<int>(
-                              0,
-                              (sum, item) =>
-                                  sum +
-                                  (int.tryParse(item['jumlah'].toString()) ?? 0),
-                            );
-
-                            return Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Padding(
-                                  padding: const EdgeInsets.fromLTRB(18, 4, 18, 6),
-                                  child: Text(
-                                    waktu,
-                                    style: const TextStyle(
-                                      fontSize: 12,
-                                      color: Colors.grey,
-                                    ),
-                                  ),
-                                ),
-                                _buildOrderCard(
-                                  orderan: orderan,
-                                  gambarkantin: fotoKantin,
-                                  namaKantin: namaKantin,
-                                  kategori: kategoriKantin,
-                                  itemCount: '$jumlahItem item',
-                                  totalHarga:
-                                      'Rp. ${formatRupiah.format(orderan.totalHarga)}',
-                                  status: orderan.statusOrderan,
-                                  items: detailBelanja,
-                                  statusPembayaran: orderan.statusPembayaran ?? '',
-                                ),
-                              ],
-                            );
-                          }),
-                        ],
-                      );
-                    },
-                  );
+                      return _buildOrderList(data);
                     },
                   ),
                 ),
@@ -261,6 +159,90 @@ class _OrderPageState extends State<OrderPage> {
           ),
         );
     }
+  }
+
+  Widget _buildOrderList(List<Orderan> data) {
+    final groupedOrderan = Orderan.orderanPertanggal(data);
+    final listTanggal = groupedOrderan.keys.toList();
+
+    return ListView.builder(
+      itemCount: listTanggal.length,
+      itemBuilder: (context, indexTanggal) {
+        final tanggalRaw = listTanggal[indexTanggal];
+        final orderanPerHari = groupedOrderan[tanggalRaw]!;
+        final totalHarian = _TotalHarian(orderanPerHari);
+        final formatRupiah = NumberFormat.decimalPattern('id');
+
+        String tanggalFormatted = tanggalRaw;
+        try {
+          DateTime parsedDate = DateTime.parse(tanggalRaw);
+          tanggalFormatted = DateFormat('dd MMMM yyyy').format(parsedDate);
+        } catch (_) {}
+
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(top: 18, right: 18, left: 18, bottom: 8),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    tanggalFormatted,
+                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
+                  ),
+                  Text(
+                    'Rp. ${formatRupiah.format(totalHarian)}',
+                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                  ),
+                ],
+              ),
+            ),
+            ...orderanPerHari.map((orderan) {
+              final namaKantin = orderan.kantin?['nama_kantin'] ?? 'Kantin Tidak Diketahui';
+              final kategoriKantin = orderan.kantin?['kategori'] ?? 'Umum';
+              final fotoKantin = orderan.kantin?['foto_url'];
+              final detailBelanja = orderan.items.map<Map<String, String>>((item) {
+                return {
+                  'jumlah': "${item['jumlah']}",
+                  'nama': item['nama_produk'].toString(),
+                  'harga': 'Rp. ${formatRupiah.format(item['harga_subtotal'])}',
+                  'catatan': item['catatan']?.toString() ?? '',
+                };
+              }).toList();
+
+              String waktu = DateFormat('HH.mm').format(orderan.tanggalOrderan);
+
+              final jumlahItem = orderan.items.fold<int>(
+                0,
+                (sum, item) => sum + (int.tryParse(item['jumlah'].toString()) ?? 0),
+              );
+
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(18, 4, 18, 6),
+                    child: Text(waktu, style: const TextStyle(fontSize: 12, color: Colors.grey)),
+                  ),
+                  _buildOrderCard(
+                    orderan: orderan,
+                    gambarkantin: fotoKantin,
+                    namaKantin: namaKantin,
+                    kategori: kategoriKantin,
+                    itemCount: '$jumlahItem item',
+                    totalHarga: 'Rp. ${formatRupiah.format(orderan.totalHarga)}',
+                    status: orderan.statusOrderan,
+                    items: detailBelanja,
+                    statusPembayaran: orderan.statusPembayaran ?? '',
+                  ),
+                ],
+              );
+            }),
+          ],
+        );
+      },
+    );
   }
 
   Widget _buildOrderCard({
@@ -488,9 +470,7 @@ class _OrderPageState extends State<OrderPage> {
                 ),
               ));
               if (result == true) {
-                setState(() {
-                  _futureOrderan = _loadOrderan();
-                });
+                _loadOrderan();
               }
             },
             child: Container(

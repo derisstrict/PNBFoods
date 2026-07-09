@@ -1,5 +1,6 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
-import 'package:pnbfoods/common/tombol.dart';
 import 'package:pnbfoods/common/top_bar.dart';
 import 'package:pnbfoods/common/warna.dart';
 import 'package:pnbfoods/penjual/pesanan/widget/detail_pesanan.dart';
@@ -13,9 +14,27 @@ class Pesanan extends StatefulWidget {
 }
 
 class _PesananState extends State<Pesanan> {
-  List<Orderan> _semuaPesanan = [];
-  bool _isLoading = true;
+  final _pesananController = StreamController<List<Orderan>>.broadcast();
+  bool _isFirstLoad = true;
   String _statusFilter = 'semua';
+  Timer? _refreshTimer;
+  List<Orderan> _semuaPesanan = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _ambilPesanan();
+    _refreshTimer = Timer.periodic(const Duration(seconds: 3), (_) {
+      if (mounted) _ambilPesanan();
+    });
+  }
+
+  @override
+  void dispose() {
+    _refreshTimer?.cancel();
+    _pesananController.close();
+    super.dispose();
+  }
 
   Widget _tombolFilter(String label, String status) {
     final isActive = _statusFilter == status;
@@ -29,23 +48,20 @@ class _PesananState extends State<Pesanan> {
     );
   }
 
-  @override
-  void initState() {
-    super.initState();
-    _ambilPesanan();
-  }
-
   Future<void> _ambilPesanan() async {
     final prefs = await SharedPreferences.getInstance();
     final kantinId = prefs.getInt('kantinId');
     if (kantinId != null) {
       final data = await fetchOrderanByKantin(kantinId);
-      setState(() {
-        _semuaPesanan = _urutkanPesanan(data);
-        _isLoading = false;
-      });
+      if (!mounted) return;
+      _semuaPesanan = _urutkanPesanan(data);
+      _isFirstLoad = false;
+      _pesananController.add(_semuaPesanan);
     } else {
-      setState(() => _isLoading = false);
+      if (mounted) {
+        _isFirstLoad = false;
+        _pesananController.add([]);
+      }
     }
   }
 
@@ -88,22 +104,18 @@ class _PesananState extends State<Pesanan> {
   }
 
   void _handleStatusUpdated(int orderanId, String statusBaru) {
-    setState(() {
-      final idx = _semuaPesanan.indexWhere((o) => o.id == orderanId);
-      if (idx != -1) {
-        _semuaPesanan[idx] = _semuaPesanan[idx].copyWith(
-          statusOrderan: statusBaru,
-        );
-        _semuaPesanan = _urutkanPesanan(_semuaPesanan);
-      }
-    });
+    final idx = _semuaPesanan.indexWhere((o) => o.id == orderanId);
+    if (idx != -1) {
+      _semuaPesanan[idx] = _semuaPesanan[idx].copyWith(
+        statusOrderan: statusBaru,
+      );
+      _semuaPesanan = _urutkanPesanan(_semuaPesanan);
+      _pesananController.add(_semuaPesanan);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    final pesanan = _filterPesanan(_semuaPesanan);
-
-    // TODO: implement build
     return Scaffold(
       backgroundColor: Warna.warnaBackground,
       appBar: TopBar(title: "Pesanan"),
@@ -134,39 +146,45 @@ class _PesananState extends State<Pesanan> {
                     ),
                   ),
                 ),
-                if (_isLoading)
-                  Center(child: CircularProgressIndicator())
-                else if (pesanan.isEmpty)
-                  Container(
-                    padding: EdgeInsets.all(10),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10),
-                      color: Colors.white,
-                    ),
-                    child: Center(
-                      child: Text(
-                        "Tidak ada pesanan",
-                        style: TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w500,
+                StreamBuilder<List<Orderan>>(
+                  stream: _pesananController.stream,
+                  builder: (context, snapshot) {
+                    if (_isFirstLoad) return const Center(child: CircularProgressIndicator());
+                    final data = snapshot.data ?? [];
+                    final pesanan = _filterPesanan(data);
+                    if (pesanan.isEmpty) {
+                      return Container(
+                        padding: EdgeInsets.all(10),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
+                          color: Colors.white,
                         ),
-                      ),
-                    ),
-                  )
-                else
-                  Column(
-                    spacing: 10,
-                    children: pesanan
-                        .map(
-                          (orderan) => DetailPesanan(
-                            key: ValueKey(orderan.id),
-                            orderan: orderan,
-                            onStatusUpdated: (statusBaru) =>
-                                _handleStatusUpdated(orderan.id, statusBaru),
+                        child: Center(
+                          child: Text(
+                            "Tidak ada pesanan",
+                            style: TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w500,
+                            ),
                           ),
-                        )
-                        .toList(),
-                  ),
+                        ),
+                      );
+                    }
+                    return Column(
+                      spacing: 10,
+                      children: pesanan
+                          .map(
+                            (orderan) => DetailPesanan(
+                              key: ValueKey(orderan.id),
+                              orderan: orderan,
+                              onStatusUpdated: (statusBaru) =>
+                                  _handleStatusUpdated(orderan.id, statusBaru),
+                            ),
+                          )
+                          .toList(),
+                    );
+                  },
+                ),
               ],
             ),
           ),

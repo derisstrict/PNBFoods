@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -32,12 +33,14 @@ class _DashboardState extends State<Dashboard> {
   late Future<Kantin?> _futureKantin;
   late Future<List<Produk>> _futureProduk;
   Penjual? penjual;
-  Future<List<Orderan>> _futureOrderan = Future.value([]);
+  final _pesananController = StreamController<List<Orderan>>.broadcast();
+  bool _isFirstLoadPesanan = true;
   int _todayIncome = 0;
   int _totalIncome = 0;
   int _todayProductsSold = 0;
   int _totalProductsSold = 0;
   String? _appDirPath;
+  Timer? _refreshTimer;
 
   Future<void> _initPath() async {
     final Directory appDir = await getApplicationDocumentsDirectory();
@@ -112,13 +115,15 @@ class _DashboardState extends State<Dashboard> {
       }
     }
 
+    if (!mounted) return;
     setState(() {
-      _futureOrderan = Future.value(orderans);
       _todayIncome = todayIncome;
       _totalIncome = totalIncome;
       _todayProductsSold = todayProductsSold;
       _totalProductsSold = totalProductsSold;
     });
+    _isFirstLoadPesanan = false;
+    _pesananController.add(orderans);
   }
 
   @override
@@ -133,6 +138,31 @@ class _DashboardState extends State<Dashboard> {
       return kantin;
     });
     _initPath();
+    _refreshTimer = Timer.periodic(const Duration(seconds: 3), (_) {
+      if (mounted) _ambilPesananKantin();
+    });
+  }
+
+  @override
+  void dispose() {
+    _refreshTimer?.cancel();
+    _pesananController.close();
+    super.dispose();
+  }
+
+  Future<void> _refreshAll() async {
+    _ambilPesananKantin();
+    _ambilDataPenjual();
+    setState(() {
+      _futureKantin = _loadKantin();
+    });
+    final prefs = await SharedPreferences.getInstance();
+    final userId = prefs.getInt('userId');
+    if (userId != null) {
+      setState(() {
+        _futureProduk = fetchProdukByPenjual(userId);
+      });
+    }
   }
 
   void refreshDashboard() {
@@ -239,16 +269,18 @@ class _DashboardState extends State<Dashboard> {
             double screenWidth = constraints.maxWidth;
             double screenPadding = 50.0;
             double finalWidth = (screenWidth - (screenPadding * 2)) / 2;
-            return SingleChildScrollView(
-              child: Column(
-                children: [
-                  if (penjual != null)
-                    TopBarHeaderPenjual(
-                      penjual: penjual!,
-                      returnFunction: () {
-                        _ambilDataPenjual();
-                      },
-                    ),
+            return RefreshIndicator(
+              onRefresh: _refreshAll,
+              child: SingleChildScrollView(
+                child: Column(
+                  children: [
+                    if (penjual != null)
+                      TopBarHeaderPenjual(
+                        penjual: penjual!,
+                        returnFunction: () {
+                          _ambilDataPenjual();
+                        },
+                      ),
                   Container(
                     margin: EdgeInsets.all(20),
                     child: FutureBuilder<Kantin?>(
@@ -518,16 +550,13 @@ class _DashboardState extends State<Dashboard> {
                             ),
                             
                             //pesanan
-                            FutureBuilder(
-                              future: _futureOrderan,
+                            StreamBuilder<List<Orderan>>(
+                              stream: _pesananController.stream,
                               builder: (context, snapshot) {
-                                final data = snapshot.data ?? [];
-                                final pesanan = data.where((p) {
-                                  if (p.statusOrderan == "lunas") {
-                                    return true;
-                                  }
-                                  return false;
-                                });
+                                final pesananLunas = (snapshot.data ?? [])
+                                    .where((p) => p.statusOrderan == 'lunas')
+                                    .toList();
+                                final isLoading = !snapshot.hasData && _isFirstLoadPesanan;
                                 return Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   spacing: 12.0,
@@ -538,7 +567,7 @@ class _DashboardState extends State<Dashboard> {
                                         TextHeading(title: "Pesanan"),
                                         Spacer(),
                                         Text(
-                                          "${pesanan.length} pesanan baru",
+                                          "${pesananLunas.length} pesanan baru",
                                           style: TextStyle(
                                             fontSize: 12,
                                             color: Warna.warnaAccent,
@@ -546,12 +575,9 @@ class _DashboardState extends State<Dashboard> {
                                         ),
                                       ],
                                     ),
-                                    if (snapshot.connectionState ==
-                                        ConnectionState.waiting)
-                                      const Center(
-                                        child: CircularProgressIndicator(),
-                                      )
-                                    else if (pesanan.isEmpty)
+                                    if (isLoading)
+                                      const Center(child: CircularProgressIndicator())
+                                    else if (pesananLunas.isEmpty)
                                       Column(
                                         spacing: 10,
                                         children: [
@@ -615,9 +641,8 @@ class _DashboardState extends State<Dashboard> {
                                           ),
                                         ],
                                       )
-                                      
                                     else ...[
-                                      ...pesanan
+                                      ...pesananLunas
                                           .take(3)
                                           .map(
                                             (orderan) => Container(
@@ -790,9 +815,10 @@ class _DashboardState extends State<Dashboard> {
                   ),
                 ],
               ),
-            );
-          },
-        ),
+            ),
+          );
+        },
+      ),
       ),
     );
   }
