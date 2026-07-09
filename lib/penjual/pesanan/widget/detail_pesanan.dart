@@ -4,7 +4,6 @@ import 'package:pnbfoods/common/tombol.dart';
 import 'package:pnbfoods/common/warna.dart';
 import 'package:pnbfoods/models/orderan.dart';
 import 'package:pnbfoods/services/orderan_service.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class DetailPesanan extends StatefulWidget {
   final Orderan orderan;
@@ -17,21 +16,11 @@ class DetailPesanan extends StatefulWidget {
 }
 
 class _DetailPesananState extends State<DetailPesanan> {
-  late String status;
-  bool _isLoading = false;
-
   void _ubahStatus(String statusBaru) async {
-    setState(() {
-      _isLoading = true;
-    });
-
     try {
       await updateOrderan(id: widget.orderan.id, statusOrderan: statusBaru);
 
-      setState(() {
-        status = statusBaru;
-        _isLoading = false;
-      });
+      if (!mounted) return;
 
       widget.onStatusUpdated?.call(statusBaru);
 
@@ -41,20 +30,12 @@ class _DetailPesananState extends State<DetailPesanan> {
         ),
       );
     } catch (e) {
-      setState(() {
-        _isLoading = false;
-      });
+      if (!mounted) return;
 
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text(e.toString())));
     }
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    status = widget.orderan.statusOrderan;
   }
 
   @override
@@ -112,7 +93,7 @@ class _DetailPesananState extends State<DetailPesanan> {
             ],
           ),
         ),
-        _buildStatusBar(status),
+        _buildStatusBar(widget.orderan.statusOrderan),
         Container(
           padding: EdgeInsets.all(10),
           decoration: BoxDecoration(
@@ -198,7 +179,7 @@ class _DetailPesananState extends State<DetailPesanan> {
           ),
         ),
         Visibility(
-          visible: status != 'selesai' && status != 'batal',
+          visible: widget.orderan.statusOrderan != 'selesai' && widget.orderan.statusOrderan != 'batal',
           child: Container(
             padding: EdgeInsets.all(15),
             decoration: BoxDecoration(
@@ -217,17 +198,17 @@ class _DetailPesananState extends State<DetailPesanan> {
                   children: [
                     TombolNavigasi(
                       function: () {
-                        if (status == 'lunas') {
+                        if (widget.orderan.statusOrderan == 'lunas') {
                           _konfirmasiUbahStatus('diproses');
-                        } else if (status == 'diproses') {
+                        } else if (widget.orderan.statusOrderan == 'diproses') {
                           _konfirmasiUbahStatus('menunggu');
-                        } else if (status == 'menunggu') {
+                        } else if (widget.orderan.statusOrderan == 'menunggu') {
                           _konfirmasiUbahStatus('selesai');
                         }
                       },
                       backgroundColor: Warna.warnaAccent,
                       foregroundColor: Colors.white,
-                      text: switch (status) {
+                      text: switch (widget.orderan.statusOrderan) {
                         'lunas' => 'Proses',
                         'diproses' => 'Pengambilan',
                         'menunggu' => 'Selesai',
@@ -242,7 +223,7 @@ class _DetailPesananState extends State<DetailPesanan> {
                       },
                       backgroundColor: Colors.red[50]!,
                       foregroundColor: Colors.red,
-                      text: switch (status) {
+                      text: switch (widget.orderan.statusOrderan) {
                         'lunas' => 'Tolak',
                         'diproses' => 'Batalkan',
                         'menunggu' => 'Batalkan',
