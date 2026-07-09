@@ -112,7 +112,7 @@ class _PengaturanServerState extends State<PengaturanServer> {
                       filled: true,
                       fillColor: Warna.warnaBackground,
                       floatingLabelStyle: TextStyle(color: Warna.warnaTextGray, fontSize: 16),
-                      hint: Text("http://192.168.1.12/api/"),
+                      hint: Text("http://192.168.1.1/api/", style: TextStyle(color: Warna.warnaTextGray),),
                       labelText: "Custom IP",
                       border: OutlineInputBorder(borderRadius: BorderRadius.circular(15)),
                       enabledBorder: OutlineInputBorder(
