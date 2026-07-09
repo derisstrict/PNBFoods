@@ -309,6 +309,7 @@ class TopBarHeaderPenjual extends StatelessWidget {
                       children: [
                         SizedBox(width: 5),
                         Stack(
+                          alignment: AlignmentGeometry.topRight,
                           children: [
                             CircleAvatar(
                               radius: 12,
