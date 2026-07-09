@@ -276,7 +276,7 @@ class TopBarHeaderPenjual extends StatelessWidget {
                   style: TextStyle(
                     color: Colors.white,
                     fontWeight: FontWeight.w600,
-                    fontSize: 18
+                    fontSize: 16
                   ),
                 ),
                 SizedBox(width: 5,),
@@ -284,7 +284,7 @@ class TopBarHeaderPenjual extends StatelessWidget {
                   style: TextStyle(
                     color: Colors.white,
                     fontWeight: FontWeight.w400,
-                    fontSize: 18
+                    fontSize: 16
                   ),
                 ),
                 Spacer(),
@@ -342,7 +342,7 @@ class TopBarHeaderPenjual extends StatelessWidget {
                         ),
                         SizedBox(width: 5,),
                         Text(
-                          penjual.namaPenjual,
+                          "Profil",
                           style: TextStyle(
                             fontWeight: FontWeight.w300,
                             color: Colors.white,
