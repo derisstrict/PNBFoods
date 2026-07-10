@@ -38,6 +38,7 @@ class _PembayaranPageState extends State<PembayaranPage> {
   String? _qrImageUrl;
   Pembayaran? _pembayaran;
   Timer? _pollTimer;
+  bool _dialogShown = false;
 
   @override
   void initState() {
@@ -114,6 +115,8 @@ class _PembayaranPageState extends State<PembayaranPage> {
   }
 
   void _showDoneDialog(String title, String msg, bool success) {
+    if (_dialogShown) return;
+    _dialogShown = true;
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -127,10 +130,8 @@ class _PembayaranPageState extends State<PembayaranPage> {
         actions: [
           TombolNavigasi(
             function: () {
-              // Navigator.of(ctx).pop();
-              // Navigator.of(context).pop(success);
-              Navigator.pop(context, true);
-              Navigator.pop(context, true);
+              Navigator.of(ctx).pop();
+              Navigator.of(context).pop(true);
             },
             text: "Kembali",
             backgroundColor: Warna.warnaAccent,
