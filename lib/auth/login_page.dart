@@ -215,10 +215,16 @@ class _LoginPageState extends State<LoginPage> {
       Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Autentikasi()));
 
     } on DioException catch (e) {
-      final pesan = e.response?.data['message'] ?? 'Login gagal';
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(pesan), backgroundColor: Colors.red),
-      );
+      final String pesan = e.response?.data['message'] ?? 'Login gagal';
+      if (pesan.contains("field") && pesan.contains("required")) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Belum semua form terisi"), backgroundColor: Colors.red),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(pesan), backgroundColor: Colors.red),
+        );
+      }
     } finally {
       setState(() => _isLoading = false);
     }
