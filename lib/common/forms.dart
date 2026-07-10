@@ -305,12 +305,14 @@ class CustomTextFieldProfile extends StatelessWidget {
   final TextEditingController controller;
   final String hintText;
   final IconData icon;
+  final bool? enabled;
 
   const CustomTextFieldProfile({
     super.key,
     required this.controller,
     required this.hintText,
     required this.icon,
+    this.enabled = true
   });
 
   @override
@@ -319,7 +321,7 @@ class CustomTextFieldProfile extends StatelessWidget {
       width: double.infinity,
       height: 40,
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: enabled! ? Colors.white : Warna.warnaBackground,
         borderRadius: BorderRadius.circular(10),
         boxShadow: [
           BoxShadow(
@@ -346,6 +348,7 @@ class CustomTextFieldProfile extends StatelessWidget {
             const SizedBox(width: 15),
             Expanded(
               child: TextFormField(
+                enabled: enabled,
                 controller: controller,
                 style: const TextStyle(
                   fontSize: 14,

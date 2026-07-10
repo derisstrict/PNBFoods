@@ -136,8 +136,9 @@ class _EditProfileState extends State<EditProfile> {
                       controller: widget.pelanggan != null ? _nim : _emailPenjual,
                       hintText: widget.pelanggan != null ? "NIM" : "Email",
                       icon: widget.pelanggan != null 
-                        ? Icons.phone_android_outlined 
+                        ? Icons.badge_outlined 
                         : Icons.email_outlined,
+                      enabled: widget.pelanggan != null ? false : true,
                     ),
                   ],
                 ),
