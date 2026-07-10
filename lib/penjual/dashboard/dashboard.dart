@@ -74,7 +74,8 @@ class _DashboardState extends State<Dashboard> {
   void _ambilDataPenjual() async {
     final prefs = await SharedPreferences.getInstance();
     final userId = prefs.getInt('userId');
-    fetchPenjual(userId!).then((Penjual hasil) {
+    if (userId == null) return;
+    fetchPenjual(userId).then((Penjual hasil) {
       setState(() {
         penjual = hasil;
       });
