@@ -74,6 +74,8 @@ Future<void> updatePelanggan({
     );
   } on DioException catch (e) {
     print("Eror Update: ${e.response?.data}");
+    final message = e.response?.data['message'] ?? 'Gagal mengupdate data pelanggan';
+    throw Exception(message);
   }
 }
 

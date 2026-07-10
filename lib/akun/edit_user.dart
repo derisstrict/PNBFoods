@@ -255,7 +255,7 @@ class _EditProfileState extends State<EditProfile> {
       Navigator.pop(context, true);
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Gagal melakukan perubahan'), backgroundColor: Colors.red,),
+        SnackBar(content: Text('Gagal melakukan perubahan. $e'), backgroundColor: Colors.red,),
       );
     }
   }
