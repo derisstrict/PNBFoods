@@ -60,6 +60,7 @@ Future<Orderan> postOrderan({
 Future<Orderan> updateOrderan({
   required int id,
   String? statusOrderan,
+  String? alasanPenolakan,
   double? totalHarga,
   DateTime? tanggalOrderan,
 }) async {
@@ -69,6 +70,7 @@ Future<Orderan> updateOrderan({
     final Map<String, dynamic> data = {'_method': 'PUT'};
 
     if (statusOrderan != null) data['status_orderan'] = statusOrderan;
+    if (alasanPenolakan != null) data['alasan_penolakan'] = alasanPenolakan;
     if (totalHarga != null) data['total_harga'] = totalHarga;
     if (tanggalOrderan != null) {
       data['tanggal_orderan'] = tanggalOrderan.toIso8601String();

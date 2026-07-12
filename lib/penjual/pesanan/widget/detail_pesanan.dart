@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:pnbfoods/common/forms.dart';
 import 'package:pnbfoods/common/tombol.dart';
 import 'package:pnbfoods/common/warna.dart';
 import 'package:pnbfoods/models/orderan.dart';
@@ -16,9 +17,13 @@ class DetailPesanan extends StatefulWidget {
 }
 
 class _DetailPesananState extends State<DetailPesanan> {
-  void _ubahStatus(String statusBaru) async {
+  void _ubahStatus(String statusBaru, {String? alasanPenolakan}) async {
     try {
-      await updateOrderan(id: widget.orderan.id, statusOrderan: statusBaru);
+      await updateOrderan(
+        id: widget.orderan.id,
+        statusOrderan: statusBaru,
+        alasanPenolakan: alasanPenolakan,
+      );
 
       if (!mounted) return;
 
@@ -94,6 +99,32 @@ class _DetailPesananState extends State<DetailPesanan> {
           ),
         ),
         _buildStatusBar(widget.orderan.statusOrderan),
+        if (widget.orderan.statusOrderan == "batal")
+          Container(
+            padding: EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Text("Alasan",
+                      style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 8,),
+                Text(widget.orderan.alasanPenolakan ?? "-",
+                  style: TextStyle(
+                    fontSize: 12
+                  ),
+                ),
+              ],
+            ),
+          ),
         Container(
           padding: EdgeInsets.all(10),
           decoration: BoxDecoration(
@@ -280,7 +311,7 @@ class _DetailPesananState extends State<DetailPesanan> {
       case 'batal':
         bgColor = Colors.red;
         icon = Icons.cancel_outlined;
-        label = 'Pesanan dibatalkan';
+        label = 'Pesanan ditolak';
         break;
       case 'lunas':
         bgColor = Colors.grey;
@@ -318,14 +349,82 @@ class _DetailPesananState extends State<DetailPesanan> {
   }
 
   Future<void> _konfirmasiUbahStatus(String statusBaru) async {
+    final formController = TextEditingController();
     final bool? konfirmasi = await showDialog<bool>(
       context: context,
       builder: (context) {
         return AlertDialog(
           backgroundColor: Colors.white,
           title: const Text("Konfirmasi"),
-          content: Text(
-            "Apakah Anda yakin ingin mengubah status menjadi \"$statusBaru\"?",
+          content: Column(
+            spacing: 10,
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                statusBaru != "batal" ?
+                "Apakah Anda yakin ingin mengubah status menjadi \"$statusBaru\"?" : "Apakah anda yakin ingin membatalkan pesanan?",
+              ),
+              if (statusBaru == "batal")
+              Column(
+                spacing: 10,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  TextFormFieldCustom(
+                    controller: formController, 
+                    labelText: "Alasan pembatalan", 
+                    prefixIcon: Icon(Icons.comment_outlined),
+                    backgroundColor: Warna.warnaBackground,
+                  ),
+                  Wrap(
+                    spacing: 10,
+                    runSpacing: 10,
+                    children: [
+                      TextButton(
+                        onPressed: () {
+                          setState(() {
+                            formController.text = "Produk yang anda pilih habis.";
+                          });
+                        },
+                        style: TextButton.styleFrom(
+                          backgroundColor: Warna.warnaBackground,
+                          foregroundColor: Colors.black12
+                        ), 
+                        child: Text("Produk terpilih habis",
+                          style: TextStyle(
+                            color: Warna.warnaAccent
+                          ),
+                        )
+                      ),    
+                      TextButton(
+                        onPressed: () {
+                          setState(() {
+                            formController.text = "";
+                          });
+                        },
+                        style: TextButton.styleFrom(
+                          backgroundColor: Warna.warnaBackground,
+                          foregroundColor: Colors.black12
+                        ), 
+                        child: Row(
+                          spacing: 10,
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(Icons.backspace_outlined,
+                            color: Warna.warnaAccent,),
+                            Text("Hapus",
+                              style: TextStyle(
+                                color: Warna.warnaAccent
+                              ),
+                            )
+                          ],
+                        ) 
+                      ),
+                    ],
+                  )
+                ],
+              )
+            ],
           ),
           actions: [
             Row(
@@ -364,7 +463,10 @@ class _DetailPesananState extends State<DetailPesanan> {
       },
     );
     if (konfirmasi == true) {
-      _ubahStatus(statusBaru);
+      _ubahStatus(
+        statusBaru,
+        alasanPenolakan: statusBaru == 'batal' ? formController.text : null,
+      );
     }
   }
 }

@@ -344,6 +344,33 @@ class _OrderPageState extends State<OrderPage> {
           ),
         ),
         _buildStatusBar(status),
+        if (status == "batal")
+          Container(
+            margin: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(16),
+            ),
+            padding: EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Text("Alasan",
+                      style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 8,),
+                Text(orderan.alasanPenolakan ?? "-",
+                  style: TextStyle(
+                    fontSize: 13
+                  ),
+                ),
+              ],
+            ),
+          ),
         Container(
           margin: const EdgeInsets.fromLTRB(16, 0, 16, 12),
           decoration: BoxDecoration(
@@ -522,7 +549,7 @@ class _OrderPageState extends State<OrderPage> {
       case 'batal':
         bgColor = Colors.red;
         icon = Icons.cancel_outlined;
-        label = 'Pesanan dibatalkan';
+        label = 'Pesanan ditolak';
         break;
       case 'kadaluwarsa':
         bgColor = Colors.red;

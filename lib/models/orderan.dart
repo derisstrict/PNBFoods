@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 class Orderan {
   final int id;
   final String statusOrderan;
+  final String? alasanPenolakan;
   final double totalHarga;
   final DateTime tanggalOrderan;
   final DateTime? createdAt;
@@ -19,6 +20,7 @@ class Orderan {
   const Orderan({
     required this.id,
     required this.statusOrderan,
+    this.alasanPenolakan,
     required this.totalHarga,
     required this.tanggalOrderan,
     required this.pelangganId,
@@ -37,6 +39,7 @@ class Orderan {
     return Orderan(
       id: json['id'] as int,
       statusOrderan: json['status_orderan'] as String,
+      alasanPenolakan: json['alasan_penolakan'] as String?,
       totalHarga: (json['total_harga'] as num).toDouble(),
       tanggalOrderan: DateTime.parse(json['tanggal_orderan'] as String),
       pelangganId: json['pelanggan_id'],
@@ -71,6 +74,7 @@ class Orderan {
   Orderan copyWith({
     int? id,
     String? statusOrderan,
+    String? alasanPenolakan,
     double? totalHarga,
     DateTime? tanggalOrderan,
     DateTime? createdAt,
@@ -87,6 +91,7 @@ class Orderan {
     return Orderan(
       id: id ?? this.id,
       statusOrderan: statusOrderan ?? this.statusOrderan,
+      alasanPenolakan: alasanPenolakan ?? this.alasanPenolakan,
       totalHarga: totalHarga ?? this.totalHarga,
       tanggalOrderan: tanggalOrderan ?? this.tanggalOrderan,
       createdAt: createdAt ?? this.createdAt,
