@@ -353,113 +353,119 @@ class _DetailPesananState extends State<DetailPesanan> {
     final bool? konfirmasi = await showDialog<bool>(
       context: context,
       builder: (context) {
-        return AlertDialog(
-          backgroundColor: Colors.white,
-          title: const Text("Konfirmasi"),
-          content: Column(
-            spacing: 10,
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                statusBaru != "batal" ?
-                "Apakah Anda yakin ingin mengubah status menjadi \"$statusBaru\"?" : "Apakah anda yakin ingin membatalkan pesanan?",
-              ),
-              if (statusBaru == "batal")
-              Column(
-                spacing: 10,
-                crossAxisAlignment: CrossAxisAlignment.start,
+        return StatefulBuilder(builder: (context, setState) {
+          return AlertDialog(
+            backgroundColor: Colors.white,
+            title: const Text("Konfirmasi"),
+            content: Column(
+              spacing: 10,
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  statusBaru != "batal" ?
+                  "Apakah Anda yakin ingin mengubah status menjadi \"$statusBaru\"?" : "Apakah anda yakin ingin menolak pesanan?",
+                ),
+                if (statusBaru == "batal")
+                Column(
+                  spacing: 10,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    TextFormFieldCustom(
+                      controller: formController, 
+                      labelText: "Alasan", 
+                      prefixIcon: Icon(Icons.comment_outlined),
+                      backgroundColor: Warna.warnaBackground,
+                      onChanged: (text) {
+                        setState(() {
+                          
+                        });
+                      },
+                    ),
+                    Wrap(
+                      spacing: 10,
+                      runSpacing: 10,
+                      children: [
+                        TextButton(
+                          onPressed: () {
+                            setState(() {
+                              formController.text = "Produk yang anda pilih habis.";
+                            });
+                          },
+                          style: TextButton.styleFrom(
+                            backgroundColor: Warna.warnaBackground,
+                            foregroundColor: Colors.black12
+                          ), 
+                          child: Text("Produk terpilih habis",
+                            style: TextStyle(
+                              color: Warna.warnaAccent
+                            ),
+                          )
+                        ),    
+                        TextButton(
+                          onPressed: () {
+                            setState(() {
+                              formController.text = "";
+                            });
+                          },
+                          style: TextButton.styleFrom(
+                            backgroundColor: Warna.warnaBackground,
+                            foregroundColor: Colors.black12
+                          ), 
+                          child: Row(
+                            spacing: 10,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(Icons.backspace_outlined,
+                              color: Warna.warnaAccent,),
+                              Text("Hapus",
+                                style: TextStyle(
+                                  color: Warna.warnaAccent
+                                ),
+                              )
+                            ],
+                          ) 
+                        ),
+                      ],
+                    )
+                  ],
+                )
+              ],
+            ),
+            actions: [
+              Row(
                 children: [
-                  TextFormFieldCustom(
-                    controller: formController, 
-                    labelText: "Alasan pembatalan", 
-                    prefixIcon: Icon(Icons.comment_outlined),
-                    backgroundColor: Warna.warnaBackground,
-                  ),
-                  Wrap(
-                    spacing: 10,
-                    runSpacing: 10,
-                    children: [
-                      TextButton(
-                        onPressed: () {
-                          setState(() {
-                            formController.text = "Produk yang anda pilih habis.";
-                          });
-                        },
-                        style: TextButton.styleFrom(
-                          backgroundColor: Warna.warnaBackground,
-                          foregroundColor: Colors.black12
-                        ), 
-                        child: Text("Produk terpilih habis",
-                          style: TextStyle(
-                            color: Warna.warnaAccent
-                          ),
-                        )
-                      ),    
-                      TextButton(
-                        onPressed: () {
-                          setState(() {
-                            formController.text = "";
-                          });
-                        },
-                        style: TextButton.styleFrom(
-                          backgroundColor: Warna.warnaBackground,
-                          foregroundColor: Colors.black12
-                        ), 
-                        child: Row(
-                          spacing: 10,
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Icon(Icons.backspace_outlined,
-                            color: Warna.warnaAccent,),
-                            Text("Hapus",
-                              style: TextStyle(
-                                color: Warna.warnaAccent
-                              ),
-                            )
-                          ],
-                        ) 
+                  TextButton(
+                    onPressed: () {
+                      Navigator.pop(context, false);
+                    },
+                    style: TextButton.styleFrom(
+                      foregroundColor: Colors.black
+                    ),
+                    child: const Text("Batal",
+                      style: TextStyle(
+                        color: Colors.black
                       ),
-                    ],
-                  )
+                    ),
+                  ),
+                  Spacer(),
+                  TextButton(
+                    onPressed: formController.text.isNotEmpty ? () {Navigator.pop(context, true);} : null,
+                    style: TextButton.styleFrom(
+                      backgroundColor: formController.text.isEmpty ? Warna.warnaAccent.withAlpha(85) : Warna.warnaAccent
+                    ),
+                    child: const Text("Ya",
+                      style: TextStyle(
+                        color: Colors.white
+                      ),
+                    ),
+                  ),
                 ],
               )
             ],
-          ),
-          actions: [
-            Row(
-              children: [
-                TextButton(
-                  onPressed: () {
-                    Navigator.pop(context, false);
-                  },
-                  style: TextButton.styleFrom(
-                    foregroundColor: Colors.black
-                  ),
-                  child: const Text("Batal",
-                    style: TextStyle(
-                      color: Colors.black
-                    ),
-                  ),
-                ),
-                Spacer(),
-                TextButton(
-                  onPressed: () {
-                    Navigator.pop(context, true);
-                  },
-                  style: TextButton.styleFrom(
-                    backgroundColor: Warna.warnaAccent
-                  ),
-                  child: const Text("Ya",
-                    style: TextStyle(
-                      color: Colors.white
-                    ),
-                  ),
-                ),
-              ],
-            )
-          ],
-        );
+          );
+        }); 
+        
       },
     );
     if (konfirmasi == true) {

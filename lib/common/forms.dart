@@ -9,6 +9,7 @@ class TextFormFieldCustom extends StatelessWidget {
   final Widget prefixIcon;
   final bool numberOnly;
   final Color backgroundColor;
+  final Function(String)? onChanged;
 
 
   const TextFormFieldCustom({
@@ -17,7 +18,8 @@ class TextFormFieldCustom extends StatelessWidget {
     required this.labelText,
     required this.prefixIcon,
     this.numberOnly = false,
-    this.backgroundColor = Colors.white
+    this.backgroundColor = Colors.white,
+    this.onChanged
   });
 
   @override
@@ -46,6 +48,7 @@ class TextFormFieldCustom extends StatelessWidget {
           borderSide: BorderSide.none,
         ),
       ),
+      onChanged: onChanged,
     );
   }
 }
