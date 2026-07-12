@@ -350,6 +350,9 @@ class _DetailPesananState extends State<DetailPesanan> {
 
   Future<void> _konfirmasiUbahStatus(String statusBaru) async {
     final formController = TextEditingController();
+    if (statusBaru != "batal") {
+      formController.text = "-";
+    }
     final bool? konfirmasi = await showDialog<bool>(
       context: context,
       builder: (context) {
