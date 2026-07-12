@@ -261,12 +261,14 @@ class _FormProdukState extends State<FormProduk> {
       return;
     }
 
-    if (_gambar == null) {
-      const snackbar = SnackBar(
-        content: Text("Silahkan upload gambar")
-      );
-      ScaffoldMessenger.of(context).showSnackBar(snackbar);
-      return;
+    if (widget.produk == null) {
+      if (_gambar == null) {
+        const snackbar = SnackBar(
+          content: Text("Silahkan upload gambar")
+        );
+        ScaffoldMessenger.of(context).showSnackBar(snackbar);
+        return;
+      }
     }
 
     final prefs = await SharedPreferences.getInstance();
