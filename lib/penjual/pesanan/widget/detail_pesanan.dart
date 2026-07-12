@@ -250,7 +250,13 @@ class _DetailPesananState extends State<DetailPesanan> {
                     Spacer(),
                     TombolNavigasi(
                       function: () {
-                        _konfirmasiUbahStatus('batal');
+                        if (widget.orderan.statusOrderan == 'menunggu') {
+                          _konfirmasiUbahStatus('diproses');
+                        } else if (widget.orderan.statusOrderan == 'diproses') {
+                          _konfirmasiUbahStatus('lunas');
+                        } else {
+                          _konfirmasiUbahStatus('batal');
+                        }
                       },
                       backgroundColor: Colors.red[50]!,
                       foregroundColor: Colors.red,
@@ -353,6 +359,21 @@ class _DetailPesananState extends State<DetailPesanan> {
     if (statusBaru != "batal") {
       formController.text = "-";
     }
+    String text;
+    switch (statusBaru) {
+      case "diproses":
+        text = "Ubah status bahwa pesanan sedang diproses?";
+      case "menunggu":
+        text = "Ubah status bahwa pesanan sudah siap untuk diambil?";
+      case "selesai":
+        text = "Selesaikan pesanan? Pastikan bahwa pembeli telah mengambil pesanan.";
+      case "lunas":
+        text = "Batalkan pemrosesan pesanan?";
+      case "batal":
+        text = "Apakah anda yakin ingin menolak pesanan?";
+      default:
+        text = "Apakah Anda yakin ingin mengubah status menjadi \"$statusBaru\"?";
+    }
     final bool? konfirmasi = await showDialog<bool>(
       context: context,
       builder: (context) {
@@ -366,8 +387,7 @@ class _DetailPesananState extends State<DetailPesanan> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  statusBaru != "batal" ?
-                  "Apakah Anda yakin ingin mengubah status menjadi \"$statusBaru\"?" : "Apakah anda yakin ingin menolak pesanan?",
+                  text,
                 ),
                 if (statusBaru == "batal")
                 Column(
