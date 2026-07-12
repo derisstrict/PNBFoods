@@ -149,6 +149,15 @@ class _OrderPageState extends State<OrderPage> {
             color: Colors.grey,
           ),
         );
+      case 'dikembalikan':
+        return Text(
+          'Dikembalikan',
+          style: TextStyle(
+            fontSize: 13,
+            fontWeight: FontWeight.w600,
+            color: Colors.orange,
+          ),
+        );
       default:
         return Text(
           statusPembayaran,
