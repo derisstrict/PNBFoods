@@ -352,7 +352,7 @@ class _ListKantinState extends State<ListKantin> {
                         kategori: kantin.kategori,
                         infoHarga: _priceRanges.containsKey(kantin.idPenjual)
                             ? 'Rp. ${_formatHarga(_priceRanges[kantin.idPenjual]!.min)} - ${_formatHarga(_priceRanges[kantin.idPenjual]!.max)}'
-                            : "Lihat Menu",
+                            : "kosong",
                         imageUrl:
                             kantin.fotoUrl ??
                             'https://picsum.photos/200?id=${kantin.id}',

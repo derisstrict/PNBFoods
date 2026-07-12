@@ -101,12 +101,12 @@ class CardKantin extends StatelessWidget {
                   Row(
                     spacing: 5,
                     children: [
-                      Icon(Icons.sell_outlined, size: 16, color: Warna.warnaAccent,),
+                      Icon(infoHarga != 'kosong' ? Icons.sell_outlined : Icons.info_outline, size: 16, color: infoHarga != 'kosong' ? Warna.warnaAccent : Warna.warnaTextGray,),
                       Text(
-                        infoHarga,
+                        infoHarga != 'kosong' ? infoHarga : 'Belum terdapat produk',
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: TextStyle(color: Warna.warnaAccent, fontSize: 12),
+                        style: TextStyle(color: infoHarga != 'kosong' ? Warna.warnaAccent : Warna.warnaTextGray, fontSize: 12),
                       ),
                     ],
                   ),
