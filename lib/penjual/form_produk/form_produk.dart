@@ -255,7 +255,15 @@ class _FormProdukState extends State<FormProduk> {
   Future<void> upsertData() async {
     if (nama!.text == '' || harga!.text == '') {
       const snackbar = SnackBar(
-        content: Text("Salah satu form belum terisi.")
+        content: Text("Salah satu form belum terisi")
+      );
+      ScaffoldMessenger.of(context).showSnackBar(snackbar);
+      return;
+    }
+
+    if (_gambar == null) {
+      const snackbar = SnackBar(
+        content: Text("Silahkan upload gambar")
       );
       ScaffoldMessenger.of(context).showSnackBar(snackbar);
       return;
@@ -296,15 +304,24 @@ class _FormProdukState extends State<FormProduk> {
   }
 
   Future<void> pickImage() async {
+    var maxFileSizeInBytes = 5 * 1048576;
+
     final ImagePicker picker = ImagePicker();
     
-    final XFile? gambar = await picker.pickImage(source: ImageSource.gallery, imageQuality: 80);
+    final XFile? gambar = await picker.pickImage(source: ImageSource.gallery, imageQuality: 80,);
 
     if (gambar != null) {
-      setState(() {
-        _gambar = File(gambar.path);
-      });
+      var imagePath = await gambar.readAsBytes();
+      var fileSize = imagePath.length;
+      if (fileSize <= maxFileSizeInBytes) {
+        setState(() {
+          _gambar = File(gambar.path);
+        });
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Ukuran gambar melebihi batas maksimum 5MB'), backgroundColor: Colors.red,),
+        );
+      }
     }
-
   }
 }

@@ -238,14 +238,24 @@ class _FormKantinState extends State<FormKantin> {
   }
 
   Future<void> pickImage() async {
-    final ImagePicker picker = ImagePicker();
+    var maxFileSizeInBytes = 5 * 1048576;
 
-    final XFile? gambar = await picker.pickImage(source: ImageSource.gallery, imageQuality: 80);
+    final ImagePicker picker = ImagePicker();
+    
+    final XFile? gambar = await picker.pickImage(source: ImageSource.gallery, imageQuality: 80,);
 
     if (gambar != null) {
-      setState(() {
-        _gambar = File(gambar.path);
-      });
+      var imagePath = await gambar.readAsBytes();
+      var fileSize = imagePath.length;
+      if (fileSize <= maxFileSizeInBytes) {
+        setState(() {
+          _gambar = File(gambar.path);
+        });
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Ukuran gambar melebihi batas maksimum 5MB'), backgroundColor: Colors.red,),
+        );
+      }
     }
   }
 }
