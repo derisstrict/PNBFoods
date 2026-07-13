@@ -83,7 +83,7 @@ class _LoginPageState extends State<LoginPage> {
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               Icon(Icons.person),
-                              Text("Login pengguna", 
+                              Text("Login pembeli", 
                                 style: TextStyle(
                                   fontWeight: FontWeight.w400
                                 ),
