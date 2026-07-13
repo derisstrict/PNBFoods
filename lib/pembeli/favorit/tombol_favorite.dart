@@ -93,8 +93,12 @@ class _TombolFavoritState extends State<TombolFavorit> {
   Widget build(BuildContext context) {
     if (_isLoading) {
       return IconButton(
-          onPressed: null, 
-          icon: const Icon(Icons.favorite, size: 28, color: Colors.black12,)
+          onPressed: null,
+          style: IconButton.styleFrom(
+            padding: EdgeInsets.zero,
+            minimumSize: Size(35, 35)
+          ), 
+          icon: const Icon(Icons.favorite, size: 24, color: Colors.black12,)
         );
     }
 
@@ -102,7 +106,11 @@ class _TombolFavoritState extends State<TombolFavorit> {
       icon: Icon(
         _isFavorit ? Icons.favorite : Icons.favorite_border,
         color: _isFavorit ? Colors.red : Colors.grey,
-        size: 28,
+        size: 24,
+      ),
+      style: IconButton.styleFrom(
+        padding: EdgeInsets.zero,
+        minimumSize: Size(35, 35)
       ),
       onPressed: _toggle,
       tooltip: _isFavorit ? 'Hapus dari favorit' : 'Tambah ke favorit',

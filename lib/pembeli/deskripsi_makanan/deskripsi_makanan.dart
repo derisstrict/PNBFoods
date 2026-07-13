@@ -112,29 +112,29 @@ class _DeskripsiMakananState extends State<DeskripsiMakanan> {
                         formatRupiah(widget.produk.hargaProduk),
                         style: TextStyle(
                           fontWeight: FontWeight.w600,
-                          fontSize: 14,
+                          fontSize: 16,
                           color: Warna.warnaAccent,
                         ),
                       ),
                     ],
                   ),
 
-                  SizedBox(height: 2),
                   Row(
                     mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     spacing: 3,
                     children: [
                       Icon(
-                        Icons.shopping_bag_outlined,
-                        size: 16,
-                        color: Colors.black,
+                        Icons.local_mall_outlined,
+                        size: 18,
+                        color: Warna.warnaTextGray,
                       ),
                       Text(
                         "${widget.produk.terjual} terjual",
                         style: TextStyle(
                           fontWeight: FontWeight.w500,
-                          color: Colors.black,
-                          fontSize: 10,
+                          color: Warna.warnaTextGray,
+                          fontSize: 12,
                         ),
                       ),
                       Spacer(),
@@ -142,7 +142,9 @@ class _DeskripsiMakananState extends State<DeskripsiMakanan> {
                     ],
                   ),
 
-                  SizedBox(height: 20),
+                  SizedBox(height: 1),
+                  Divider(),
+                  SizedBox(height: 5,),
 
                   Row(
                     children: [
