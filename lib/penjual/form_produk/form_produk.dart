@@ -229,6 +229,21 @@ class _FormProdukState extends State<FormProduk> {
                                 text: "Kembali",
                               ),
                               Spacer(),
+                              if (widget.produk != null) 
+                                Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    TombolNavigasi(
+                                      function: _konfirmasiHapus, 
+                                      backgroundColor: Colors.red, 
+                                      foregroundColor: Colors.white, 
+                                      icon: Icons.delete_outline,
+                                      text: "Hapus",
+                                    ),
+                                    // Spacer(),
+                                  ],
+                                ),
+                              Spacer(),
                               TombolNavigasi(
                                 function: upsertData, 
                                 backgroundColor: Warna.warnaAccent, 
@@ -324,6 +339,70 @@ class _FormProdukState extends State<FormProduk> {
           SnackBar(content: Text('Ukuran gambar melebihi batas maksimum 5MB'), backgroundColor: Colors.red,),
         );
       }
+    }
+  }
+
+  Future<void> _konfirmasiHapus() async {
+    final bool? konfirmasi = await showDialog<bool>(
+      context: context,
+      builder: (context) {
+        return StatefulBuilder(builder: (context, setState) {
+          return AlertDialog(
+            backgroundColor: Colors.white,
+            title: const Text("Hapus Produk"),
+            content: Column(
+              spacing: 10,
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  "Apakah anda yakin ingin menghapus produk ini?",
+                ),
+              ],
+            ),
+            actions: [
+              Row(
+                children: [
+                  TextButton(
+                    onPressed: () {
+                      Navigator.pop(context, false);
+                    },
+                    style: TextButton.styleFrom(
+                      foregroundColor: Colors.black
+                    ),
+                    child: const Text("Batal",
+                      style: TextStyle(
+                        color: Colors.black
+                      ),
+                    ),
+                  ),
+                  Spacer(),
+                  TextButton(
+                    onPressed: () => Navigator.pop(context, true),
+                    style: TextButton.styleFrom(
+                      backgroundColor: Colors.red
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(Icons.delete_outline, color: Colors.white,),
+                        Text("Hapus",
+                          style: TextStyle(
+                            color: Colors.white
+                          ),
+                        ),
+                      ],
+                    ) 
+                  ),
+                ],
+              )
+            ],
+          );
+        }); 
+      },
+    );
+    if (konfirmasi == true) {
+      await deleteProduk(widget.produk!.id);
+      Navigator.pop(context, true);
     }
   }
 }
