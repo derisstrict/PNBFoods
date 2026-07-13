@@ -130,7 +130,7 @@ class _DeskripsiMakananState extends State<DeskripsiMakanan> {
                         color: Colors.black,
                       ),
                       Text(
-                        "89 terjual",
+                        "${widget.produk.terjual} terjual",
                         style: TextStyle(
                           fontWeight: FontWeight.w500,
                           color: Colors.black,

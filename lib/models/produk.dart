@@ -7,6 +7,7 @@ class Produk {
   final String kategoriProduk;
   final int hargaProduk;
   final int stok;
+  final int terjual;
   final int? penjualId;
   final int? kantinId;
   final DateTime? createdAt;
@@ -21,6 +22,7 @@ class Produk {
     required this.kategoriProduk,
     required this.hargaProduk,
     required this.stok,
+    this.terjual = 0,
     this.penjualId,
     this.kantinId,
     this.createdAt,
@@ -37,6 +39,7 @@ class Produk {
       kategoriProduk: json['kategori_produk'] as String,
       hargaProduk: json['harga_produk'] as int,
       stok: json['stok'] as int,
+      terjual: json['terjual'] as int? ?? 0,
       penjualId: json['penjual_id'] as int?,
       kantinId: json['kantin_id'] as int?,
       createdAt: json['created_at'] != null
